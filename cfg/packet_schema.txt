@@ -1,5 +1,6 @@
 PROTOCOL base{
 	uint systemTime get_system_time (low_cardinality,required,increasing, snap_len 0);
+	uint schemaId get_schemaId (low_cardinality,required, snap_len 0);
 }
 
 PROTOCOL CSV_EXAMPLE (base) {

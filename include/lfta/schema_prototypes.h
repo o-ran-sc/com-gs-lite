@@ -60,6 +60,11 @@ static inline gs_retval_t get_system_time(struct packet * p, gs_uint32_t * t)
 	*t=(gs_uint32_t) p->systemTime;
 	return 0;
 }
+static inline gs_retval_t get_schemaId(struct packet * p, gs_uint32_t * t)
+{
+	*t=(gs_uint32_t) p->schema;
+	return 0;
+}
 
 /* CSV access function using position as 3rd argument */
 

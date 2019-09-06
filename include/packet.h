@@ -27,6 +27,7 @@ struct ipv6_str{
 
 #define PTYPE_CSV 1
 #define PTYPE_GDAT 2
+#define PTYPE_STRUCT 3
 
 #define CSVELEMENTS 1000
 #define GDATELEMENTS 1000
@@ -50,13 +51,20 @@ struct gdat {
     gs_uint8_t data[MAXTUPLESZ];
 };
 
+struct packed {
+	void *values;
+	gs_sp_t *existence_bitmap;
+};
+
 struct packet {
     gs_uint32_t systemTime;
     gs_uint32_t ptype; /* type of record e.g. PTYPE_CSV */
+	gs_schemahandle_t schema;
     union {
         struct csv csv; /* content of CSV record being processed */
         struct csv2 csv2;     
         struct gdat gdat;
+		struct packed packed;
 	} record;
     
 };

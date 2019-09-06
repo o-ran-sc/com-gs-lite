@@ -30,7 +30,8 @@ INCDIR=../../../include
 LFTA_DIR=$(INCDIR/lfta)
 
 libgscprts.a: $(OBJECTS) Makefile 
-	ar  rc libgscprts.a $(OBJECTS) 
+	cd local_datasource; make
+	ar  rc libgscprts.a $(OBJECTS) local_datasource/*.o 
 
 rts_main.c : $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) $(INCDIR/lapp.h) $(INCDIR/fta.h) 
 
@@ -46,4 +47,5 @@ install: all
 	cp libgscprts.a  ../../../lib/ ; ranlib ../../../lib/libgscprts.a
 
 clean:
+	cd local_datasource; make clean
 	rm -f *.o *.a core

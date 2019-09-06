@@ -35,6 +35,7 @@
 gs_retval_t main_csv(gs_int32_t devicenum, gs_sp_t device, gs_int32_t mapcnt, gs_sp_t map[]);
 gs_retval_t main_csv2(gs_int32_t devicenum, gs_sp_t device, gs_int32_t mapcnt, gs_sp_t map[]);
 gs_retval_t main_gdat(gs_int32_t devicenum, gs_sp_t device, gs_int32_t mapcnt, gs_sp_t map[]);
+gs_retval_t main_dproto(gs_int32_t devicenum, gs_sp_t device, gs_int32_t mapcnt, gs_sp_t map[]);
 
 int main (int argc, char* argv[]) {
     gs_int32_t pid;
@@ -153,14 +154,19 @@ int main (int argc, char* argv[]) {
             }
             
             if (strcmp(interfacetype,"CSV")==0) {
-                main_csv(x,device[x],lmapcnt,lmap);           
+                main_csv(x,device[x],lmapcnt,lmap);        
             } else {
            		if (strncmp(interfacetype,"GDAT",4)==0) {
                     main_gdat(x,device[x],lmapcnt,lmap);
-                } else {
-                    gslog(LOG_ERR,"UNKNOWN InterfaceType\n");
-                    exit(0);
-                }
+				}else{
+	           		if (strncmp(interfacetype,"PROTO",5)==0) {
+                    	main_dproto(x,device[x],lmapcnt,lmap);
+                	} else {
+						fprintf(stderr,"interface type %s not recognized\n",interfacetype);
+                    	gslog(LOG_ERR,"UNKNOWN InterfaceType\n");
+                    	exit(0);
+                	}
+				}
             }
             
             /* should never return */

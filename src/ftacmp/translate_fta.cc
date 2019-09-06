@@ -30,6 +30,8 @@ Copyright 2014 AT&T Intellectual Property
 #include <stdlib.h>
 #include <stdio.h>
 #include<ctype.h>
+#include<glob.h>
+#include<string.h>
 
 #include<list>
 
@@ -610,12 +612,31 @@ int main(int argc, char **argv){
 "#include \"fta.h\"\n"
 "#include \"lapp.h\"\n"
 "#include \"rts_udaf.h\"\n\n"
+;
+// Get any locally defined parsing headers
+    glob_t glob_result;
+    memset(&glob_result, 0, sizeof(glob_result));
+
+    // do the glob operation
+    int return_value = glob("../../include/lfta/local/*h", GLOB_TILDE, NULL, &glob_result);
+	if(return_value == 0){
+    	for(size_t i = 0; i < glob_result.gl_pathc; ++i) {
+			char *flds[1000];
+			int nflds = split_string(glob_result.gl_pathv[i],'/',flds,1000);
+			lfta_header += "#include \"local/"+string(flds[nflds-1])+"\"\n\n";
+    	}
+	}else{
+		fprintf(stderr,"Warning, glob on ../../include/lfta/local/*h failed.\n");
+	}
+
 /*
 "#define IS_FILLED(bitmap,bucket) (bitmap[bucket >> 4] & (0x80000000 >> ((bucket & 15)<<1)))\n"
 "#define IS_NEW(bitmap,bucket) (bitmap[bucket >> 4] & (0x80000000 >> (((bucket & 15) << 1) + 1)))\n"
 "#define SET_EMPTY(bitmap,bucket) (bitmap[bucket >> 4] &= (~(0x80000000 >> ((bucket & 15)<<1))))\n"
 "#define SET_FILLED_AND_NEW(bitmap,bucket) (bitmap[bucket >> 4] |= (0xC0000000 >> ((bucket & 15)<<1)))\n"
 */
+
+	lfta_header += 
 "\n"
 "gs_uint64_t (*lfta_prefilter)(void *pkt) = NULL; // set at fta_init\n"
 "\n"
@@ -2726,6 +2747,40 @@ void generate_makefile(vector<string> &input_file_names, int nfiles,
 	if(generate_stats)
 		fprintf(outfl,"  -DLFTA_STATS");
 
+//		Gather the set of interfaces
+//		Also, gather "base interface names" for use in computing
+//		the hash splitting to virtual interfaces.
+//		TODO : must update to hanndle machines
+	set<string> ifaces;
+	set<string> base_vifaces;	// base interfaces of virtual interfaces
+	map<string, string> ifmachines;
+	map<string, string> ifattrs;
+	for(i=0;i<interface_names.size();++i){
+		ifaces.insert(interface_names[i]);
+		ifmachines[interface_names[i]] = machine_names[i];
+
+		size_t Xpos = interface_names[i].find_last_of("X");
+		if(Xpos!=string::npos){
+			string iface = interface_names[i].substr(0,Xpos);
+			base_vifaces.insert(iface);
+		}
+		// get interface attributes and add them to the list
+	}
+
+//		Do we need to include protobuf libraries?
+	bool use_proto = false;
+	int erri;
+	string err_str;
+	for(ssi=ifaces.begin();ssi!=ifaces.end();++ssi){
+		string ifnm = (*ssi);
+		vector<string> ift = ifdb->get_iface_vals(ifmachines[ifnm],ifnm, "InterfaceType", erri, err_str);
+		for(int ift_i=0;ift_i<ift.size();ift_i++){
+			if(ift[ift_i]=="PROTO"){
+				use_proto = true;
+			}
+		}
+	}
+
 	fprintf(outfl,
 "\n"
 "\n"
@@ -2746,11 +2801,13 @@ void generate_makefile(vector<string> &input_file_names, int nfiles,
 	fprintf(outfl,
 "-lgscprts -lgscphost -lm -lgscpaux -lgscplftaaux  -lclearinghouse -lresolv -lpthread -lgscpinterface -lz");
 	if(use_pads)
-		fprintf(outfl, "-lpz -lz -lbz ");
+		fprintf(outfl, " -lpz -lz -lbz ");
 	if(libz_exists && libast_exists)
-		fprintf(outfl,"-last ");
+		fprintf(outfl," -last ");
 	if(use_pads)
-		fprintf(outfl, "-ldll -ldl ");
+		fprintf(outfl, " -ldll -ldl ");
+	if(use_proto)
+		fprintf(outfl, " -L/usr/local/lib/ -lprotobuf-c ");
 	fprintf(outfl," -lgscpaux");
 #ifdef GCOV
 	fprintf(outfl," -fprofile-arcs");
@@ -2815,25 +2872,6 @@ void generate_makefile(vector<string> &input_file_names, int nfiles,
 		exit(0);
 	}
 
-//		Gather the set of interfaces
-//		Also, gather "base interface names" for use in computing
-//		the hash splitting to virtual interfaces.
-//		TODO : must update to hanndle machines
-	set<string> ifaces;
-	set<string> base_vifaces;	// base interfaces of virtual interfaces
-	map<string, string> ifmachines;
-	map<string, string> ifattrs;
-	for(i=0;i<interface_names.size();++i){
-		ifaces.insert(interface_names[i]);
-		ifmachines[interface_names[i]] = machine_names[i];
-
-		size_t Xpos = interface_names[i].find_last_of("X");
-		if(Xpos!=string::npos){
-			string iface = interface_names[i].substr(0,Xpos);
-			base_vifaces.insert(iface);
-		}
-		// get interface attributes and add them to the list
-	}
 
 	fputs(
 ("#!/bin/sh\n"
@@ -2848,8 +2886,8 @@ void generate_makefile(vector<string> &input_file_names, int nfiles,
 "ADDR=`cat gshub.log`\n"
 "ps opgid= $! >> gs.pids\n"
 "./rts $ADDR default ").c_str(), outfl);
-	int erri;
-	string err_str;
+//	int erri;
+//	string err_str;
 	for(ssi=ifaces.begin();ssi!=ifaces.end();++ssi){
 		string ifnm = (*ssi);
 		fprintf(outfl, "%s ",ifnm.c_str());

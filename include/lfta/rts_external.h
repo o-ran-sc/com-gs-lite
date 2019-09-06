@@ -84,6 +84,9 @@ gs_retval_t str_constructor(struct gs_string *s, gs_sp_t l);
 #define UINT(c) ((unsigned int)(c))
 #define ULLONG(c) ((unsigned long long)(c))
 #define FLOAT(c) ((double)(c))
+#define EQ(x,y) ((x)==(y))
+#define GEQ(x,y) ((x)>=(y))
+#define LEQ(x,y) ((x)<=(y))
 
 //	Cast away temporality
 #define non_temporal(x)(x)
