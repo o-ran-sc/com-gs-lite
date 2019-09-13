@@ -75,6 +75,25 @@ void avg_udaf_hfta_HFTA_AGGR_DESTROY_(gs_sp_t b);
 gs_float_t extr_avg_fcn(vstring *v);
 
 //      first aggregate
+// hfta only
+void FIRST_HFTA_AGGR_INIT_(gs_uint32_t* scratch);
+void FIRST_HFTA_AGGR_REINIT_(gs_uint32_t* scratch);
+void FIRST_HFTA_AGGR_UPDATE_(gs_uint32_t* scratch, gs_uint32_t val);
+void FIRST_HFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch);
+void FIRST_HFTA_AGGR_DESTROY_(gs_uint32_t* scratch);
+
+void FIRST_ULL_HFTA_AGGR_INIT_(gs_uint64_t* scratch);
+void FIRST_ULL_HFTA_AGGR_REINIT_(gs_uint64_t* scratch);
+void FIRST_ULL_HFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val);
+void FIRST_ULL_HFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch);
+void FIRST_ULL_HFTA_AGGR_DESTROY_(gs_uint64_t* scratch);
+
+void FIRST_STR_HFTA_AGGR_INIT_(vstring* scratch);
+void FIRST_STR_HFTA_AGGR_REINIT_(vstring* scratch);
+void FIRST_STR_HFTA_AGGR_UPDATE_(vstring* scratch, vstring* val);
+void FIRST_STR_HFTA_AGGR_OUTPUT_(vstring* res, vstring* scratch);
+void FIRST_STR_HFTA_AGGR_DESTROY_(vstring* scratch);
+// hfts-lfta split
 void FIRST_hfta_HFTA_AGGR_INIT_(gs_uint32_t* scratch);
 void FIRST_hfta_HFTA_AGGR_REINIT_(gs_uint32_t* scratch);
 void FIRST_hfta_HFTA_AGGR_UPDATE_(gs_uint32_t* scratch, gs_uint32_t val);
