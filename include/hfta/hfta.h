@@ -21,6 +21,7 @@ Copyright 2014 AT&T Intellectual Property
 #include "base_operator.h"
 #include <vector>
 #include <map>
+#include<math.h>
 #include "rdtsc.h"
 using namespace std;
 
@@ -34,7 +35,8 @@ using namespace std;
 #define LEQ(x,y) ((x)<=(y))
 //	Cast away temporality
 #define non_temporal(x)(x)
-
+//	Access math libraries
+#define sqrt(x) sqrt(x)
 
 
 extern "C" {

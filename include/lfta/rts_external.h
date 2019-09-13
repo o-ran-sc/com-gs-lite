@@ -17,6 +17,8 @@
  ------------------------------------------- */
 
 #include <stdint.h>
+#include<math.h>
+
 
 #include "gsconfig.h"
 #include "gstypes.h"
@@ -90,6 +92,10 @@ gs_retval_t str_constructor(struct gs_string *s, gs_sp_t l);
 
 //	Cast away temporality
 #define non_temporal(x)(x)
+
+//	Access math libraries
+#define sqrt(x) sqrt(x)
+
 
 
 

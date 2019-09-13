@@ -173,7 +173,7 @@ int main(int argc, char* argv[]) {
 	gs_sp_t curl_auth = NULL;
 	gs_uint32_t http_code;
 
-	gs_uint32_t ves_version=5;
+	gs_uint32_t ves_version=7;
 
 
     gs_uint32_t tlimit = 0;     // time limit in seconds

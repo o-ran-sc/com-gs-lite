@@ -2520,11 +2520,17 @@ for(ssi_el=extra_external_libs.begin();ssi_el!=extra_external_libs.end();++ssi_e
 		
   			fprintf(stderr,"interface %s, LFTA %d, snap length is %d\n",liface.c_str(),mi,snap_lengths[mi]);
 
-    		lfta_val[lmach] += "\tfta_register(\""+query_names[mi]+"\", " + (lfta_reuse_options[mi]?"1":"0") + ", ";
-    		if(interface_names[mi]=="")
-				lfta_val[lmach]+="DEFAULTDEV";
-    		else
-				lfta_val[lmach]+='"'+interface_names[mi]+'"';
+			string this_iface = "DEFAULTDEV";
+			if(interface_names[mi]!="")
+				this_iface = '"'+interface_names[mi]+'"';
+			lfta_val[lmach] += "\tif(!strcmp(device,"+this_iface+"))\n";
+    		lfta_val[lmach] += "\t\tfta_register(\""+query_names[mi]+"\", " + (lfta_reuse_options[mi]?"1":"0") + ", ";
+//    		if(interface_names[mi]=="")
+//				lfta_val[lmach]+="DEFAULTDEV";
+//    		else
+//				lfta_val[lmach]+='"'+interface_names[mi]+'"';
+			lfta_val[lmach] += this_iface;
+
 
     		lfta_val[lmach] += ", "+generate_alloc_name(query_names[mi])
         		+"\n#ifndef LFTA_IN_NIC\n\t,"+generate_schema_string_name(query_names[mi])

@@ -71,6 +71,12 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 	ullong FUN [LFTA_LEGAL,COST FREE]ULLONG(uint);
 	ullong FUN [LFTA_LEGAL,COST FREE]ULLONG(int);
 
+///////////////////////////////////////////////////////////
+//          Numeric functions
+///////////////////////////////////////////////////////////
+
+	float FUN [LFTA_LEGAL, COST LOW] sqrt(float); 
+
 
 ///////////////////////////////////////////////////////////
 //          Convert an IPv4 address 
