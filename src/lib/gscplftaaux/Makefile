@@ -15,7 +15,7 @@
 
 CC=gcc -g -O3  -fexpensive-optimizations -I ../gscpaux/acl/ -I ../gscpaux/ -I ../../../include/lfta/ -I ../../../include/
 
-SOURCE =  rts_string.c rts_byteswap.c rts_sample.c rts_udaf.c 
+SOURCE =  rts_string.c rts_byteswap.c rts_sample.c rts_udaf.c flip_udaf.c
 
 OBJECTS = $(SOURCE:.c=.o)
 
@@ -36,6 +36,8 @@ rts_byteswap.c : $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h)
 rts_sample.c : $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) $(LFTA_DIR/rts_external.h)
 
 rts_udaf.c : $(LFTA_DIR/rts_udaf.h) $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) 
+
+flip_udaf.c : $(LFTA_DIR/flip_udaf.h) $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) 
 
 lpm.c : $(LFTA_DIR/rts_external.h) $(INCDIR/fta.h) $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h)
 

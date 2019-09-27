@@ -80,5 +80,18 @@ gs_retval_t running_array_aggr_lfta_LFTA_AGGR_FLUSHME_(char* scratch);
 void running_array_aggr_lfta_LFTA_AGGR_OUTPUT_(struct gs_string* res, char* scratch);
 void running_array_aggr_lfta_LFTA_AGGR_DESTROY_(char* scratch);
 
+//////////////////////////////////////////////////////////////////
+///		Flip-s sample-based quantiles
+
+/****************************************************************/
+/* LFTA functions						*/
+/****************************************************************/
+
+void quant_udaf_lfta3_LFTA_AGGR_INIT_(gs_sp_t);
+void quant_udaf_lfta3_LFTA_AGGR_UPDATE_(gs_sp_t, gs_uint32_t);
+gs_retval_t quant_udaf_lfta3_LFTA_AGGR_FLUSHME_(gs_sp_t);
+void quant_udaf_lfta3_LFTA_AGGR_OUTPUT_(struct gs_string *, gs_sp_t);
+void quant_udaf_lfta3_LFTA_AGGR_DESTROY_(gs_sp_t);
+
 
 #endif

@@ -158,5 +158,30 @@ void running_array_aggr_hfta_HFTA_AGGR_UPDATE_(vstring* scratch, vstring* val);
 void running_array_aggr_hfta_HFTA_AGGR_OUTPUT_(vstring* res, vstring* scratch);
 void running_array_aggr_hfta_HFTA_AGGR_DESTROY_(vstring* scratch);
 
+////////////////////////////////////////////////////////////////
+///		Flip's sample-based quantiles
+
+/****************************************************************/
+/* HFTA functions						*/
+/****************************************************************/
+
+void quant_udaf_hfta3_HFTA_AGGR_INIT_(gs_sp_t);
+void quant_udaf_hfta3_HFTA_AGGR_UPDATE_(gs_sp_t, vstring *);
+void quant_udaf_hfta3_HFTA_AGGR_OUTPUT_(vstring *, gs_sp_t);
+void quant_udaf_hfta3_HFTA_AGGR_DESTROY_(gs_sp_t);
+gs_uint32_t extr_quant_hfta3_fcn(vstring *, gs_float_t);
+gs_uint32_t extr_med_hfta3_fcn(vstring *);
+gs_uint32_t extr_quant_hfta3_space(vstring *);
+
+/****************************************************************/
+/* HFTA-only functions						*/
+/****************************************************************/
+void quant_udaf_hfta0_HFTA_AGGR_INIT_(gs_sp_t);
+void quant_udaf_hfta0_HFTA_AGGR_UPDATE_(gs_sp_t, gs_uint32_t);
+void quant_udaf_hfta0_HFTA_AGGR_OUTPUT_(vstring *, gs_sp_t);
+void quant_udaf_hfta0_HFTA_AGGR_DESTROY_(gs_sp_t);
+gs_uint32_t extr_quant_hfta0_fcn(vstring *, gs_float_t);
+gs_uint32_t extr_med_hfta0_fcn(vstring *);
+gs_uint32_t extr_quant_hfta0_space(vstring *);
 
 #endif
