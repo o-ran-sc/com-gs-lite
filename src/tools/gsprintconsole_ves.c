@@ -48,6 +48,9 @@ static char linebuf[MAXLINE];
 int listensockfd=0;
 int fd=0;
 
+// how frequently we will log stats (expressed in tuples posted)
+#define STAT_FREQUENCY 30
+
 
 // Not all systems have timersub defined so make sure its ther
 #ifndef timersub
@@ -178,6 +181,9 @@ int main(int argc, char* argv[]) {
 
     gs_uint32_t tlimit = 0;     // time limit in seconds
     time_t start_time, curr_time;
+
+    gs_uint64_t post_success_cnt = 0ULL;
+    gs_uint64_t post_failure_cnt = 0ULL;    
     
 	gsopenlog(argv[0]);
     
@@ -384,7 +390,7 @@ int main(int argc, char* argv[]) {
 
 	long unsigned int lineno=0;
 	long unsigned int seqno=0;
-	unsigned int measurement_interval;
+	double measurement_interval;
     while((code=ftaapp_get_tuple(&rfta_id,&rsize,rbuf,2*MAXTUPLESZ,0))>=0) {
 		lineno++;
         if (dump)	// -D in command line
@@ -463,7 +469,7 @@ int main(int argc, char* argv[]) {
 						else
                         	pos += snprintf(linebuf+pos,MAXLINE-pos," \"%s\": \"%d\"",field_names[y], ar.r.i);
 						if(y==measurement_interval_pos)
-							measurement_interval = (unsigned int)ar.r.i;
+							measurement_interval = (double)ar.r.i;
                         break;
                     case UINT_TYPE:
 						if(ves_version < 7)
@@ -471,7 +477,7 @@ int main(int argc, char* argv[]) {
 						else
                         	pos += snprintf(linebuf+pos,MAXLINE-pos," \"%s\": \"%u\"",field_names[y], ar.r.ui);
 						if(y==measurement_interval_pos)
-							measurement_interval = (unsigned int)ar.r.ui;
+							measurement_interval = (double)ar.r.ui;
                         break;
                     case IP_TYPE:
 						if(ves_version < 7)
@@ -521,7 +527,7 @@ int main(int argc, char* argv[]) {
 						else
                         	pos += snprintf(linebuf+pos,MAXLINE-pos,"\"%s\":  \"%u\"}",field_names[y], ar.r.ui);
 						if(y==measurement_interval_pos)
-							measurement_interval = (unsigned int)ar.r.ui;
+							measurement_interval = (double)ar.r.ui;
                         break;
                     case BOOL_TYPE:
 						if(ves_version < 7){
@@ -544,7 +550,7 @@ int main(int argc, char* argv[]) {
 						else
                         	pos += snprintf(linebuf+pos,MAXLINE-pos,"\"%s\": \"%llu\"",field_names[y], ar.r.ul);
 						if(y==measurement_interval_pos)
-							measurement_interval = (unsigned int)ar.r.ul;
+							measurement_interval = (double)ar.r.ul;
                         break;
                     case LLONG_TYPE:
 						if(ves_version < 7)
@@ -552,13 +558,15 @@ int main(int argc, char* argv[]) {
 						else
                         	pos += snprintf(linebuf+pos,MAXLINE-pos,"\"%s\": \"%lld\"",field_names[y], ar.r.l);
 						if(y==measurement_interval_pos)
-							measurement_interval = (unsigned int)ar.r.l;
+							measurement_interval = (double)ar.r.l;
                         break;
                     case FLOAT_TYPE:
 						if(ves_version < 7)
                         	pos += snprintf(linebuf+pos,MAXLINE-pos,"{\"name\": \"%s\", \"value\": \"%f\"}",field_names[y], ar.r.f);
 						else
                         	pos += snprintf(linebuf+pos,MAXLINE-pos,"\"%s\": \"%f\"",field_names[y], ar.r.f);
+						if(y==measurement_interval_pos)
+							measurement_interval = (double)ar.r.f;                            
                         break;
                     case TIMEVAL_TYPE:
                     {
@@ -609,12 +617,12 @@ int main(int argc, char* argv[]) {
 			}
 			if(ves_version < 7){
 				snprintf(linebuf+pos, MAXLINE-pos,
-	  	"], \"measurementInterval\": %u, \"measurementsForVfScalingVersion\": 1"
+	  	"], \"measurementInterval\": %f, \"measurementsForVfScalingVersion\": 1"
 		"}}}\n", measurement_interval
 				);
 			}else{
 				snprintf(linebuf+pos, MAXLINE-pos,
-	  	"}, \"measurementInterval\": %u, \"measurementFieldsVersion\": \"4.0\""
+	  	"}, \"measurementInterval\": %f, \"measurementFieldsVersion\": \"4.0\""
 		"}}}\n", measurement_interval
 				);
 			}
@@ -623,13 +631,18 @@ int main(int argc, char* argv[]) {
 			}else{
 				http_post_request_hdr(curl_endpoint, curl_url, linebuf, &http_code, curl_auth);
 				if(http_code != 200 && http_code != 202){
+                    post_failure_cnt++; 
 					gslog(LOG_WARNING, "http return code is %d\n",http_code);
-				}
+				} else {
+                    post_success_cnt++;   
+                }  
+                if (((post_success_cnt+post_failure_cnt) % STAT_FREQUENCY) == 0)
+                    gslog(LOG_WARNING, "%s: successful ves posts - %llu, failed ves posts - %llu\n", argv[0], post_success_cnt, post_failure_cnt);
 			}
             if (verbose!=0) fflush(stdout);
         } else {
             if (rfta_id.streamid != fta_id.streamid)
-                fprintf(stderr,"Got unkown streamid %llu \n",rfta_id.streamid);
+                fprintf(stderr,"Got unknown streamid %llu \n",rfta_id.streamid);
         }
 
         // whenever we receive a temp tuple check if we reached time limit

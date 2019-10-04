@@ -82,6 +82,13 @@ void FIRST_HFTA_AGGR_UPDATE_(gs_uint32_t* scratch, gs_uint32_t val);
 void FIRST_HFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch);
 void FIRST_HFTA_AGGR_DESTROY_(gs_uint32_t* scratch);
 
+void FIRST_HFTA_AGGR_INIT_(gs_uint64_t* scratch);
+void FIRST_HFTA_AGGR_REINIT_(gs_uint64_t* scratch);
+void FIRST_HFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val);
+void FIRST_HFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch);
+void FIRST_HFTA_AGGR_DESTROY_(gs_uint64_t* scratch);
+
+
 void FIRST_ULL_HFTA_AGGR_INIT_(gs_uint64_t* scratch);
 void FIRST_ULL_HFTA_AGGR_REINIT_(gs_uint64_t* scratch);
 void FIRST_ULL_HFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val);
@@ -119,6 +126,12 @@ void LAST_HFTA_AGGR_REINIT_(gs_uint32_t* scratch);
 void LAST_HFTA_AGGR_UPDATE_(gs_uint32_t* scratch, gs_uint32_t val);
 void LAST_HFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch);
 void LAST_HFTA_AGGR_DESTROY_(gs_uint32_t* scratch);
+
+void LAST_HFTA_AGGR_INIT_(gs_uint64_t* scratch);
+void LAST_HFTA_AGGR_REINIT_(gs_uint64_t* scratch);
+void LAST_HFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val);
+void LAST_HFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch);
+void LAST_HFTA_AGGR_DESTROY_(gs_uint64_t* scratch);
 
 void LAST_ULL_HFTA_AGGR_INIT_(gs_uint64_t* scratch);
 void LAST_ULL_HFTA_AGGR_REINIT_(gs_uint64_t* scratch);

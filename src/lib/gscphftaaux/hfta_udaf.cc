@@ -277,19 +277,30 @@ gs_float_t extr_avg_fcn(vstring *v){
 void FIRST_HFTA_AGGR_INIT_(gs_uint32_t* scratch) {
 	*scratch = UINT_MAX;		// we will encode uninitialized value of UINT_MAX
 }
-
 void FIRST_HFTA_AGGR_REINIT_(gs_uint32_t* scratch) { }
-
 void FIRST_HFTA_AGGR_UPDATE_(gs_uint32_t* scratch, gs_uint32_t val) {
 	if (*scratch == UINT_MAX)
 		*scratch = val;
 }
-
 void FIRST_HFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch) {
 	*res = *scratch;
 }
-
 void FIRST_HFTA_AGGR_DESTROY_(gs_uint32_t* scratch) { }
+
+void FIRST_HFTA_AGGR_INIT_(gs_uint64_t* scratch) {
+	*scratch = UINT_MAX;		// we will encode uninitialized value of UINT_MAX
+}
+void FIRST_HFTA_AGGR_REINIT_(gs_uint64_t* scratch) { }
+void FIRST_HFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val) {
+	if (*scratch == UINT_MAX)
+		*scratch = val;
+}
+void FIRST_HFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch) {
+	*res = *scratch;
+}
+void FIRST_HFTA_AGGR_DESTROY_(gs_uint64_t* scratch) { }
+
+
 
 void FIRST_ULL_HFTA_AGGR_INIT_(gs_uint64_t* scratch) {
 	*scratch = UINT_MAX;		// we will encode uninitialized value of UINT_MAX
@@ -393,18 +404,27 @@ void FIRST_STR_hfta_HFTA_AGGR_DESTROY_(vstring* scratch) { }
 // hfta only
 
 void LAST_HFTA_AGGR_INIT_(gs_uint32_t* scratch) { }
-
 void LAST_HFTA_AGGR_REINIT_(gs_uint32_t* scratch) { }
-
 void LAST_HFTA_AGGR_UPDATE_(gs_uint32_t* scratch, gs_uint32_t val) {
 	*scratch = val;
 }
-
 void LAST_HFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch) {
 	*res = *scratch;
 }
-
 void LAST_HFTA_AGGR_DESTROY_(gs_uint32_t* scratch) { }
+
+
+void LAST_HFTA_AGGR_INIT_(gs_uint64_t* scratch) { }
+void LAST_HFTA_AGGR_REINIT_(gs_uint64_t* scratch) { }
+void LAST_HFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val) {
+	*scratch = val;
+}
+void LAST_HFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch) {
+	*res = *scratch;
+}
+void LAST_HFTA_AGGR_DESTROY_(gs_uint64_t* scratch) { }
+
+
 
 void LAST_ULLHFTA_AGGR_INIT_(gs_uint64_t* scratch) { }
 

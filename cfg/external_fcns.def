@@ -24,8 +24,11 @@
 ///////////////////////////////////////////////////////////
 
 	uint FUN [LFTA_LEGAL, COST FREE] EQ (uint, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (ullong, ullong);
 	uint FUN [LFTA_LEGAL, COST FREE] GEQ (uint, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (ullong, ullong);
 	uint FUN [LFTA_LEGAL, COST FREE] LEQ (uint, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (ullong, ullong);
 
 
 ///////////////////////////////////////////////////////////
