@@ -49,7 +49,7 @@ int listensockfd=0;
 int fd=0;
 
 // how frequently we will log stats (expressed in tuples posted)
-#define STAT_FREQUENCY 30
+#define STAT_FREQUENCY 5
 
 
 // Not all systems have timersub defined so make sure its ther
