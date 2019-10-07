@@ -164,7 +164,7 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
         uint  FUN [COST LOW] extr_med_hfta0_fcn(string);
         uint EXTR qspace_of quant_udaf_hfta0 extr_quant_hfta0_space (uint);
         uint  FUN [COST LOW] extr_quant_hfta0_space(string);
-        string UDAF [SUBAGGR quant_udaf_lfta3, SUPERAGGR quant_udaf_hfta3] quant_udaf_hfta0 fstring8 (uint);
+        string UDAF [SUBAGGR quant_udaf_lfta3, SUPERAGGR quant_udaf_hfta3] quant_udaf_hfta0 fstring16 (uint);
         string UDAF quant_udaf_hfta3 fstring16 (string);
         string UDAF quant_udaf_lfta3 fstring6600 (uint);
 

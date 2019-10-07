@@ -91,13 +91,13 @@ static void wait_for_client() {
         /* make sure we can reuse the common port rapidly */
         if (setsockopt(listensockfd, SOL_SOCKET, SO_REUSEPORT,
                        (gs_sp_t )&on, sizeof(on)) != 0) {
-            gslog(LOG_EMERG,"Error::could not set socket option\n");
+            gslog(LOG_EMERG,"Error::could not set socket option");
             exit(1);
         }
 #endif
         if (setsockopt(listensockfd, SOL_SOCKET, SO_REUSEADDR,
                        (gs_sp_t )&on, sizeof(on)) != 0) {
-            gslog(LOG_EMERG,"Error::could not set socket option\n");
+            gslog(LOG_EMERG,"Error::could not set socket option");
             exit(1);
 		}
         
@@ -254,7 +254,7 @@ int main(int argc, char* argv[]) {
     }
     
     if (get_initinstance(gshub,instance_name,&dummyep,1)!=0) {
-        gslog(LOG_EMERG,"Did not receive signal that GS is initiated\n");
+        gslog(LOG_EMERG,"Did not receive signal that GS is initiated");
     }
 
 
@@ -632,12 +632,12 @@ int main(int argc, char* argv[]) {
 				http_post_request_hdr(curl_endpoint, curl_url, linebuf, &http_code, curl_auth);
 				if(http_code != 200 && http_code != 202){
                     post_failure_cnt++; 
-					gslog(LOG_WARNING, "http return code is %d\n",http_code);
+					gslog(LOG_WARNING, "http return code is %d",http_code);
 				} else {
                     post_success_cnt++;   
                 }  
                 if (((post_success_cnt+post_failure_cnt) % STAT_FREQUENCY) == 0)
-                    gslog(LOG_WARNING, "%s: successful ves posts - %llu, failed ves posts - %llu\n", argv[0], post_success_cnt, post_failure_cnt);
+                    gslog(LOG_WARNING, "%s: successful ves posts - %llu, failed ves posts - %llu", argv[0], post_success_cnt, post_failure_cnt);
 			}
             if (verbose!=0) fflush(stdout);
         } else {
