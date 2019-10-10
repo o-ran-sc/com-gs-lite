@@ -38,6 +38,7 @@ static char linebuf[MAXLINE];
 int listensockfd=0;
 int fd=0;
 
+FILE* outf;
 
 // Not all systems have timersub defined so make sure its ther
 #ifndef timersub
@@ -123,7 +124,7 @@ static void emit_socket() {
 static void emit_line() {
     
     if (tcpport==0) {
-        printf("%s",linebuf);
+        fprintf(outf,"%s",linebuf);
     } else {
         emit_socket();
     }
@@ -161,7 +162,9 @@ int main(int argc, char* argv[]) {
     time_t start_time, curr_time;
     
 	gsopenlog(argv[0]);
-    
+
+    // by default the output will go to stdout
+    outf = stdout;
     
     while ((ch = getopt(argc, argv, "l:p:r:vXD")) != -1) {
         switch (ch) {
@@ -174,6 +177,9 @@ int main(int argc, char* argv[]) {
             case 'v':
                 verbose++;
                 break;
+            case 'e':
+                outf = stderr;
+                break;
             case 'X':
                 xit++;
                 break;
@@ -185,7 +191,7 @@ int main(int argc, char* argv[]) {
                 break;
             default:
             usage:
-                fprintf(stderr, "usage: %s [-r <bufsz>] [-p <port>] [-l <time_limit>] [-v] [-X] [-D] <gshub-hostname>:<gshub-port> <gsinstance_name>  query param1 param2...\n",
+                fprintf(stderr, "usage: %s [-r <bufsz>] [-e] [-p <port>] [-l <time_limit>] [-v] [-X] [-D] <gshub-hostname>:<gshub-port> <gsinstance_name>  query param1 param2...\n",
                         *argv);
                 exit(1);
         }
