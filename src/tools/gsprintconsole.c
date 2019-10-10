@@ -166,7 +166,7 @@ int main(int argc, char* argv[]) {
     // by default the output will go to stdout
     outf = stdout;
     
-    while ((ch = getopt(argc, argv, "l:p:r:vXD")) != -1) {
+    while ((ch = getopt(argc, argv, "l:p:r:veXD")) != -1) {
         switch (ch) {
             case 'r':
                 bufsz=atoi(optarg);
