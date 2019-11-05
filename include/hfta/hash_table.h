@@ -119,7 +119,7 @@ private:
 public:
 
 
-	hash_table(const size_t n_buckets = 131072, const double load = 0.5) {
+	hash_table(const size_t n_buckets = 51437, const double load = 0.5) {
 		load_factor = load;
 		int nb;
 		for(nb=2;nb<n_buckets;nb*=2);
