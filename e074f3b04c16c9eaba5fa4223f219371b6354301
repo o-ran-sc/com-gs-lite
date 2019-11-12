@@ -1,0 +1,9 @@
+Code-Review+1: Matti Hiltunen <hiltunen@att.com>
+Verified+1: ORAN Jobbuilder <releng+oran-jobbuilder@linuxfoundation.org>
+Code-Review+1: Aric Gardner <agardner@linuxfoundation.org>
+Code-Review+2: Vlad Shkapenyuk <vshkap@research.att.com>
+Submitted-by: Vlad Shkapenyuk <vshkap@research.att.com>
+Submitted-at: Tue, 12 Nov 2019 15:40:48 +0000
+Reviewed-on: https://gerrit.o-ran-sc.org/r/c/com/gs-lite/+/810
+Project: com/gs-lite
+Branch: refs/heads/master
