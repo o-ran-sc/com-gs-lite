@@ -37,12 +37,12 @@ committers:
     - name: "Vladislav Shkapenyuk"
       email: "vshkap@research.att.com"
       company: "AT&T Labs-Research"
-      id: "TBD"
+      id: "vshkap"
       timezone: "America/New_York"
     - name: "Theodore Johnson"
       email: "johnsont@research.att.com"
       company: "ATT"
-      id: "TBD"
+      id: "johnsont"
       timezone: "America/New_York"
 tsc:
     # yamllint disable-line rule:line-length
