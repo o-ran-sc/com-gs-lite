@@ -1,7 +1,7 @@
 ---
 project: "RICAPP"
 project_creation_date: "2019-08-21"
-project_category: ""
+project_category: " "
 lifecycle_state: "Incubation"
 project_lead: &oran_ricapp_ptl
     name: "Matti Hiltunen"
