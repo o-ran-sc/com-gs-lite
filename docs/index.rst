@@ -11,6 +11,7 @@ GS-lite Stream Processing Engine
    :caption: Documents:
 
    overview.rst
+   release-notes.rst
 
 
 * :ref:`search`
