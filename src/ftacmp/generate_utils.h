@@ -72,7 +72,7 @@ std::string generate_host_tuple_pack(table_def *td);
 std::string generate_host_tuple_unpack(table_def *td);
 
 int split_string(char *instr,char sep, char **words,int max_words);
-
+std::vector<string> split_string(const string &str, char sep);
 
 // # random numbers for hashing
 #define NRANDS 100

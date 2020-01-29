@@ -570,8 +570,8 @@ table_list:	table_def	{$$ = new table_list($1);}
 	|	table_list table_def	{$$ = $1->append_table($2);}
 	;
 
-table_def:	PROTOCOL NAME  opt_singleparam_commalist opt_singleparam_commalist_bkt LEFTBRACE field_list RIGHTBRACE {
-					$$=new table_def($2,$3,$4, $6, PROTOCOL_SCHEMA); delete $6;}
+table_def:	PROTOCOL NAME   opt_param_commalist opt_singleparam_commalist_bkt LEFTBRACE field_list RIGHTBRACE {
+					$$=new table_def($2,$3,$4, $6, PROTOCOL_SCHEMA); delete $3; delete $6;}
 	|		STREAM qname  opt_singleparam_commalist LEFTBRACE field_list RIGHTBRACE {
 					$$=new table_def($2->c_str(),$3,NULL,$5, STREAM_SCHEMA); delete $5;}
 	|		OPERATOR_VIEW NAME LEFTBRACE OPERATOR opt_param_commalist FIELDS LEFTBRACE field_list RIGHTBRACE SUBQUERIES LEFTBRACE subqueryspec_list RIGHTBRACE SELECTION_PUSHDOWN opt_param_commalist RIGHTBRACE {

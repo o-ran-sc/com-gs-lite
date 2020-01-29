@@ -1850,6 +1850,10 @@ table_def *stream_query::get_output_tabledef(){
 	return( query_plan[qhead]->get_fields() );
 }
 
+vector<string> stream_query::get_tbl_keys(vector<string> &partial_keys){
+	return query_plan[qhead]->get_tbl_keys(partial_keys);
+}
+
 
 
 //////////////////////////////////////////////////////////

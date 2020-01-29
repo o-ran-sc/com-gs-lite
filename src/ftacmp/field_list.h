@@ -29,10 +29,11 @@ public:
 	field_list(xml_t *x);
 
 	int verify_field(std::string name, std::string type, std::string &err){
-		if(fields.count(name) == 0){
-			err += "\tCould not find field "+name+" in the field list\n";
-			return 1;
-		}
+// Perhaps re-enable this at some point but for now its an annoyance.
+//		if(fields.count(name) == 0){
+//			err += "\tCould not find field "+name+" in the field list\n";
+//			return 1;
+//		}
 		if(fields[name] == "")
 			return 0;
 		if(type_verifier[fields[name]] != type_verifier[type]){

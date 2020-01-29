@@ -259,11 +259,29 @@ int table_list::get_table_ref(string t){
 //				and verify that all field unpacking functions
 //				are listed in the schema.
 int table_list::unroll_tables(string &err){
+	int f, tref, p, t, ret=0, retval=0;
+
 //		First, verify there are no repeat field names in any
 //		of the tables.
+	set<string> found_names;
+	set<string> dup_names;
+	for(t=0;t<tbl_list.size();t++){
+		if(found_names.find(tbl_list[t]->get_tbl_name()) != found_names.end()){
+			dup_names.insert(tbl_list[t]->get_tbl_name());
+		}else{
+			found_names.insert(tbl_list[t]->get_tbl_name());
+		}
+	}
+	if(dup_names.size()>0){
+		fprintf(stderr, "Error, the schema has duplicate names:");
+		for(auto dit=dup_names.begin();dit!=dup_names.end(); ++dit)
+			fprintf(stderr, " %s",(*dit).c_str());
+		fprintf(stderr, "\n");
+		retval = 1;
+	}
 
-	int f, tref, p, t, ret, retval;
 
+//		extrack unpack functions
 	for(t=0;t<tbl_list.size();t++){
 	  if(tbl_list[t]->get_schema_type() == UNPACK_FCNS_SCHEMA){
 		for(f=0;f<tbl_list[t]->ufcn_list.size();f++){
@@ -282,7 +300,7 @@ int table_list::unroll_tables(string &err){
 
 //			every field has an access function
 		if(tbl_list[t]->get_schema_type() == PROTOCOL_SCHEMA){
-			retval = tbl_list[t]->verify_access_fcns(err);
+			ret = tbl_list[t]->verify_access_fcns(err);
 			if(ret) retval = ret;
 		}
 
@@ -404,6 +422,11 @@ int table_list::unroll_tables(string &err){
 						err.append(tbl_list[root]->get_tbl_name());
 						err.append(").\n");
 					}
+				}
+//			and insert schema_ids
+				set<int> s_schema_ids = tbl_list[root]->get_all_schema_ids();
+				for(auto sit=s_schema_ids.begin(); sit!=s_schema_ids.end(); ++sit){
+					tbl_list[s]->add_to_all_schema_ids((*sit));
 				}
 
 //			s has one less predecessor.

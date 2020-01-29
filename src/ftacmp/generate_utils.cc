@@ -334,6 +334,18 @@ string generate_host_tuple_unpack(table_def *td){
    return(nwords);
 }
 
+std::vector<string> split_string(const string &str, char sep){
+	char *instr = strdup(str.c_str());
+	char *words[1000];
+	int nwords = split_string(instr, sep, words, 1000);
+	vector<string> ret;
+	for(int i=0;i<nwords;++i){
+		ret.push_back(words[i]);
+	}
+	delete instr;
+	return ret;
+}
+
 //	For fast hashing
 string hash_nums[NRANDS] = {
 "12916008961267169387ull", "13447227858232756685ull",

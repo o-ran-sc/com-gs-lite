@@ -103,11 +103,11 @@ mrg_qpn::mrg_qpn(filter_join_qpn *spx, std::string n_name, std::vector<std::stri
 //		into one or more query nodes (qp_node).
 //		Currently only one node is created, but some query
 //		fragments might create more than one query node,
-//		e.g. aggregation over a joim, or nested subqueries
-//		in the FROM clause (unless this is handles at parse tree
+//		e.g. aggregation over a join, or nested subqueries
+//		in the FROM clause (unless this is handled at parse tree
 //		analysis time).  At this stage, they will be linked
 //		by the names in the FROM clause.
-//		INVARIANT : if mroe than one query node is returned,
+//		INVARIANT : if more than one query node is returned,
 //		the last one represents the output of the query.
 vector<qp_node *> create_query_nodes(query_summary_class *qs,table_list *Schema){
 
@@ -5137,6 +5137,57 @@ table_def *join_eq_hash_qpn::get_fields(){
 
 	return create_attributes(node_name, select_list);
 }
+
+
+//-----------------------------------------------------------------
+//			get output "keys"
+//			This is a guess about the set of fields which are a key
+//			Use as metadata output, e.g. in qtree.xml
+
+
+
+//		refs to GB attribtues are keys, if a SE is not a GB colref
+//		but refers to a GB colref (outside of an aggregation)
+//		then set partial_keys to true
+vector<string> sgah_qpn::get_tbl_keys(vector<string> &partial_keys){
+	vector<string> keys;
+
+	set<int> gref_set;
+	for(int i=0; i<gb_tbl.size();++i)
+		gref_set.insert(i);
+
+	for(int s=0;s<select_list.size();++s){
+		if(select_list[s]->se->is_gb()){
+			keys.push_back(select_list[s]->name);
+		}else{
+			if(contains_gb_se(select_list[s]->se, gref_set)){
+				partial_keys.push_back(select_list[s]->name);
+			}
+		}
+	}
+	return keys;
+}
+
+vector<string> rsgah_qpn::get_tbl_keys(vector<string> &partial_keys){
+	vector<string> keys;
+
+	set<int> gref_set;
+	for(int i=0; i<gb_tbl.size();++i)
+		gref_set.insert(i);
+
+	for(int s=0;s<select_list.size();++s){
+		if(select_list[s]->se->is_gb()){
+			keys.push_back(select_list[s]->name);
+		}else{
+			if(contains_gb_se(select_list[s]->se, gref_set)){
+				partial_keys.push_back(select_list[s]->name);
+			}
+		}
+	}
+	return keys;
+}
+
+
 
 
 

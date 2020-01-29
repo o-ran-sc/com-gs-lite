@@ -225,10 +225,13 @@ public:
 
 //		Each qp node must be able to return a description
 //		of the tuples it creates.
-//		TODO: the get_output_tls method should subsume the get_fields
+//		TODO: the get_output_tbls method should subsume the get_fields
 //			method, but in fact it really just returns the
 //			operator name.
   virtual table_def *get_fields() = 0;	// Should be vector?
+//		get keys from the operator.  Currently, only works on group-by queries.
+//		partial_keys set to true if there is a suspicion that the list is partial.
+	virtual std::vector<string> get_tbl_keys(std::vector<std::string> &partial_keys) = 0;
 //		Get the from clause
   virtual std::vector<tablevar_t *> get_input_tbls() = 0;
 //		this is a confused function, it acutally return the output
@@ -296,6 +299,9 @@ public:
 //			To be more explicit, use get_filter_preds
   virtual  std::vector<cnf_elem *> get_filter_clause() = 0;
 
+//		Add an extra predicate.  Currently only used for LFTAs.
+  virtual void append_to_where(cnf_elem *c) = 0;
+
   void add_predecessor(int i){predecessors.push_back(i);};
   void remove_predecessor(int i){
 	std::vector<int>::iterator vi;
@@ -347,6 +353,11 @@ public:
 		return ret;
 	}
 
+  void append_to_where(cnf_elem *c){
+		where.push_back(c);
+	}
+
+
 	void bind_to_schema(table_list *Schema);
 	col_id_set get_colrefs(bool ext_fcns_only,table_list *Schema);
 
@@ -369,6 +380,11 @@ public:
     std::vector<handle_param_tbl_entry *> get_handle_param_tbl(ext_fcn_list *Ext_fcns);
 
 	table_def *get_fields();
+	std::vector<string> get_tbl_keys(std::vector<std::string> &partial_keys){
+		std::vector<string> ret;
+		return ret;
+	}
+
 	std::vector<tablevar_t *> get_input_tbls();
 	std::vector<tablevar_t *> get_output_tbls();
 
@@ -507,6 +523,11 @@ public:
 		return ret;
 	};
     std::vector<cnf_elem *> get_where_clause(){return where;};
+
+  void append_to_where(cnf_elem *c){
+		where.push_back(c);
+	}
+
     std::vector<cnf_elem *> get_filter_clause(){return where;};
     std::vector<cnf_elem *> get_having_clause(){return having;};
     gb_table *get_gb_tbl(){return &gb_tbl;};
@@ -516,6 +537,7 @@ public:
 
 //				table which represents output tuple.
 	table_def *get_fields();
+	std::vector<string> get_tbl_keys(std::vector<std::string> &partial_keys);
 	std::vector<tablevar_t *> get_input_tbls();
 	std::vector<tablevar_t *> get_output_tbls();
 
@@ -690,6 +712,10 @@ public:
 		return ret;
 	};
     std::vector<cnf_elem *> get_where_clause(){return where;};
+  void append_to_where(cnf_elem *c){
+		where.push_back(c);
+	}
+
     std::vector<cnf_elem *> get_filter_clause(){return where;};
     std::vector<cnf_elem *> get_having_clause(){return having;};
     std::vector<cnf_elem *> get_closing_when_clause(){return closing_when;};
@@ -700,6 +726,8 @@ public:
 
 //				table which represents output tuple.
 	table_def *get_fields();
+	std::vector<string> get_tbl_keys(std::vector<std::string> &partial_keys);
+
 	std::vector<tablevar_t *> get_input_tbls();
 	std::vector<tablevar_t *> get_output_tbls();
 
@@ -833,6 +861,12 @@ public:
 	partn_def_t* partn_def;
 
 
+  void append_to_where(cnf_elem *c){
+		fprintf(stderr, "ERROR, append_to_where called on mrg_qpn, not supported, query %s.\n",  node_name.c_str());
+		exit(1);
+	}
+
+
 
 	std::string node_type(){return("mrg_qpn");	};
     bool makes_transform(){return false;};
@@ -861,6 +895,11 @@ public:
     std::vector<handle_param_tbl_entry *> get_handle_param_tbl(ext_fcn_list *Ext_fcns);
 
 	table_def *get_fields();
+	std::vector<string> get_tbl_keys(std::vector<std::string> &partial_keys){
+		std::vector<string> ret;
+		return ret;
+	}
+
 	std::vector<tablevar_t *> get_input_tbls();
 	std::vector<tablevar_t *> get_output_tbls();
 
@@ -1315,6 +1354,12 @@ public:
 		exit(1);
 	}
 
+  void append_to_where(cnf_elem *c){
+		fprintf(stderr, "Error, append_to_where called on join_hash_qpn, not supported, query is %s\n",node_name.c_str());
+		exit(1);
+	}
+
+
 	std::string to_query_string();
   	std::string generate_functor(table_list *schema, ext_fcn_list *Ext_fcns, std::vector<bool> &needs_xform);
   	std::string generate_functor_name();
@@ -1341,6 +1386,13 @@ public:
     std::vector<handle_param_tbl_entry *> get_handle_param_tbl(ext_fcn_list *Ext_fcns);
 
 	table_def *get_fields();
+
+//		It might be feasible to find keys in an equijoin expression.
+	std::vector<string> get_tbl_keys(std::vector<std::string> &partial_keys){
+		std::vector<string> ret;
+		return ret;
+	}
+
 	std::vector<tablevar_t *> get_input_tbls();
 	std::vector<tablevar_t *> get_output_tbls();
 
@@ -1541,6 +1593,10 @@ public:
 		return ret;
 	};
 //			Used for LFTA only
+	void append_to_where(cnf_elem *c){
+		where.push_back(c);
+	}
+
     std::vector<cnf_elem *> get_where_clause(){return where;}
     std::vector<cnf_elem *> get_filter_clause(){return shared_pred;}
 
@@ -1548,6 +1604,12 @@ public:
     std::vector<handle_param_tbl_entry *> get_handle_param_tbl(ext_fcn_list *Ext_fcns);
 
 	table_def *get_fields();
+//		It should be feasible to find keys in a filter join
+	std::vector<string> get_tbl_keys(std::vector<std::string> &partial_keys){
+		std::vector<string> ret;
+		return ret;
+	}
+
 	std::vector<tablevar_t *> get_input_tbls();
 	std::vector<tablevar_t *> get_output_tbls();
 
@@ -1749,6 +1811,13 @@ public:
 		return ret;
 	}
 
+  void append_to_where(cnf_elem *c){
+		fprintf(stderr, "ERROR, append_to_where called on output_file_qpn, not supported, query %s.\n",  node_name.c_str());
+		exit(1);
+	}
+
+
+
 	void bind_to_schema(table_list *Schema){}
 	col_id_set get_colrefs(bool ext_fcns_only,table_list *Schema){
 		col_id_set ret;
@@ -1781,6 +1850,14 @@ public:
 			fel->append_field(fields[i]);
 		return new table_def(node_name.c_str(), NULL, NULL, fel, STREAM_SCHEMA);
 	}
+
+//		TODO! either bypass the output operator in stream_query,
+//			or propagate key information when the output operator is constructed.
+	std::vector<string> get_tbl_keys(std::vector<std::string> &partial_keys){
+		std::vector<string> ret;
+		return ret;
+	}
+
 	std::vector<tablevar_t *> get_input_tbls();
 	std::vector<tablevar_t *> get_output_tbls();
 
@@ -1952,8 +2029,18 @@ public:
 
 //				table which represents output tuple.
 	table_def *get_fields();
+//			TODO Key extraction should be feasible but I'll defer the issue.
+	std::vector<string> get_tbl_keys(std::vector<std::string> &partial_keys){
+		std::vector<string> ret;
+		return ret;
+	}
+
 	std::vector<tablevar_t *> get_input_tbls();
 	std::vector<tablevar_t *> get_output_tbls();
+
+  void append_to_where(cnf_elem *c){
+		where.push_back(c);
+	}
 
 
 	sgahcwcb_qpn(){

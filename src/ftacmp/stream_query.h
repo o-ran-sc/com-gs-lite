@@ -36,7 +36,7 @@ public:
 	std::vector<ospec_str *> output_specs;
 	vector<qp_node *> output_operators;
 
-	int qhead;
+	int qhead;		// index of output operator
 	std::vector<int> qtail;
 
 	table_def *attributes;
@@ -128,6 +128,9 @@ public:
   std::vector<tablevar_t *> get_input_tables();
 
   table_def *get_output_tabledef();
+
+// get any inferred key definition, just a pass-through to the head _qpn method
+  std::vector<std::string> get_tbl_keys(std::vector<std::string> &partial_keys);
 
 //		Extract lfta components of the query
   std::vector<stream_query *> split_query(ext_fcn_list *Ext_fcns, table_list *Schema, bool &hfta_returned, ifq_t *ifdb, int n_virtual_ifaces, int hfta_parallelism, int hfta_idx);

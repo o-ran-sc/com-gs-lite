@@ -71,6 +71,7 @@ string res_a, res_v;
 		vals[nm].push_back(val);
 	}
 
+// Add in more consistency checks
 	int iface_t::finalize(string &errs){
 		string tag ="ERROR in interface starting at line "+int_to_string(lineno)+", ";
 		string e;
@@ -113,6 +114,14 @@ string res_a, res_v;
 	string iface_t::get_host(){
 		if(vals.count("host") == 0) return (string)"";
 		return (vals["host"])[0];
+	}
+ 
+	bool iface_t::has_multiple_schemas(){
+		if(vals.count("interfacetype") == 0) return true;
+		string iface_type = vals["interfacetype"][0];
+		if(iface_type=="GDAT" || iface_type=="CSV" || iface_type=="CSV2")
+			return false;
+		return true;
 	}
 
 
@@ -272,7 +281,7 @@ string res_a, res_v;
 			pr->get_lineno(), pr->get_charno(), pr->get_operator_type() );
 		exit(1);
 	case PRED_COMPARE:
-		fprintf(stderr,"INTERNAL ERROR in reparse_date::eval_pred, line %d, character %d, IN not supported. %d\n",
+		fprintf(stderr,"INTERNAL ERROR in reparse_date::eval_pred, line %d, character %d, comparison predicate not supported. %d\n",
 			pr->get_lineno(), pr->get_charno(), pr->get_operator_type() );
 		exit(1);
 	case PRED_UNARY_OP:
@@ -645,5 +654,41 @@ vector<string> ifq_t::get_iface_properties(string host_name, string basic_if_nam
 	}
 
 	return rpd->get_properties(ifi[0]);
+
+}
+
+
+iface_t *ifq_t::get_interface(string host_name, string basic_if_name, int &err_no, string &err_str){
+	iface_t *retval = NULL;
+	err_no = 0;
+
+	char *cdat = strdup(basic_if_name.c_str());
+	int pos;
+	string virtual_iface = "0";
+	string iface_name = basic_if_name;
+	for(pos=strlen(cdat)-1;pos>=0 && isdigit(cdat[pos]);--pos);
+	if(pos>0 && cdat[pos] == 'X' && pos<=strlen(cdat)-2){
+		cdat[pos] = '\0';
+		virtual_iface = cdat+pos+1;
+		iface_name = cdat;
+	}
+	free(cdat);
+
+	if(rpd->failed()){
+		err_no = 1; err_str = "interface resource parse failed.";
+		return retval;
+	}
+
+	vector<int> ifi = rpd->get_ifaces_by_Name(host_name, iface_name);
+	if(ifi.size() == 0){
+		err_no = 1; err_str="interface not found.";
+		return retval;
+	}
+	if(ifi.size()>1){
+		err_no = 1; err_str="multiple interfaces found.";
+		return retval;
+	}
+
+	return rpd->get_interface(ifi[0]);
 
 }

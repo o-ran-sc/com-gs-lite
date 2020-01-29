@@ -326,6 +326,8 @@ private:
 	param_list *base_tables;	// if PROTOCOL, the PROTOCOLS that
 								// this PROTOCOL inherits fields from.
 	int schema_type;	// STREAM_SCHEMA, PROTOCOL_SCHEMA, OPERATOR_VIEW_SCHEMA
+	int schema_id;		// the id associated with the protocol
+	std::set<int> all_schema_ids;	// schema_id plus the inherited ones
 //		For operator_view tables
 	param_list *op_properties;
 	std::vector<subquery_spec *> qspec_list;
@@ -343,10 +345,26 @@ public:
 //		get the PROTOCOL-wide unpack functions.
 	table_def(const char *name, param_list *plist, param_list *ufcn_l, field_entry_list *fel, int sch_t){
 	int f;
-		if(plist == NULL)
+		schema_id = -1;
 			base_tables = new param_list();
-		else
-			base_tables = plist;
+		if(plist != NULL){
+			std::vector<std::string> pkeys = plist->get_key_vec();
+			for(int p=0;p<pkeys.size();++p){
+				std::string val = plist->val_of(pkeys[p]);
+				if(val!=""){
+					if(pkeys[p] == "schema_id" || pkeys[p] == "schemaId"){
+						schema_id = atoi(val.c_str());
+						if(schema_id <= 0){
+							fprintf(stderr,"Error, Protocol %s has a schema_id value of %d, must be larger than 0.\n",name, schema_id);
+							exit(1);
+						}
+						all_schema_ids.insert(schema_id);
+					}
+				}else{
+					base_tables->append(pkeys[p]);
+				}
+			}
+		}
 		table_name =name;
 		fields = fel->get_list();
 		schema_type = sch_t;
@@ -415,6 +433,14 @@ public:
 	int add_field(field_entry *fe);
 
 	int get_schema_type(){return schema_type;};
+
+	int get_schema_id(){return schema_id;};
+
+	std::set<int> get_all_schema_ids(){ return all_schema_ids;}
+	void add_to_all_schema_ids(int sid){
+		all_schema_ids.insert(sid);
+	}
+
 
 	std::vector<subquery_spec *> get_subqueryspecs(){return qspec_list;};
 
@@ -523,6 +549,10 @@ public:
 
 	int get_schema_type(int t){
 		return(tbl_list[t]->get_schema_type());
+	};
+
+	int get_schema_id(int t){
+		return(tbl_list[t]->get_schema_id());
 	};
 
 	std::string get_op_prop(int t, std::string s){

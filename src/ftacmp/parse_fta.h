@@ -678,7 +678,7 @@ public:
 	};
 
 	std::string get_schema_name(){return schema_name;};
-	void set_schema_name(std::string n){schema_name=n;};
+	void set_schema_name(std::string n){schema_name=n;}; // DUPLICATE with set_shema
 	std::string get_var_name(){return variable_name;};
 	std::string get_interface(){return interface;};
 	std::string get_machine(){return machine;};

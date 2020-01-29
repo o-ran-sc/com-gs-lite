@@ -90,6 +90,9 @@ public:
   }
 };
 
+//	Make visible for predicate insertion
+void make_cnf_from_pr(predicate_t *pr, std::vector<cnf_elem *> &clist);
+
 
 //		A GB variable is identified by its name and
 //		its source table variable -- so that joins can be expressed.

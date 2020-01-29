@@ -27,6 +27,9 @@ Copyright 2014 AT&T Intellectual Property
 
 
 //			Represent an interface.
+//	TODO Add in some more consistency checks, beyond having an interface name
+//	TODO More intelligence about interfaces, e.g. the libraries to
+//		link to
 class iface_t{
 public:
 	int lineno;
@@ -73,10 +76,15 @@ for(msvsi=vals.begin(); msvsi!=vals.end();++msvsi){
 		return ret;
 	}
 
+// Add in more consistency checks
 	int finalize(std::string &errs);
+
 	std::string to_string();
 	std::string get_name();
 	std::string get_host();
+	bool has_multiple_schemas();		// depends on InterfaceType
+	
+
 	bool eval_Contains(std::string prop, std::string val);
 	bool eval_Equals(std::string prop, std::string val);
 	bool eval_Exists(std::string prop);
@@ -148,6 +156,11 @@ public:
 	void new_iface(int l){
 		curr_iface = new iface_t(l);
 	};
+	iface_t *get_interface(int l){
+		return ifaces[l];
+	}
+
+
 	void new_host(int l){
 		curr_host = new gs_host_t(l);
 	};
@@ -193,6 +206,7 @@ public:
 	std::vector<std::pair<std::string,std::string> > eval(std::string qname, int &errnbr);
 	std::vector<std::string> get_iface_vals(std::string host_name, std::string if_name, std::string property, int &errnbr, std::string &err_str);
 	std::vector<std::string> get_iface_properties(std::string host_name, std::string basic_if_name, int &err_no, std::string &err_str);
+	iface_t *get_interface(std::string host_name, std::string basic_if_name, int &err_no, std::string &err_str);
 };
 
 

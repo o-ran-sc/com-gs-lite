@@ -25,6 +25,10 @@
 /* HIGH LEVEL APPLICATION INTERFACE */
 /* ================================ */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 
 
@@ -102,5 +106,9 @@ gs_retval_t ftaapp_remove_fta(FTAID f, gs_uint32_t recursive);
 /* same as sgroup_get_buffer just repeated to have a complet ftapp interface */
 gs_retval_t ftaapp_get_tuple(FTAID * f, gs_uint32_t * size, void *tbuffer,
                              gs_int32_t tbuf_size, gs_int32_t timeout);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
