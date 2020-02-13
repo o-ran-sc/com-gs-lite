@@ -1620,7 +1620,7 @@ public:
 //		Ensure that any refs to interface params have been split away.
 	int count_ifp_refs(std::set<std::string> &ifpnames);
 
-
+//		CONSTRUCTOR
 	filter_join_qpn(){
 	};
 	filter_join_qpn(query_summary_class *qs,table_list *Schema){
@@ -1636,6 +1636,10 @@ public:
 			char tmpstr[200];
 			sprintf(tmpstr,"ERROR building filter_join_qpn node: query defined over %lu tables, but joins must be between two sources.\n",from.size() );
 			err_str += tmpstr;
+			error_code = 1;
+		}
+		if(from[0]->get_interface() != from[1]->get_interface()){
+			err_str += "Error building filter_join_qpn node: all range variables must be sourced from the same interface or interface set ("+from[0]->get_interface()+" vs. "+from[1]->get_interface()+")\n";
 			error_code = 1;
 		}
 

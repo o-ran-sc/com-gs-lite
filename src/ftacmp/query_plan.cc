@@ -13609,7 +13609,7 @@ void mrg_qpn::create_protocol_se(vector<qp_node *> q_sources, table_list *Schema
 		for(s=1;s<src_vec.size() && match;s++){
 			pse_map = src_vec[s];
 			scalarexp_t *match_se = (*pse_map)[fld_nm];
-			if(match_se == false)
+			if(match_se == NULL)
 				match = false;
 			else
 				match = is_equivalent_se_base(first_se, match_se, Schema);

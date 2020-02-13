@@ -1949,6 +1949,14 @@ void get_prefilter_temporal_cids(std::vector<stream_query *> lfta_list, col_id_s
 			gb_tbl = sgah_node->get_gb_tbl();
 		}
 
+		if(lfta_list[s]->query_plan[0]->node_type() == "filter_join"){
+			filter_join_qpn *fj_node = (filter_join_qpn *)lfta_list[s]->query_plan[0];
+			sl_list = fj_node->get_select_se_list();
+			col_id ci;	// also get the temporal var in case not in select list
+			ci.load_from_colref(fj_node->temporal_var);
+			temp_cids.insert(ci);
+		}
+
 		for(sl=0;sl<sl_list.size();sl++){
 			data_type *sdt = sl_list[sl]->get_data_type();
 			if (sdt->is_temporal()) {

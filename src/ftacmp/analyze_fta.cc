@@ -4130,7 +4130,7 @@ query_summary_class *analyze_fta(table_exp_t *fta_tree, table_list *schema,
 		tbl_vec[tbl_vec.size()-1]->set_property(1);
 	if(jprop == FILTER_JOIN_PROPERTY){
 		if(fta_tree->get_from()->get_temporal_range() == 0){
-			fprintf(stderr,"ERROR, a filter join must have a non-zero tempoal range.\n");
+			fprintf(stderr,"ERROR, a filter join must have a non-zero temporal range.\n");
 			return NULL;
 		}
 		if(tbl_vec.size() != 2){
@@ -4150,8 +4150,10 @@ query_summary_class *analyze_fta(table_exp_t *fta_tree, table_list *schema,
 		string type_name = schema->get_type_name(tbl_vec[0]->get_schema_ref(),field);
 		param_list *modifiers = schema->get_modifier_list(cr->get_schema_ref(), field);
 		data_type *dt0 = new data_type(type_name, modifiers);
-		if(dt0->get_type_str() != "UINT"){
-			fprintf(stderr,"ERROR, the temporal attribute in a filter join must be a UINT.\n");
+		string dt0_type = dt0->get_type_str();
+		if(dt0_type != "INT" && dt0_type != "UINT" && dt0_type != "LLONG" && dt0_type != "ULLONG"){
+//		if(dt0->get_type_str() != "UINT"){
+			fprintf(stderr,"ERROR, the temporal attribute in a filter join must be one of INT/UINT/LLONG/ULLONG.\n");
 			return NULL;
 		}
 		if(! dt0->is_increasing()){

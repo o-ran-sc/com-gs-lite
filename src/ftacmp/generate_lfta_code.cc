@@ -237,7 +237,7 @@ string generate_fj_struct(filter_join_qpn *fs, string node_name ){
 	int k;
 	for(k=0;k<fs->hash_eq.size();++k){
 		sprintf(tmpstr,"key_var%d",k);
-		ret += "\t"+fs->hash_eq[k]->pr->get_left_se()->get_data_type()->make_cvar(tmpstr)+";\n";
+		ret += "\t"+fs->hash_eq[k]->pr->get_right_se()->get_data_type()->make_cvar(tmpstr)+";\n";
 	}
 	ret += "\tlong long int ts;\n";
     ret += "};\n\n";
@@ -2360,9 +2360,13 @@ printf("n_bloom=%d, window_len=%d, bloom_width=%s, bf_exp_size=%d, bf_bit_size=%
 //		bloom filter needs to be advanced.
 //		SET_BF_EMPTY(table,number of bloom filters,bloom filter index,bit index)
 //		t->bf_size : number of bits in bloom filter
+//		TODO: vectorize?
+//		TODO: Don't iterate more than n_bloom times!
+//			As written, its possible to wrap around many times.
 	if(fs->use_bloom){
 		ret +=
 "//			Clean out old bloom filters if needed.\n"
+"//			TODO vectorize this ? \n"
 "	if(t->first_exec){\n"
 "		t->first_exec = 0;\n"
 "		t->last_bin = (long long int)(curr_fj_ts/"+bloom_width_str+");\n"
@@ -2493,6 +2497,7 @@ printf("n_bloom=%d, window_len=%d, bloom_width=%s, bf_exp_size=%d, bf_bit_size=%
 ;
 		}
 	}else{
+		ret += "// Add the S record to the hash table, choose a position\n";
 		ret += "\t\tbucket=0;\n";
 		for(p=0;p<fs->hash_eq.size();++p){
 			ret +=
@@ -2516,20 +2521,20 @@ printf("n_bloom=%d, window_len=%d, bloom_width=%s, bf_exp_size=%d, bf_bit_size=%
 			ret += generate_equality_test(lhs_op,rhs_op,hdt);
 		}
 		ret += "){\n\t\t\tthe_bucket = bucket;\n";
-		ret += "\t\t}else {if(";
+		ret += "\t\t}else{\n\t\t\tif(";
 		for(p=0;p<fs->hash_eq.size();++p){
 			if(p>0) ret += " && ";
 //			ret += "t->join_table[bucket1].key_var"+int_to_string(p)+
 //					" == s_equijoin_"+int_to_string(p);
 			data_type *hdt = fs->hash_eq[p]->pr->get_right_se()->get_data_type();
-			string lhs_op = "t->join_table[bucket].key_var"+int_to_string(p);
+			string lhs_op = "t->join_table[bucket1].key_var"+int_to_string(p);
 			string rhs_op = "s_equijoin_"+int_to_string(p);
 			ret += generate_equality_test(lhs_op,rhs_op,hdt);
 		}
-		ret +=  "){\n\t\t\tthe_bucket = bucket1;\n";
-		ret += "\t\t}else{ if(t->join_table[bucket].ts <= t->join_table[bucket1].ts)\n";
-		ret+="\t\t\tthe_bucket = bucket;\n\t\t\telse the_bucket=bucket1;\n";
-		ret += "\t\t}}\n";
+		ret +=  "){\n\t\t\t\tthe_bucket = bucket1;\n";
+		ret += "\t\t\t}else{ \n\t\t\t\tif(t->join_table[bucket].ts <= t->join_table[bucket1].ts)\n";
+		ret+="\t\t\t\t\tthe_bucket = bucket;\n\t\t\t\telse\n\t\t\t\t\tthe_bucket=bucket1;\n";
+		ret += "\t\t\t}\n\t\t}\n";
 		for(p=0;p<fs->hash_eq.size();++p){
 			data_type *hdt = fs->hash_eq[p]->pr->get_right_se()->get_data_type();
 			if(hdt->is_buffer_type()){
@@ -2569,7 +2574,7 @@ printf("n_bloom=%d, window_len=%d, bloom_width=%s, bf_exp_size=%d, bf_bit_size=%
 		}
 	}
 
-// Sort S preds based on cost.
+// Sort R preds based on cost.
 
 	vector<cnf_elem *> tmp_wh;
 	for(w=0;w<r_filt.size();++w){
@@ -2626,7 +2631,7 @@ printf("n_bloom=%d, window_len=%d, bloom_width=%s, bf_exp_size=%d, bf_bit_size=%
 
 	ret += "\n//	Do the join\n\n";
 	for(p=0;p<fs->hash_eq.size();++p)
-		ret += "\t\tr_equijoin_"+int_to_string(p)+" = "+generate_se_code(fs->hash_eq[p]->pr->get_left_se(),schema)+";\n";
+		ret += "\tr_equijoin_"+int_to_string(p)+" = "+generate_se_code(fs->hash_eq[p]->pr->get_left_se(),schema)+";\n";
 
 
 //			Passed the cheap pred, now test the join with S.
@@ -2637,7 +2642,7 @@ printf("n_bloom=%d, window_len=%d, bloom_width=%s, bf_exp_size=%d, bf_bit_size=%
 				ret +=
 "	bucket"+int_to_string(i)+
 	" ^= (("+hash_nums[(i*fs->hash_eq.size()+p)%NRANDS]+" * lfta_"+
-	fs->hash_eq[p]->pr->get_right_se()->get_data_type()->get_type_str()+
+	fs->hash_eq[p]->pr->get_left_se()->get_data_type()->get_type_str()+
 	+"_to_hash(r_equijoin_"+int_to_string(p)+"))>>32);\n";
 			}
 				ret +=
@@ -2662,7 +2667,7 @@ printf("n_bloom=%d, window_len=%d, bloom_width=%s, bf_exp_size=%d, bf_bit_size=%
 		for(p=0;p<fs->hash_eq.size();++p){
 			ret +=
 "		bucket ^= (("+hash_nums[(i*fs->hash_eq.size()+p)%NRANDS]+" * lfta_"+
-	fs->hash_eq[p]->pr->get_right_se()->get_data_type()->get_type_str()+
+	fs->hash_eq[p]->pr->get_left_se()->get_data_type()->get_type_str()+
 	+"_to_hash(r_equijoin_"+int_to_string(p)+"))>>32);\n";
 		}
 		ret +=
@@ -2689,7 +2694,7 @@ printf("n_bloom=%d, window_len=%d, bloom_width=%s, bf_exp_size=%d, bf_bit_size=%
 //			ret += "t->join_table[bucket1].key_var"+int_to_string(p)+
 //					" == r_equijoin_"+int_to_string(p);
 			data_type *hdt = fs->hash_eq[p]->pr->get_right_se()->get_data_type();
-			string lhs_op = "t->join_table[bucket].key_var"+int_to_string(p);
+			string lhs_op = "t->join_table[bucket1].key_var"+int_to_string(p);
 			string rhs_op = "s_equijoin_"+int_to_string(p);
 			ret += generate_equality_test(lhs_op,rhs_op,hdt);
 		}
@@ -3170,7 +3175,9 @@ string generate_fta_accept(qp_node *fs, string node_name, table_list *schema, ex
 	bool uses_bloom = fjq->use_bloom;
 	ret += "/*\t\tJoin fields\t*/\n";
 	for(g=0;g<fjq->hash_eq.size();g++){
-		sprintf(tmpstr,"\t%s s_equijoin_%d, r_equijoin_%d;\n",fjq->hash_eq[g]->pr->get_left_se()->get_data_type()->get_cvar_type().c_str(),g,g);
+		sprintf(tmpstr,"\t%s s_equijoin_%d;\n",fjq->hash_eq[g]->pr->get_right_se()->get_data_type()->get_cvar_type().c_str(),g);
+		ret += tmpstr;
+		sprintf(tmpstr,"\t%s r_equijoin_%d;\n",fjq->hash_eq[g]->pr->get_left_se()->get_data_type()->get_cvar_type().c_str(),g);
 		ret += tmpstr;
 	  }
 	if(uses_bloom){
@@ -3179,7 +3186,7 @@ string generate_fta_accept(qp_node *fs, string node_name, table_list *schema, ex
 "\tunsigned int i=0,j=0,k=0, b, bf_clean = 0, tmp_i, found; \n"
 "\tunsigned int bucket, bucket0, bucket1, bucket2;\n"
 "\tlong long int curr_fj_ts;\n"
-"\tunsigned int curr_bin, the_bin;\n"
+"\tlong long int curr_bin, the_bin;\n"
 "\n"
 ;
 	}else{

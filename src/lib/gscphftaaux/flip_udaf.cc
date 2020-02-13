@@ -226,7 +226,7 @@ gs_uint32_t extr_quant_hfta0_fcn(vstring *v, gs_float_t phi)
 //printf("nelts=%d t=%llx\n",vs->nelts, (unsigned long long int)(vs->t));
 	supertuple_t *t, *p;
 	gs_uint32_t nelts=0;
-	gs_uint32_t rmin=0, rmax, rank, ropt=UINT_MAX;
+	gs_int32_t rmin=0, rmax, rank, ropt=INT_MAX;
 	gs_uint32_t count=0;
 
 	for (t=vs->t; t != NULL; t=t->next) {
@@ -235,7 +235,7 @@ gs_uint32_t extr_quant_hfta0_fcn(vstring *v, gs_float_t phi)
 		nelts += t->gap;
 		count++;
 	}
-	rank = (gs_uint32_t) (phi*(float)nelts);
+	rank = (gs_int32_t) (phi*(float)nelts);
 
 	for (t=vs->t; t != NULL; t=t->next) {
 		rmin += t->gap;
@@ -389,14 +389,14 @@ gs_uint32_t extr_quant_hfta3_fcn(vstring *v, gs_float_t  phi)
 	quant_udaf_hfta3_struct_t *vs = (quant_udaf_hfta3_struct_t *)(v->offset);
 	supertuple_t *t, *p;
 	gs_uint32_t nelts=0;
-	gs_uint32_t rmin=0, rmax, rank, ropt=UINT_MAX;
+	gs_int32_t rmin=0, rmax, rank, ropt=INT_MAX;
 	gs_uint32_t count=0;
 
 	for (t=vs->t; t != NULL; t=t->next) {
 		nelts += t->gap;
 		count++;
 	}
-	rank = (gs_uint32_t) (phi*(float)nelts);
+	rank = (gs_int32_t) (phi*(float)nelts);
 
 	for (t=vs->t; t != NULL; t=t->next) {
 		rmin += t->gap;
