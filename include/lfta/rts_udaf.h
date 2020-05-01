@@ -42,11 +42,23 @@ gs_retval_t FIRST_lfta_LFTA_AGGR_FLUSHME_(gs_uint32_t* scratch);
 void FIRST_lfta_LFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch);
 void FIRST_lfta_LFTA_AGGR_DESTROY_(gs_uint32_t* scratch);
 
+void FIRST_INT_lfta_LFTA_AGGR_INIT_(gs_int32_t* scratch);
+void FIRST_INT_lfta_LFTA_AGGR_UPDATE_(gs_int32_t* scratch, gs_int32_t val);
+gs_retval_t FIRST_INT_lfta_LFTA_AGGR_FLUSHME_(gs_int32_t* scratch);
+void FIRST_INT_lfta_LFTA_AGGR_OUTPUT_(gs_int32_t* res, gs_int32_t* scratch);
+void FIRST_INT_lfta_LFTA_AGGR_DESTROY_(gs_int32_t* scratch);
+
 void FIRST_ULL_lfta_LFTA_AGGR_INIT_(gs_uint64_t* scratch);
 void FIRST_ULL_lfta_LFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val);
 gs_retval_t FIRST_ULL_lfta_LFTA_AGGR_FLUSHME_(gs_uint64_t* scratch);
 void FIRST_ULL_lfta_LFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch);
 void FIRST_ULL_lfta_LFTA_AGGR_DESTROY_(gs_uint64_t* scratch);
+
+void FIRST_LL_lfta_LFTA_AGGR_INIT_(gs_int64_t* scratch);
+void FIRST_LL_lfta_LFTA_AGGR_UPDATE_(gs_int64_t* scratch, gs_int64_t val);
+gs_retval_t FIRST_LL_lfta_LFTA_AGGR_FLUSHME_(gs_int64_t* scratch);
+void FIRST_LL_lfta_LFTA_AGGR_OUTPUT_(gs_int64_t* res, gs_int64_t* scratch);
+void FIRST_LL_lfta_LFTA_AGGR_DESTROY_(gs_int64_t* scratch);
 
 void FIRST_STR_lfta_LFTA_AGGR_INIT_(struct gs_string* scratch);
 void FIRST_STR_lfta_LFTA_AGGR_UPDATE_(struct gs_string* scratch, struct gs_string* val);
@@ -61,17 +73,61 @@ gs_retval_t LAST_lfta_LFTA_AGGR_FLUSHME_(gs_uint32_t* scratch);
 void LAST_lfta_LFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch);
 void LAST_lfta_LFTA_AGGR_DESTROY_(gs_uint32_t* scratch);
 
+void LAST_INT_lfta_LFTA_AGGR_INIT_(gs_int32_t* scratch);
+void LAST_INT_lfta_LFTA_AGGR_UPDATE_(gs_int32_t* scratch, gs_int32_t val);
+gs_retval_t LAST_INT_lfta_LFTA_AGGR_FLUSHME_(gs_int32_t* scratch);
+void LAST_INT_lfta_LFTA_AGGR_OUTPUT_(gs_int32_t* res, gs_int32_t* scratch);
+void LAST_INT_lfta_LFTA_AGGR_DESTROY_(gs_int32_t* scratch);
+
 void LAST_ULL_lfta_LFTA_AGGR_INIT_(gs_uint64_t* scratch);
 void LAST_ULL_lfta_LFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val);
 gs_retval_t LAST_ULL_lfta_LFTA_AGGR_FLUSHME_(gs_uint64_t* scratch);
 void LAST_ULL_lfta_LFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch);
 void LAST_ULL_lfta_LFTA_AGGR_DESTROY_(gs_uint64_t* scratch);
 
+void LAST_LL_lfta_LFTA_AGGR_INIT_(gs_int64_t* scratch);
+void LAST_LL_lfta_LFTA_AGGR_UPDATE_(gs_int64_t* scratch, gs_int64_t val);
+gs_retval_t LAST_LL_lfta_LFTA_AGGR_FLUSHME_(gs_int64_t* scratch);
+void LAST_LL_lfta_LFTA_AGGR_OUTPUT_(gs_int64_t* res, gs_int64_t* scratch);
+void LAST_LL_lfta_LFTA_AGGR_DESTROY_(gs_int64_t* scratch);
+
 void LAST_STR_lfta_LFTA_AGGR_INIT_(struct gs_string* scratch);
 void LAST_STR_lfta_LFTA_AGGR_UPDATE_(struct gs_string* scratch, struct gs_string* val);
 gs_retval_t LAST_STR_lfta_LFTA_AGGR_FLUSHME_(struct gs_string* scratch);
 void LAST_STR_lfta_LFTA_AGGR_OUTPUT_(struct gs_string* res, struct gs_string* scratch);
 void LAST_STR_lfta_LFTA_AGGR_DESTROY_(struct gs_string* scratch);
+
+//	count_diff aggregate
+void count_diff_lfta_ui_LFTA_AGGR_INIT_(gs_sp_t s) ;
+void count_diff_lfta_ui_LFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint32_t val) ;
+void count_diff_lfta_ui_LFTA_AGGR_OUTPUT_(struct gs_string *res, gs_sp_t s) ;
+void count_diff_lfta_ui_LFTA_AGGR_DESTROY_(gs_sp_t s) ;
+gs_retval_t count_diff_lfta_ui_LFTA_AGGR_FLUSHME_(gs_sp_t s) ;
+
+void count_diff_lfta_i_LFTA_AGGR_INIT_(gs_sp_t s) ;
+void count_diff_lfta_i_LFTA_AGGR_UPDATE_(gs_sp_t s, gs_int32_t val) ;
+void count_diff_lfta_i_LFTA_AGGR_OUTPUT_(struct gs_string *res, gs_sp_t s) ;
+void count_diff_lfta_i_LFTA_AGGR_DESTROY_(gs_sp_t s) ;
+gs_retval_t count_diff_lfta_i_LFTA_AGGR_FLUSHME_(gs_sp_t s) ;
+
+void count_diff_lfta_ul_LFTA_AGGR_INIT_(gs_sp_t s) ;
+void count_diff_lfta_ul_LFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint64_t val) ;
+void count_diff_lfta_ul_LFTA_AGGR_OUTPUT_(struct gs_string *res, gs_sp_t s) ;
+void count_diff_lfta_ul_LFTA_AGGR_DESTROY_(gs_sp_t s) ;
+gs_retval_t count_diff_lfta_ul_LFTA_AGGR_FLUSHME_(gs_sp_t s) ;
+
+void count_diff_lfta_l_LFTA_AGGR_INIT_(gs_sp_t s) ;
+void count_diff_lfta_l_LFTA_AGGR_UPDATE_(gs_sp_t s, gs_int64_t val) ;
+void count_diff_lfta_l_LFTA_AGGR_OUTPUT_(struct gs_string *res, gs_sp_t s) ;
+void count_diff_lfta_l_LFTA_AGGR_DESTROY_(gs_sp_t s) ;
+gs_retval_t count_diff_lfta_l_LFTA_AGGR_FLUSHME_(gs_sp_t s) ;
+
+void count_diff_lfta_s_LFTA_AGGR_INIT_(gs_sp_t s) ;
+void count_diff_lfta_s_LFTA_AGGR_UPDATE_(gs_sp_t s, struct gs_string *val) ;
+void count_diff_lfta_s_LFTA_AGGR_OUTPUT_(struct gs_string *res, gs_sp_t s) ;
+void count_diff_lfta_s_LFTA_AGGR_DESTROY_(gs_sp_t s) ;
+gs_retval_t count_diff_lfta_s_LFTA_AGGR_FLUSHME_(gs_sp_t s) ;
+
 
 //		running_array_aggr aggregate
 void running_array_aggr_lfta_LFTA_AGGR_INIT_(char* scratch);

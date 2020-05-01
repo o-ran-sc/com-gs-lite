@@ -158,16 +158,24 @@ int main(int argc, char* argv[]) {
     gs_uint32_t tip1,tip2,tip3,tip4;
     gs_sp_t instance_name;
 
+	char sep_str[2];
+
     gs_uint32_t tlimit = 0;     // time limit in seconds
     time_t start_time, curr_time;
+
+	sep_str[0] = '|';
+	sep_str[1] = '\0';
     
 	gsopenlog(argv[0]);
 
     // by default the output will go to stdout
     outf = stdout;
     
-    while ((ch = getopt(argc, argv, "l:p:r:veXD")) != -1) {
+    while ((ch = getopt(argc, argv, "l:p:r:sveXD")) != -1) {
         switch (ch) {
+            case 's':
+                sep_str[0]=',';
+                break;
             case 'r':
                 bufsz=atoi(optarg);
                 break;
@@ -438,7 +446,8 @@ int main(int argc, char* argv[]) {
                         linebuf[0]=0;
                         break;
                 }
-                if (y<numberoffields-1) snprintf(&linebuf[strlen(linebuf)],MAXLINE,"|");
+//                if (y<numberoffields-1) snprintf(&linebuf[strlen(linebuf)],MAXLINE,"|");
+                if (y<numberoffields-1) snprintf(&linebuf[strlen(linebuf)],MAXLINE,sep_str);
                 emit_line();
             }
             snprintf(linebuf,MAXLINE,"\n");

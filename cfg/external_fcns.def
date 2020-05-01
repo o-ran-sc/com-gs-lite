@@ -10,12 +10,272 @@
 //          MIN/MAX functions
 ///////////////////////////////////////////////////////////
 
+// return ullong
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (uint,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (uint,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (uint,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (uint,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (uint,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (int,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (int,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (int,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (int,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (int,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (ullong,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (ullong,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (ullong,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (ullong,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (ullong,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (llong,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (llong,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (llong,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (llong,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (llong,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (float,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (float,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (float,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (float,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMIN (float,float);
 
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (uint,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (uint,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (uint,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (uint,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (uint,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (int,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (int,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (int,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (int,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (int,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (ullong,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (ullong,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (ullong,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (ullong,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (ullong,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (llong,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (llong,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (llong,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (llong,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (llong,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (float,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (float,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (float,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (float,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] ULLMAX (float,float);
+
+// return llong
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (uint,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (uint,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (uint,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (uint,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (uint,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (int,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (int,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (int,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (int,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (int,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (ullong,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (ullong,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (ullong,llong);
         ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (ullong,ullong);
-        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (ullong,ullong); 
-        uint FUN [LFTA_LEGAL, COST FREE] UMIN (uint,uint);
-        uint FUN [LFTA_LEGAL, COST FREE] UMAX (uint,uint); 
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (ullong,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (llong,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (llong,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (llong,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (llong,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (llong,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (float,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (float,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (float,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (float,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMIN (float,float);
 
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (uint,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (uint,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (uint,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (uint,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (uint,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (int,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (int,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (int,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (int,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (int,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (ullong,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (ullong,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (ullong,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (ullong,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (ullong,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (llong,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (llong,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (llong,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (llong,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (llong,float);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (float,int);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (float,uint);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (float,llong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (float,ullong);
+        ullong FUN [LFTA_LEGAL, COST FREE] LLMAX (float,float);
+
+// return uint
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (uint,int);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (uint,uint);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (uint,llong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (uint,ullong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (uint,float);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (int,int);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (int,uint);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (int,llong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (int,ullong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (int,float);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (ullong,int);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (ullong,uint);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (ullong,llong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (ullong,ullong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (ullong,float);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (llong,int);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (llong,uint);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (llong,llong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (llong,ullong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (llong,float);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (float,int);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (float,uint);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (float,llong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (float,ullong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMIN (float,float);
+
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (uint,int);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (uint,uint);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (uint,llong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (uint,ullong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (uint,float);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (int,int);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (int,uint);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (int,llong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (int,ullong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (int,float);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (ullong,int);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (ullong,uint);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (ullong,llong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (ullong,ullong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (ullong,float);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (llong,int);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (llong,uint);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (llong,llong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (llong,ullong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (llong,float);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (float,int);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (float,uint);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (float,llong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (float,ullong);
+        uint FUN [LFTA_LEGAL, COST FREE] UMAX (float,float);
+
+// return int
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (uint,int);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (uint,uint);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (uint,llong);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (uint,ullong);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (uint,float);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (int,int);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (int,uint);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (int,llong);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (int,ullong);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (int,float);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (ullong,int);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (ullong,uint);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (ullong,llong);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (ullong,ullong);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (ullong,float);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (llong,int);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (llong,uint);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (llong,llong);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (llong,ullong);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (llong,float);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (float,int);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (float,uint);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (float,llong);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (float,ullong);
+        int FUN [LFTA_LEGAL, COST FREE] LMIN (float,float);
+
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (uint,int);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (uint,uint);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (uint,llong);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (uint,ullong);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (uint,float);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (int,int);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (int,uint);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (int,llong);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (int,ullong);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (int,float);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (ullong,int);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (ullong,uint);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (ullong,llong);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (ullong,ullong);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (ullong,float);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (llong,int);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (llong,uint);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (llong,llong);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (llong,ullong);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (llong,float);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (float,int);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (float,uint);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (float,llong);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (float,ullong);
+        int FUN [LFTA_LEGAL, COST FREE] LMAX (float,float);
+
+// return float
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (uint,int);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (uint,uint);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (uint,llong);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (uint,ullong);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (uint,float);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (int,int);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (int,uint);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (int,llong);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (int,ullong);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (int,float);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (ullong,int);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (ullong,uint);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (ullong,llong);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (ullong,ullong);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (ullong,float);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (llong,int);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (llong,uint);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (llong,llong);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (llong,ullong);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (llong,float);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (float,int);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (float,uint);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (float,llong);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (float,ullong);
+        float FUN [LFTA_LEGAL, COST FREE] FMIN (float,float);
+
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (uint,int);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (uint,uint);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (uint,llong);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (uint,ullong);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (uint,float);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (int,int);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (int,uint);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (int,llong);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (int,ullong);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (int,float);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (ullong,int);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (ullong,uint);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (ullong,llong);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (ullong,ullong);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (ullong,float);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (llong,int);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (llong,uint);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (llong,llong);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (llong,ullong);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (llong,float);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (float,int);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (float,uint);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (float,llong);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (float,ullong);
+        float FUN [LFTA_LEGAL, COST FREE] FMAX (float,float);
+
+// return IP
         IP FUN [LFTA_LEGAL, COST FREE] UMIN (IP,IP);
         IP FUN [LFTA_LEGAL, COST FREE] UMAX (IP,IP);
    
@@ -23,16 +283,163 @@
 //          conditional functions
 ///////////////////////////////////////////////////////////
 
+// rhs == lhs
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (uint, int);
 	uint FUN [LFTA_LEGAL, COST FREE] EQ (uint, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (uint, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (uint, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (uint, float);
 	uint FUN [LFTA_LEGAL, COST FREE] EQ (int, int);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (int, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (int, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (int, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (int, float);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (ullong, int);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (ullong, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (ullong, llong);
 	uint FUN [LFTA_LEGAL, COST FREE] EQ (ullong, ullong);
-	uint FUN [LFTA_LEGAL, COST FREE] GEQ (uint, uint);
-	uint FUN [LFTA_LEGAL, COST FREE] GEQ (int, int);
-	uint FUN [LFTA_LEGAL, COST FREE] GEQ (ullong, ullong);
-	uint FUN [LFTA_LEGAL, COST FREE] LEQ (uint, uint);
-	uint FUN [LFTA_LEGAL, COST FREE] LEQ (int, int);
-	uint FUN [LFTA_LEGAL, COST FREE] LEQ (ullong, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (ullong, float);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (llong, int);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (llong, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (llong, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (llong, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (llong, float);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (float, int);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (float, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (float, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (float, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] EQ (float, float);
 
+// rhs >= lhs
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (uint, int);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (uint, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (uint, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (uint, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (uint, float);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (int, int);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (int, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (int, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (int, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (int, float);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (ullong, int);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (ullong, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (ullong, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (ullong, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (ullong, float);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (llong, int);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (llong, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (llong, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (llong, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (llong, float);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (float, int);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (float, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (float, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (float, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] GEQ (float, float);
+
+// rhs > lhs
+	uint FUN [LFTA_LEGAL, COST FREE] GE (uint, int);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (uint, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (uint, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (uint, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (uint, float);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (int, int);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (int, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (int, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (int, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (int, float);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (ullong, int);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (ullong, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (ullong, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (ullong, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (ullong, float);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (llong, int);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (llong, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (llong, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (llong, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (llong, float);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (float, int);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (float, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (float, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (float, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] GE (float, float);
+
+// rhs <= lhs
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (uint, int);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (uint, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (uint, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (uint, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (uint, float);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (int, int);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (int, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (int, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (int, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (int, float);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (ullong, int);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (ullong, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (ullong, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (ullong, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (ullong, float);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (llong, int);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (llong, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (llong, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (llong, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (llong, float);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (float, int);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (float, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (float, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (float, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] LEQ (float, float);
+
+// rhs < lhs
+	uint FUN [LFTA_LEGAL, COST FREE] LE (uint, int);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (uint, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (uint, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (uint, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (uint, float);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (int, int);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (int, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (int, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (int, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (int, float);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (ullong, int);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (ullong, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (ullong, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (ullong, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (ullong, float);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (llong, int);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (llong, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (llong, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (llong, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (llong, float);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (float, int);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (float, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (float, llong);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (float, ullong);
+	uint FUN [LFTA_LEGAL, COST FREE] LE (float, float);
+
+//////////////////////////////////////////////////////////////
+//	Conditional evaluation
+//		add int, uint in the else clause to allow for constants
+///////////////////////////////////////////////////////
+
+	int FUN [LFTA_LEGAL, COST FREE] if_else_i(uint, int, int);
+	int FUN [LFTA_LEGAL, COST FREE] if_else_i(uint, int, uint);
+	uint FUN [LFTA_LEGAL, COST FREE] if_else_i(uint, uint, uint); 
+	uint FUN [LFTA_LEGAL, COST FREE] if_else_i(uint, uint, int);
+	llong FUN [LFTA_LEGAL, COST FREE] if_else_i(uint, llong, llong);
+	llong FUN [LFTA_LEGAL, COST FREE] if_else_i(uint, llong, uint);
+	llong FUN [LFTA_LEGAL, COST FREE] if_else_i(uint, llong, int);
+	ullong FUN [LFTA_LEGAL, COST FREE] if_else_i(uint, ullong, ullong);
+	ullong FUN [LFTA_LEGAL, COST FREE] if_else_i(uint, ullong, int);
+	ullong FUN [LFTA_LEGAL, COST FREE] if_else_i(uint, ullong, uint);
+
+
+///////////////////////////////////////////////////////////
+//          Function for regex matching
+///////////////////////////////////////////////////////////
+
+	uint FUN [LFTA_LEGAL] endian_swap_ui(uint);
 
 ///////////////////////////////////////////////////////////
 //          Function for regex matching
@@ -45,11 +452,21 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 		str_partial_regex_match( string, string HANDLE, uint);
 	string FUN [PARTIAL, COST EXPENSIVE] str_extract_regex( string, string HANDLE);
   
+
 ///////////////////////////////////////////////////////////
 //         Truncating strings        
 ///////////////////////////////////////////////////////////
        
         string FUN [LFTA_LEGAL,PARTIAL,COST FREE] str_truncate (string, uint);
+
+
+///////////////////////////////////////////////////////////
+//         hashing
+///////////////////////////////////////////////////////////
+
+	uint FUN [LFTA_LEGAL] string_hash(string);
+	ullong FUN string_hash_long(string);
+
  
 ///////////////////////////////////////////////////////////
 //          Function for casting
@@ -61,27 +478,56 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 	ullong FUN [LFTA_LEGAL,COST FREE] non_temporal(ullong);
 
 	int FUN [LFTA_LEGAL,COST FREE]INT(uint);
-        int FUN [LFTA_LEGAL,COST FREE]INT(ullong);
-        int FUN [LFTA_LEGAL,COST FREE]INT(llong);
+	int FUN [LFTA_LEGAL,COST FREE]INT(int);
+    int FUN [LFTA_LEGAL,COST FREE]INT(ullong);
+    int FUN [LFTA_LEGAL,COST FREE]INT(llong);
+    int FUN [LFTA_LEGAL,COST FREE]INT(float);
  
-        uint FUN [LFTA_LEGAL,COST FREE]UINT(int);
-        uint FUN [LFTA_LEGAL,COST FREE]UINT(ullong);
-        uint FUN [LFTA_LEGAL,COST FREE]UINT(llong);
+    uint FUN [LFTA_LEGAL,COST FREE]UINT(uint);
+    uint FUN [LFTA_LEGAL,COST FREE]UINT(int);
+    uint FUN [LFTA_LEGAL,COST FREE]UINT(ullong);
+    uint FUN [LFTA_LEGAL,COST FREE]UINT(llong);
+    uint FUN [LFTA_LEGAL,COST FREE]UINT(float);
 	uint FUN [LFTA_LEGAL,COST FREE]UINT(IP);
 
 	float FUN [LFTA_LEGAL,COST FREE] FLOAT(llong);
+	float FUN [LFTA_LEGAL,COST FREE] FLOAT(float);
 	float FUN [LFTA_LEGAL,COST FREE] FLOAT(ullong);
 	float FUN [LFTA_LEGAL,COST FREE] FLOAT(int);
 	float FUN [LFTA_LEGAL,COST FREE] FLOAT(uint);
 
 	ullong FUN [LFTA_LEGAL,COST FREE]ULLONG(uint);
 	ullong FUN [LFTA_LEGAL,COST FREE]ULLONG(int);
+	ullong FUN [LFTA_LEGAL,COST FREE]ULLONG(ullong);
+	ullong FUN [LFTA_LEGAL,COST FREE]ULLONG(llong);
+	ullong FUN [LFTA_LEGAL,COST FREE]ULLONG(float);
+
+	llong FUN [LFTA_LEGAL,COST FREE]LLONG(uint);
+	llong FUN [LFTA_LEGAL,COST FREE]LLONG(int);
+	llong FUN [LFTA_LEGAL,COST FREE]LLONG(ullong);
+	llong FUN [LFTA_LEGAL,COST FREE]LLONG(llong);
+	llong FUN [LFTA_LEGAL,COST FREE]LLONG(float);
 
 ///////////////////////////////////////////////////////////
 //          Numeric functions
 ///////////////////////////////////////////////////////////
 
 	float FUN [LFTA_LEGAL, COST LOW] sqrt(float); 
+	float FUN [LFTA_LEGAL, COST LOW] pow(float, float); 
+	float FUN [LFTA_LEGAL, COST LOW] sin(float); 
+	float FUN [LFTA_LEGAL, COST LOW] cos(float); 
+	float FUN [LFTA_LEGAL, COST LOW] tan(float); 
+	float FUN [LFTA_LEGAL, COST LOW] asin(float); 
+	float FUN [LFTA_LEGAL, COST LOW] acos(float); 
+	float FUN [LFTA_LEGAL, COST LOW] atan(float); 
+	float FUN [LFTA_LEGAL, COST LOW] log(float); 
+	float FUN [LFTA_LEGAL, COST LOW] log2(float); 
+	float FUN [LFTA_LEGAL, COST LOW] log10(float); 
+	float FUN [LFTA_LEGAL, COST LOW] ceil(float); 
+	float FUN [LFTA_LEGAL, COST LOW] floor(float); 
+	float FUN [LFTA_LEGAL, COST LOW] fmod(float); 
+	float FUN [LFTA_LEGAL, COST LOW] trunc(float); 
+
 
 
 ///////////////////////////////////////////////////////////
@@ -173,13 +619,22 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 //	Should be replaced by builtins
 ///////////////////////////////////////////////////////////
 
+// FIRST
 	uint UDAF [RUNNING, SUBAGGR FIRST_lfta, SUPERAGGR FIRST_hfta] FIRST uint (uint);
 	uint UDAF [RUNNING] FIRST_hfta uint (uint);
 	uint UDAF [RUNNING] FIRST_lfta uint (uint);
 
+	int UDAF [RUNNING, SUBAGGR FIRST_INT_lfta, SUPERAGGR FIRST_INT_hfta] FIRST int (int);
+	int UDAF [RUNNING] FIRST_INT_hfta int (int);
+	int UDAF [RUNNING] FIRST_INT_lfta int (int);
+
 	ullong UDAF [RUNNING, SUBAGGR FIRST_ULL_lfta, SUPERAGGR FIRST_ULL_hfta] FIRST ullong (ullong);
 	ullong UDAF [RUNNING] FIRST_ULL_hfta ullong (ullong);
 	ullong UDAF [RUNNING] FIRST_ULL_lfta ullong (ullong);
+
+	llong UDAF [RUNNING, SUBAGGR FIRST_LL_lfta, SUPERAGGR FIRST_LL_hfta] FIRST llong (llong);
+	llong UDAF [RUNNING] FIRST_LL_hfta llong (llong);
+	llong UDAF [RUNNING] FIRST_LL_lfta llong (llong);
 
 	IP UDAF [RUNNING, SUBAGGR FIRST_lfta, SUPERAGGR FIRST_hfta] FIRST IP (IP);
 	IP UDAF [RUNNING] FIRST_hfta IP (IP);
@@ -189,13 +644,23 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 	string UDAF [RUNNING] FIRST_STR_hfta string (string);
 	string UDAF [RUNNING] FIRST_STR_lfta string (string);
 
+
+// LAST
 	uint UDAF [RUNNING, SUBAGGR LAST_lfta, SUPERAGGR LAST_hfta] LAST uint (uint);
 	uint UDAF [RUNNING] LAST_hfta uint (uint);
 	uint UDAF [RUNNING] LAST_lfta uint (uint);
 
+	int UDAF [RUNNING, SUBAGGR LAST_INT_lfta, SUPERAGGR LAST_INT_hfta] LAST int (int);
+	int UDAF [RUNNING] LAST_INT_hfta int (int);
+	int UDAF [RUNNING] LAST_INT_lfta int (int);
+
 	ullong UDAF [RUNNING, SUBAGGR LAST_ULL_lfta, SUPERAGGR LAST_ULL_hfta] LAST ullong (ullong);
 	ullong UDAF [RUNNING] LAST_ULL_hfta ullong (ullong);
 	ullong UDAF [RUNNING] LAST_ULL_lfta ullong (ullong);
+
+	llong UDAF [RUNNING, SUBAGGR LAST_LL_lfta, SUPERAGGR LAST_LL_hfta] LAST llong (llong);
+	llong UDAF [RUNNING] LAST_LL_hfta llong (llong);
+	llong UDAF [RUNNING] LAST_LL_lfta llong (llong);
 
 	IP UDAF [RUNNING, SUBAGGR LAST_lfta, SUPERAGGR LAST_hfta] LAST IP (IP);
 	IP UDAF [RUNNING] LAST_hfta IP (IP);
@@ -204,6 +669,29 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 	string UDAF [RUNNING, SUBAGGR LAST_STR_lfta, SUPERAGGR LAST_STR_hfta] LAST string (string);
 	string UDAF [RUNNING] LAST_STR_hfta string (string);
 	string UDAF [RUNNING] LAST_STR_lfta string (string);
+
+
+////////////////////////////////////////////////////////////
+//	count_diff aggregation
+//	count the # times the payload is different from the previous value
+/////////////////////////////////////////////////////////////
+
+	uint UDAF [SUBAGGR count_diff_lfta_ui, SUPERAGGR count_diff_hfta] count_diff fstring12 (uint);
+	uint UDAF  count_diff_hfta fstring12 (string);
+	string UDAF  count_diff_lfta_ui fstring20 (uint);
+
+	uint UDAF [SUBAGGR count_diff_lfta_i, SUPERAGGR count_diff_hfta] count_diff fstring12 (int);
+	string UDAF  count_diff_lfta_i fstring20 (int);
+
+	uint UDAF [SUBAGGR count_diff_lfta_ul, SUPERAGGR count_diff_hfta] count_diff fstring12 (ullong);
+	string UDAF  count_diff_lfta_ul fstring20 (ullong);
+
+	uint UDAF [SUBAGGR count_diff_lfta_l, SUPERAGGR count_diff_hfta] count_diff fstring12 (llong);
+	string UDAF  count_diff_lfta_l fstring20 (llong);
+
+	uint UDAF [SUBAGGR count_diff_lfta_s, SUPERAGGR count_diff_hfta] count_diff fstring12 (string);
+	string UDAF  count_diff_lfta_s fstring20 (string);
+
 
 ///////////////////////////////////////////////////////////
 //               integer array aggregation funciton

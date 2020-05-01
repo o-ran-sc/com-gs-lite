@@ -1901,3 +1901,34 @@ string data_type::get_max_literal() {
 
 }
 
+string data_type::get_wl_extract_fcn() {
+	switch(type){
+	case int_t:
+		return("wl_csv_int");
+	case bool_t:
+		return("wl_csv_bool");
+	case u_short_t:
+	case u_int_t:
+		return("wl_csv_uint");
+	case ip_t:
+		return("wl_csv_ip");
+	case u_llong_t:
+		return("wl_csv_ullong");
+	case llong_t:
+		return("wl_csv_llong");
+	case floating_t:
+		return("wl_csv_float");
+	case timeval_t:
+		return("ERROR_TIMEVAL_T_EXTRACTION_NOT_SUPPORTED");
+	case ipv6_t:
+		return("wl_csv_ipv6");
+	case v_str_t:
+	case fstring_t:
+		return("wl_csv_string");
+	default:
+		return("ERROR: Unknown type in data_type::get_wl_extract_fcn\n");
+	}
+
+}
+
+

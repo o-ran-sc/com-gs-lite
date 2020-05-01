@@ -92,6 +92,39 @@ void hfta_vstr_replace(vstring *dst, vstring *src){
 	hfta_vstr_assign_with_copy(dst,src);
 }
 
+#define HFTA_VSTR_LHASHFUNC_PRIME 12916008961267169387ull
+gs_uint64_t hfta_vstr_long_hashfunc(const vstring *s) {
+	gs_uint64_t hash_code;
+	gs_int32_t n_steps;
+	gs_int32_t substr_len;
+	gs_int32_t j, k;
+	gs_uint64_t sub_hash;
+	gs_sp_t sv;
+
+	sv=(gs_sp_t)(s->offset);
+	hash_code = 0;
+	n_steps = s->length / 4;
+	if(4*n_steps < s->length) n_steps++;
+
+	for (j = 0; j <  n_steps; j++) {
+		if(4*(j+1) < s->length) substr_len = 4;
+		else                  substr_len = s->length - 4*j;
+
+		sub_hash = 0;
+	 	for(k=0;k<4;k++){
+		  if(k < substr_len)
+  			sub_hash = (sub_hash << 4) + *sv;
+  		  else
+  			sub_hash = (sub_hash << 4);
+		  sv++;
+	  	}
+
+		hash_code = (sub_hash + hash_code * HFTA_VSTR_LHASHFUNC_PRIME);
+	}
+
+	return(hash_code);
+}
+
 #define HFTA_VSTR_HASHFUNC_PRIME 2995999
 gs_uint32_t hfta_vstr_hashfunc(const vstring *s) {
 	gs_uint32_t hash_code;
@@ -100,7 +133,6 @@ gs_uint32_t hfta_vstr_hashfunc(const vstring *s) {
 	gs_int32_t j;
 	gs_uint32_t k, sub_hash;
 	gs_sp_t sv;
-
 
 	sv=(gs_sp_t)(s->offset);
 	hash_code = 0;
@@ -125,6 +157,7 @@ gs_uint32_t hfta_vstr_hashfunc(const vstring *s) {
 
 	return(hash_code);
 }
+
 
 //	return negative if s1 < s2, 0 if s1==s2, positive if s1>s2
 gs_retval_t hfta_vstr_compare(const vstring * s1, const vstring * s2) {

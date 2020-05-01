@@ -1,5 +1,5 @@
 /* ------------------------------------------------
-Copyright 2014 AT&T Intellectual Property
+Copyright 2020 AT&T Intellectual Property
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -105,6 +105,7 @@ extern var_defs_t *fta_parse_defines;
 %type <tblp> gsql
 %type <tblp> select_statement
 %type <tblp> merge_statement
+%type <tblp> watchlist_statement
 %type <predp> opt_where_clause
 %type <predp> opt_having_clause
 %type <select_listval> selection
@@ -181,8 +182,9 @@ extern var_defs_t *fta_parse_defines;
 %token BY AS
 %token <strval> AGGR
 %token FROM INNER_JOIN FILTER_JOIN OUTER_JOIN LEFT_OUTER_JOIN RIGHT_OUTER_JOIN
+%token WATCHLIST_JOIN
 %token GROUP HAVING IN
-%token SELECT
+%token SELECT WATCHLIST
 %token WHERE SUPERGROUP CLEANING_WHEN CLEANING_BY CLOSING_WHEN
 %token SUCH THAT
 %token CUBE ROLLUP GROUPING_SETS
@@ -270,6 +272,27 @@ gsql:		variable_def params_def select_statement {
 		|	merge_statement{
 				$$ = $1;
 			}
+		|	variable_def params_def watchlist_statement{
+				$3->add_nmap($1);			// Memory leak : plug it.
+				$3->add_param_list($2);		// Memory leak : plug it.
+				$$ = $3;
+			}
+		|	params_def variable_def watchlist_statement{
+				$3->add_nmap($2);			// Memory leak : plug it.
+				$3->add_param_list($1);		// Memory leak : plug it.
+				$$ = $3;
+			}
+		|	params_def watchlist_statement{
+				$2->add_param_list($1);		// Memory leak : plug it.
+				$$ = $2;
+			}
+		|	variable_def watchlist_statement{
+				$2->add_nmap($1);			// Memory leak : plug it.
+				$$ = $2;
+			}
+		|	watchlist_statement{
+				$$ = $1;
+			}
 	;
 
 query_list:	gsql	{$$ = new query_list_t($1);}
@@ -307,6 +330,11 @@ merge_statement:
 		from_clause		{$$ = new table_exp_t($2,$4,$5);}
 	;
 
+watchlist_statement:
+		WATCHLIST
+		FIELDS LEFTBRACE field_list RIGHTBRACE {$$ = table_exp_t::make_watchlist_tbl($4); }
+	; 
+
 	/* query expressions */
 
 
@@ -332,6 +360,7 @@ from_clause:
 	|	OUTER_JOIN FROM table_ref_commalist	{$$ = $3; $$->set_properties(OUTER_JOIN_PROPERTY);}
 	|	RIGHT_OUTER_JOIN FROM table_ref_commalist	{$$ = $3; $$->set_properties(RIGHT_OUTER_JOIN_PROPERTY);}
 	|	LEFT_OUTER_JOIN FROM table_ref_commalist	{$$ = $3; $$->set_properties(LEFT_OUTER_JOIN_PROPERTY);}
+	|	WATCHLIST_JOIN FROM table_ref_commalist	{$$ = $3; $$->set_properties(WATCHLIST_JOIN_PROPERTY);}
 	|	FILTER_JOIN '(' column_ref ',' INTNUM ')' FROM table_ref_commalist	{$$ = $8; $$->set_properties(FILTER_JOIN_PROPERTY); $$->set_colref($3); $$->set_temporal_range($5);}
 	;
 

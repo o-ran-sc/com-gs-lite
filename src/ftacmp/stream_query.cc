@@ -284,7 +284,8 @@ bool stream_query::generate_linkage(){
 				qhead = n;
 			}
 		  }
-		  if(query_plan[n]->n_predecessors() < query_plan[n]->get_input_tbls().size()){
+// does the query node read a source, or is it a source?
+		  if(query_plan[n]->n_predecessors() < query_plan[n]->get_input_tbls().size() || query_plan[n]->get_input_tbls().size() == 0){
 			qtail.push_back(n);
 		  }
 		}
@@ -1955,6 +1956,10 @@ void get_prefilter_temporal_cids(std::vector<stream_query *> lfta_list, col_id_s
 			col_id ci;	// also get the temporal var in case not in select list
 			ci.load_from_colref(fj_node->temporal_var);
 			temp_cids.insert(ci);
+		}
+		if(lfta_list[s]->query_plan[0]->node_type() == "watch_join"){
+			watch_join_qpn *wj_node = (watch_join_qpn *)lfta_list[s]->query_plan[0];
+			sl_list = wj_node->get_select_se_list();
 		}
 
 		for(sl=0;sl<sl_list.size();sl++){

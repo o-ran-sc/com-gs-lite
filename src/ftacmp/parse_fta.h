@@ -1,5 +1,5 @@
 /* ------------------------------------------------
-Copyright 2014 AT&T Intellectual Property
+Copyright 2020 AT&T Intellectual Property
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -693,6 +693,7 @@ public:
 #define LEFT_OUTER_JOIN_PROPERTY 1
 #define RIGHT_OUTER_JOIN_PROPERTY 2
 #define OUTER_JOIN_PROPERTY 3
+#define WATCHLIST_JOIN_PROPERTY 3
 #define FILTER_JOIN_PROPERTY 4
 
 //		tablevar_list_t is the list of tablevars in a FROM clause
@@ -1709,6 +1710,7 @@ public:
 
 #define SELECT_QUERY 1
 #define MERGE_QUERY 2
+#define WATCHLIST_QUERY 3
 
 class table_exp_t{
 public:
@@ -1726,6 +1728,9 @@ public:
   std::vector<colref_t *> mergevars;		// merge colrefs.
   std::vector<colref_t *> supergb;	// supergroup.
   scalarexp_t *slack;				// merge slack
+
+  field_entry_list * fel;			//  List of watchlist fields
+
   bool exernal_visible;				// true iff. it can be subscribed to.
   int lineno, charno;
 
@@ -1772,6 +1777,25 @@ public:
 		ret->lineno = 0; ret->charno = 0;
 		return ret;
 	}
+
+//		For externally-defined watchlist
+	static table_exp_t *make_watchlist_tbl(field_entry_list *fel_){
+		table_exp_t *ret = new table_exp_t();
+		ret->query_type = WATCHLIST_QUERY;
+		ret->fel = fel_;
+		ret->sl=NULL;
+		ret->fm= new tablevar_list_t();	// generic analyses need the fm clause
+		ret->wh=NULL;
+		ret->hv=NULL;
+		ret->cleaning_when=NULL;
+		ret->cleaning_by=NULL;
+		ret->closing_when=NULL;
+		ret->slack=NULL;
+		ret->exernal_visible = true;
+		ret->lineno = flex_fta_lineno; ret->charno = flex_fta_ch;
+	};
+
+
 
 	table_exp_t(){
 		fm = NULL; sl = NULL; wh=NULL; hv=NULL;

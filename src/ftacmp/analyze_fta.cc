@@ -283,6 +283,10 @@ int verify_colref(scalarexp_t *se, tablevar_list_t *fm,
 			cr->set_interface("");
 			cr->set_table_name(fm->get_tablevar_name(table_var));
 
+			if(! schema->contains_field(cr->get_schema_ref(), field)){
+				fprintf(stderr, "Error, field %s is not in stream %s\n", field.c_str(), schema->get_table_name( cr->get_schema_ref() ).c_str());
+				return -1;
+			}
 
 			type_name = schema->get_type_name(cr->get_schema_ref(), field);
 			param_list *modifiers = schema->get_modifier_list(cr->get_schema_ref(), field);
@@ -4116,7 +4120,7 @@ query_summary_class *analyze_fta(table_exp_t *fta_tree, table_list *schema,
 //		Require explicit INNER_JOIN, ... specification for join queries.
 	if(jprop < 0){
 		if(qs->query_type != MERGE_QUERY && tbl_vec.size() > 1){
-			fprintf(stderr,"ERROR, a join query must specify one of INNER_JOIM, OUTER_JOIN, LEFT_OUTER_JOIN, RIGHT_OUTER_JOIN, FILTER_JOIN.\n");
+			fprintf(stderr,"ERROR, a join query must specify one of INNER_JOIM, OUTER_JOIN, LEFT_OUTER_JOIN, RIGHT_OUTER_JOIN, WATCHLIST_JOIN, FILTER_JOIN.\n");
 			return(NULL);
 		}
 	}
@@ -4152,12 +4156,11 @@ query_summary_class *analyze_fta(table_exp_t *fta_tree, table_list *schema,
 		data_type *dt0 = new data_type(type_name, modifiers);
 		string dt0_type = dt0->get_type_str();
 		if(dt0_type != "INT" && dt0_type != "UINT" && dt0_type != "LLONG" && dt0_type != "ULLONG"){
-//		if(dt0->get_type_str() != "UINT"){
 			fprintf(stderr,"ERROR, the temporal attribute in a filter join must be one of INT/UINT/LLONG/ULLONG.\n");
 			return NULL;
 		}
 		if(! dt0->is_increasing()){
-			fprintf(stderr,"ERROR, the temporal attribtue in a filter join must be temporal increasing.\n");
+			fprintf(stderr,"ERROR, the temporal attribute in a filter join must be temporal increasing.\n");
 			return NULL;
 		}
 	}
@@ -4191,6 +4194,12 @@ query_summary_class *analyze_fta(table_exp_t *fta_tree, table_list *schema,
 	if(found_error) return(NULL);
 //		unpack the param table to a global for easier analysis.
 	param_tbl=qs->param_tbl;
+
+
+//////////////////		WATCHLIST specialized analysis
+	if(qs->query_type == WATCHLIST_QUERY){
+//		Populate a SELECT clause?
+	}
 
 //////////////////		MERGE specialized analysis
 

@@ -32,6 +32,11 @@ std::string generate_lfta_prefilter_struct(col_id_set &temp_cids, table_list *Sc
 
 int compute_snap_len(qp_node *fs, table_list *schema);
 
+std::string generate_watchlist_element_name(std::string node_name);
+std::string generate_watchlist_struct_name(std::string node_name);
+std::string generate_watchlist_name(std::string node_name);
+
+
 
 #endif
 

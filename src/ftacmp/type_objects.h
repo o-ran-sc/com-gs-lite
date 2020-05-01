@@ -155,6 +155,9 @@ bool equal(data_type *o);
   std::string get_min_literal();
   std::string get_max_literal();
 
+//	char* to X functions
+  std::string get_wl_extract_fcn();
+
 
 };
 

@@ -26,17 +26,55 @@ Copyright 2014 AT&T Intellectual Property
 using namespace std;
 
 #define hfta_ullong_hashfunc(x) (((int)(*(x)))^((int)((*(x))>>32)))
-#define LLMIN(x,y) ((x)<(y)?(x):(y))
-#define LLMAX(x,y) ((x)<(y)?(y):(x))
-#define UMIN(x,y) ((x)<(y)?(x):(y))
-#define UMAX(x,y) ((x)<(y)?(y):(x))
+
+// min, max
+#define ULLMIN(x,y) (unsigned long long)(((x)<(y)?(x):(y)))
+#define ULLMAX(x,y) (unsigned long long)(((x)<(y)?(y):(x)))
+#define LLMIN(x,y) (long long int)(((x)<(y)?(x):(y)))
+#define LLMAX(x,y) (long long int)(((x)<(y)?(y):(x)))
+#define UMIN(x,y) (unsigned int)(((x)<(y)?(x):(y)))
+#define UMAX(x,y) (unsigned int)(((x)<(y)?(y):(x)))
+#define LMIN(x,y) (int)(((x)<(y)?(x):(y)))
+#define LMAX(x,y) (int)(((x)<(y)?(y):(x)))
+#define FMIN(x,y) (double)(((x)<(y)?(x):(y)))
+#define FMAX(x,y) (double)(((x)<(y)?(y):(x)))
+
+// comparison
 #define EQ(x,y) ((x)==(y))
 #define GEQ(x,y) ((x)>=(y))
+#define GE(x,y) ((x)>(y))
 #define LEQ(x,y) ((x)<=(y))
+#define LE(x,y) ((x)<(y))
+
+// if_else
+#define if_else_f(x,y,z) (double)(((x)==0?(z):(y)))
+#define if_else_ll(x,y,z) (long long int)(((x)==0?(z):(y)))
+#define if_else_ul(x,y,z) (unsigned long long)(((x)==0?(z):(y)))
+#define if_else_u(x,y,z) (unsigned int)(((x)==0?(z):(y)))
+#define if_else_i(x,y,z) (int)(((x)==0?(z):(y)))
+
 //	Cast away temporality
 #define non_temporal(x)(x)
+
+//	endian swap
+#define endian_swap_ui(x) ( (( (x) & 0xFF000000) >> 24) | (( (x) & 0x00FF0000) >> 8) | (( (x) & 0x0000FF00) << 8) | (( (x) & 0x000000FF) << 24) ) 
+
 //	Access math libraries
 #define sqrt(x) sqrt(x)
+#define pow(x,y) pow((x),(y))
+#define sin(x) sin(x)
+#define cos(x) cos(x)
+#define tan(x) tan(x)
+#define asin(x) asin(x)
+#define acos(x) acos(x)
+#define atan(x) atan(x)
+#define log(x) log(x)
+#define log2(x) log2(x)
+#define log10(x) log10(x)
+#define ceil(x) ceil(x)
+#define floor(x) floor(x)
+#define fmod(x) fmod(x)
+#define trunc(x) trunc(x)
 
 
 extern "C" {

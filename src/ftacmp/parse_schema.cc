@@ -496,8 +496,11 @@ string table_def::to_string(){
 	case OPERATOR_VIEW_SCHEMA:
 		retval += "OPERATOR_VIEW ";
 		break;
+	case WATCHLIST_SCHEMA:
+		retval += "WATCHLIST ";
+		break;
 	default:
-		retval = "ERROR UNKNOWN TABLE TYPE ";
+		retval = "ERROR UNKNOWN TABLE TYPE ("+std::to_string(schema_type)+")";
 		break;
 	}
 

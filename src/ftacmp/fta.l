@@ -1,5 +1,5 @@
 /* ------------------------------------------------
-Copyright 2014 AT&T Intellectual Property
+Copyright 2020 AT&T Intellectual Property
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -50,7 +50,7 @@ Copyright 2014 AT&T Intellectual Property
 /*		No lex lib, supply the yywrap fcn. that normally resides there
 */
 
-int FtaParserwrap(){return(1);}
+//int FtaParserwrap(){return(1);}
 
 extern int FtaParserdebug;
 
@@ -134,6 +134,7 @@ INNER_JOIN|Inner_Join|inner_join	{ flex_fta_ch+=FtaParserleng; return INNER_JOIN
 OUTER_JOIN|Outer_Join|outer_join	{ flex_fta_ch+=FtaParserleng; return OUTER_JOIN; }
 RIGHT_OUTER_JOIN|Right_Outer_Join|right_outer_join	{ flex_fta_ch+=FtaParserleng; return RIGHT_OUTER_JOIN; }
 LEFT_OUTER_JOIN|Left_Outer_Join|left_outer_join	{ flex_fta_ch+=FtaParserleng; return LEFT_OUTER_JOIN; }
+WATCHLIST_JOIN|Watchlist_Join|watchlist_join	{ flex_fta_ch+=FtaParserleng; return WATCHLIST_JOIN; }
 FILTER_JOIN|Filter_Join|filter_join	{ flex_fta_ch+=FtaParserleng; return FILTER_JOIN; }
 GROUP|Group|group	{ flex_fta_ch+=FtaParserleng; return GROUP; }
 ROLLUP|Rollup|rollup	{ flex_fta_ch+=FtaParserleng; return ROLLUP; }
@@ -155,6 +156,7 @@ SUCH|Such|such	{ flex_fta_ch+=FtaParserleng; return SUCH;}
 THAT|That|that	{ flex_fta_ch+=FtaParserleng; return THAT;}
 MERGE|Merge|merge	 {flex_fta_ch+=FtaParserleng; return MERGE;}
 SLACK	 {flex_fta_ch+=FtaParserleng; return SLACK;}
+WATCHLIST|Watchlist|watchlist	 {flex_fta_ch+=FtaParserleng; return WATCHLIST;}
 
 TRUE	{ flex_fta_ch+=FtaParserleng; return TRUE_V;}
 FALSE	{ flex_fta_ch+=FtaParserleng; return FALSE_V;}

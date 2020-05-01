@@ -19,6 +19,11 @@ Copyright 2014 AT&T Intellectual Property
 #include "gsconfig.h"
 #include "gstypes.h"
 
+
+#define string_hash(s) hfta_vstr_hashfunc(s)
+#define string_hash_long(s) hfta_vstr_long_hashfunc(s) 
+
+
 #define DNS_SAMPLE_HASH_SZ 50000000
 #define DNS_HITLIST_HASH_SZ 50000000
 #define DNS_HITLIST_ENTRY_SZ 500000
@@ -33,6 +38,7 @@ void hfta_vstr_destroy(vstring *);
 void hfta_vstr_replace(vstring *, vstring *);
 
 gs_uint32_t hfta_vstr_hashfunc(const vstring *);
+gs_uint64_t hfta_vstr_long_hashfunc(const vstring *);
 gs_retval_t hfta_vstr_compare(const vstring *, const vstring *);
 
 gs_retval_t hfta_ipv6_compare(const hfta_ipv6_str &i1, const hfta_ipv6_str &i2);
@@ -80,10 +86,14 @@ gs_retval_t deregister_handle_for_str_extract_regex_slot_1(gs_param_handle_t han
 
 
 // type conversion
-#define INT(c) ((int)(c))
-#define UINT(c) ((gs_uint32_t)(c))
-#define FLOAT(c) ((gs_float_t)(c))
-#define ULLONG(c) ((gs_uint64_t)(c))
+//		Avoid redefinition from rts_udaf.h
+#ifndef INT
+	#define INT(c) ((int)(c))
+	#define UINT(c) ((gs_uint32_t)(c))
+	#define FLOAT(c) ((gs_float_t)(c))
+	#define LLONG(c) ((long long int)(c))
+	#define ULLONG(c) ((gs_uint64_t)(c))
+#endif
 
 // string conversions
 
@@ -91,13 +101,16 @@ gs_uint32_t strtoi(gs_uint32_t * r, struct vstring *data);
 gs_uint32_t strtoip(gs_uint32_t * r, struct vstring *data);
 
 //	constant string conversions
+//		Avoid redefinition from rts_udaf.h
+#ifndef strtoi_c
+	#define strtoi_c(h) ((gs_uint32_t)(h))
+	#define strtoip_c(h) ((gs_uint32_t)(h))
+#endif
 gs_param_handle_t register_handle_for_strtoi_c_slot_0(vstring* istr) ;
 gs_retval_t deregister_handle_for_strtoi_c_slot_0(gs_param_handle_t h) ;
-#define strtoi_c(h) ((gs_uint32_t)(h))
 
 gs_param_handle_t register_handle_for_strtoip_c_slot_0(vstring* istr) ;
 gs_retval_t deregister_handle_for_strtoip_c_slot_0(gs_param_handle_t h) ;
-#define strtoip_c(h) ((gs_uint32_t)(h))
 
 
 inline gs_uint32_t str_match_offset( gs_uint32_t offset, struct vstring * s1, struct vstring * s2) {

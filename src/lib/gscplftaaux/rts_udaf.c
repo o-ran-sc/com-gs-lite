@@ -99,8 +99,11 @@ gs_retval_t moving_sum_lfta_LFTA_AGGR_DESTROY_(gs_sp_t b){
 /////////////////////////////////////////////////////////
 //		FIRST and LAST aggregates
 
+///////////////// FIRST
+
+// uint
 void FIRST_lfta_LFTA_AGGR_INIT_(gs_uint32_t* scratch) {
-	*scratch = UINT_MAX;		// we will encode uninitialized value of UINT_MAX
+	*scratch = UINT_MAX;	// we will encode uninitialized value of UINT_MAX
 	return;
 }
 
@@ -109,96 +112,136 @@ void FIRST_lfta_LFTA_AGGR_UPDATE_(gs_uint32_t* scratch, gs_uint32_t val) {
 		*scratch = val;
 	return;
 }
-
 gs_retval_t FIRST_lfta_LFTA_AGGR_FLUSHME_( gs_uint32_t* scratch) { return 0; }
-
 void FIRST_lfta_LFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch) {
 	*res = *scratch;
 }
-
 void FIRST_lfta_LFTA_AGGR_DESTROY_(gs_uint32_t* scratch) { return; }
 
+// int
+void FIRST_INT_lfta_LFTA_AGGR_INIT_(gs_int32_t* scratch) {
+	*scratch = INT_MAX;	// we will encode uninitialized value of ULLONG_MAX
+	return;
+}
+void FIRST_INT_lfta_LFTA_AGGR_UPDATE_(gs_int32_t* scratch, gs_int32_t val) {
+	if (*scratch == INT_MAX)
+		*scratch = val;
+	return;
+}
+gs_retval_t FIRST_INT_lfta_LFTA_AGGR_FLUSHME_( gs_int32_t* scratch) { return 0; }
+void FIRST_INT_lfta_LFTA_AGGR_OUTPUT_(gs_int32_t* res, gs_int32_t* scratch) {
+	*res = *scratch;
+}
+void FIRST_INT_lfta_LFTA_AGGR_DESTROY_(gs_int32_t* scratch) { return; }
+
+// ullong
 void FIRST_ULL_lfta_LFTA_AGGR_INIT_(gs_uint64_t* scratch) {
 	*scratch = ULLONG_MAX;		// we will encode uninitialized value of ULLONG_MAX
 	return;
 }
-
 void FIRST_ULL_lfta_LFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val) {
 	if (*scratch == ULLONG_MAX)
 		*scratch = val;
 	return;
 }
-
 gs_retval_t FIRST_ULL_lfta_LFTA_AGGR_FLUSHME_( gs_uint64_t* scratch) { return 0; }
-
 void FIRST_ULL_lfta_LFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch) {
 	*res = *scratch;
 }
-
 void FIRST_ULL_lfta_LFTA_AGGR_DESTROY_(gs_uint64_t* scratch) { return; }
 
+// llong
+void FIRST_LL_lfta_LFTA_AGGR_INIT_(gs_int64_t* scratch) {
+	*scratch = LLONG_MAX;		// we will encode uninitialized value of ULLONG_MAX
+	return;
+}
+void FIRST_LL_lfta_LFTA_AGGR_UPDATE_(gs_int64_t* scratch, gs_int64_t val) {
+	if (*scratch == LLONG_MAX)
+		*scratch = val;
+	return;
+}
+gs_retval_t FIRST_LL_lfta_LFTA_AGGR_FLUSHME_( gs_int64_t* scratch) { return 0; }
+void FIRST_LL_lfta_LFTA_AGGR_OUTPUT_(gs_int64_t* res, gs_int64_t* scratch) {
+	*res = *scratch;
+}
+void FIRST_LL_lfta_LFTA_AGGR_DESTROY_(gs_int64_t* scratch) { return; }
 
-
+// string
 void FIRST_STR_lfta_LFTA_AGGR_INIT_(struct gs_string* scratch) {
 	scratch->data = NULL;
 	return;
 }
-
 void FIRST_STR_lfta_LFTA_AGGR_UPDATE_(struct gs_string* scratch, struct gs_string* val) {
 	if (!scratch->data) {
 		str_assign_with_copy(NULL, scratch, val);
 	}
 	return;
 }
-
 gs_retval_t FIRST_STR_lfta_LFTA_AGGR_FLUSHME_(struct gs_string* scratch) { return 0; }
-
 void FIRST_STR_lfta_LFTA_AGGR_OUTPUT_(struct gs_string* res, struct gs_string* scratch) {
 	*res = *scratch;
 }
-
 void FIRST_STR_lfta_LFTA_AGGR_DESTROY_(struct gs_string* scratch) { 
 	if (scratch->data) 
 		fta_free(NULL, scratch->data);
 }
 
-void LAST_lfta_LFTA_AGGR_INIT_(gs_uint32_t* scratch) { }
+///////////////// LAST
 
+// uint
+void LAST_lfta_LFTA_AGGR_INIT_(gs_uint32_t* scratch) { }
 void LAST_lfta_LFTA_AGGR_UPDATE_(gs_uint32_t* scratch, gs_uint32_t val) {
 	*scratch = val;
 	return;
 }
-
 gs_retval_t LAST_lfta_LFTA_AGGR_FLUSHME_( gs_uint32_t* scratch) { return 0; }
 
 void LAST_lfta_LFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch) {
 	*res = *scratch;
 }
-
 void LAST_lfta_LFTA_AGGR_DESTROY_(gs_uint32_t* scratch) { return; }
 
-void LAST_ULL_lfta_LFTA_AGGR_INIT_(gs_uint64_t* scratch) { }
+// int
+void LAST_INT_lfta_LFTA_AGGR_INIT_(gs_int32_t* scratch) { }
+void LAST_INT_lfta_LFTA_AGGR_UPDATE_(gs_int32_t* scratch, gs_int32_t val) {
+	*scratch = val;
+	return;
+}
+gs_retval_t LAST_INT_lfta_LFTA_AGGR_FLUSHME_( gs_int32_t* scratch) { return 0; }
+void LAST_INT_lfta_LFTA_AGGR_OUTPUT_(gs_int32_t* res, gs_int32_t* scratch) {
+	*res = *scratch;
+}
+void LAST_INT_lfta_LFTA_AGGR_DESTROY_(gs_int32_t* scratch) { return; }
 
+// ullong
+void LAST_ULL_lfta_LFTA_AGGR_INIT_(gs_uint64_t* scratch) { }
 void LAST_ULL_lfta_LFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val) {
 	*scratch = val;
 	return;
 }
-
 gs_retval_t LAST_ULL_lfta_LFTA_AGGR_FLUSHME_( gs_uint64_t* scratch) { return 0; }
-
 void LAST_ULL_lfta_LFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch) {
 	*res = *scratch;
 }
-
 void LAST_ULL_lfta_LFTA_AGGR_DESTROY_(gs_uint64_t* scratch) { return; }
 
+// llong
+void LAST_LL_lfta_LFTA_AGGR_INIT_(gs_int64_t* scratch) { }
+void LAST_LL_lfta_LFTA_AGGR_UPDATE_(gs_int64_t* scratch, gs_int64_t val) {
+	*scratch = val;
+	return;
+}
+gs_retval_t LAST_LL_lfta_LFTA_AGGR_FLUSHME_( gs_int64_t* scratch) { return 0; }
+void LAST_LL_lfta_LFTA_AGGR_OUTPUT_(gs_int64_t* res, gs_int64_t* scratch) {
+	*res = *scratch;
+}
+void LAST_LL_lfta_LFTA_AGGR_DESTROY_(gs_int64_t* scratch) { return; }
 
-
+// string
 void LAST_STR_lfta_LFTA_AGGR_INIT_(struct gs_string* scratch) {
 	scratch->data = NULL;
 	return;
 }
-
 void LAST_STR_lfta_LFTA_AGGR_UPDATE_(struct gs_string* scratch, struct gs_string* val) {
 	if (!scratch->data) {
 		str_assign_with_copy(NULL, scratch, val);
@@ -210,7 +253,6 @@ void LAST_STR_lfta_LFTA_AGGR_UPDATE_(struct gs_string* scratch, struct gs_string
 	}
 	return;
 }
-
 gs_retval_t LAST_STR_lfta_LFTA_AGGR_FLUSHME_(struct gs_string* scratch) { return 0; }
 
 void LAST_STR_lfta_LFTA_AGGR_OUTPUT_(struct gs_string* res, struct gs_string* scratch) {
@@ -221,6 +263,192 @@ void LAST_STR_lfta_LFTA_AGGR_DESTROY_(struct gs_string* scratch) {
 	if (scratch->data) 
 		fta_free(NULL, scratch->data);
 }
+
+////////////////////////////////////////////////////////
+//	count_diff aggregate
+struct lfta_count_diff_scratch{
+	gs_uint32_t count;
+	union{
+		gs_uint32_t ui;
+		gs_int32_t i;
+		gs_uint64_t ul;
+		gs_int64_t l;
+	} first;
+	union{
+		gs_uint32_t ui;
+		gs_int32_t i;
+		gs_uint64_t ul;
+		gs_int64_t l;
+	} last;
+};
+
+//	unsigned int
+void count_diff_lfta_ui_LFTA_AGGR_INIT_(gs_sp_t s) {
+	struct lfta_count_diff_scratch* scratch = (struct lfta_count_diff_scratch*)s;
+	scratch->count = 0;
+	scratch->first.l = 0;
+	scratch->last.l = 0;
+}
+void count_diff_lfta_ui_LFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint32_t val) {
+	struct lfta_count_diff_scratch* scratch = (struct lfta_count_diff_scratch*)s;
+	if(scratch->count==0){
+		scratch->count = 1;
+		scratch->first.ui = val;
+	}else{
+		if(scratch->last.ui != val)
+			scratch->count++;
+	}
+	scratch->last.ui = val;
+}
+void count_diff_lfta_ui_LFTA_AGGR_OUTPUT_(struct gs_string * res, gs_sp_t scratch) {
+	res->data = (gs_sp_t)scratch;
+	res->length = sizeof(struct lfta_count_diff_scratch);
+	res->owner = NULL;
+}
+void count_diff_lfta_ui_LFTA_AGGR_DESTROY_(gs_sp_t s) { }
+
+gs_retval_t count_diff_lfta_ui_LFTA_AGGR_FLUSHME_(gs_sp_t s) {
+	return 0;
+}
+
+//	int
+void count_diff_lfta_i_LFTA_AGGR_INIT_(gs_sp_t s) {
+	struct lfta_count_diff_scratch* scratch = (struct lfta_count_diff_scratch*)s;
+	scratch->count = 0;
+	scratch->first.l = 0;
+	scratch->last.l = 0;
+}
+void count_diff_lfta_i_LFTA_AGGR_UPDATE_(gs_sp_t s, gs_int32_t val) {
+	struct lfta_count_diff_scratch* scratch = (struct lfta_count_diff_scratch*)s;
+	if(scratch->count==0){
+		scratch->count = 1;
+		scratch->first.i = val;
+	}else{
+		if(scratch->last.i != val)
+			scratch->count++;
+	}
+	scratch->last.i = val;
+}
+void count_diff_lfta_i_LFTA_AGGR_OUTPUT_(struct gs_string * res, gs_sp_t scratch) {
+	res->data = (gs_sp_t)scratch;
+	res->length = sizeof(struct lfta_count_diff_scratch);
+	res->owner = NULL;
+}
+void count_diff_lfta_i_LFTA_AGGR_DESTROY_(gs_sp_t s) { }
+gs_retval_t count_diff_lfta_i_LFTA_AGGR_FLUSHME_(gs_sp_t s) {
+	return 0;
+}
+
+//	unsigned long long int
+void count_diff_lfta_ul_LFTA_AGGR_INIT_(gs_sp_t s) {
+	struct lfta_count_diff_scratch* scratch = (struct lfta_count_diff_scratch*)s;
+	scratch->count = 0;
+	scratch->first.l = 0;
+	scratch->last.l = 0;
+}
+void count_diff_lfta_ul_LFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint64_t val) {
+	struct lfta_count_diff_scratch* scratch = (struct lfta_count_diff_scratch*)s;
+	if(scratch->count==0){
+		scratch->count = 1;
+		scratch->first.ul = val;
+	}else{
+		if(scratch->last.ul != val)
+			scratch->count++;
+	}
+	scratch->last.ul = val;
+}
+void count_diff_lfta_ul_LFTA_AGGR_OUTPUT_(struct gs_string * res, gs_sp_t scratch) {
+	res->data = (gs_sp_t)scratch;
+	res->length = sizeof(struct lfta_count_diff_scratch);
+	res->owner = NULL;
+}
+void count_diff_lfta_ul_LFTA_AGGR_DESTROY_(gs_sp_t s) { }
+gs_retval_t count_diff_lfta_ul_LFTA_AGGR_FLUSHME_(gs_sp_t s) {
+	return 0;
+}
+
+//	long long int
+void count_diff_lfta_l_LFTA_AGGR_INIT_(gs_sp_t s) {
+	struct lfta_count_diff_scratch* scratch = (struct lfta_count_diff_scratch*)s;
+	scratch->count = 0;
+	scratch->first.l = 0;
+	scratch->last.l = 0;
+}
+void count_diff_lfta_l_LFTA_AGGR_UPDATE_(gs_sp_t s, gs_int64_t val) {
+	struct lfta_count_diff_scratch* scratch = (struct lfta_count_diff_scratch*)s;
+	if(scratch->count==0){
+		scratch->count = 1;
+		scratch->first.l = val;
+	}else{
+		if(scratch->last.l != val)
+			scratch->count++;
+	}
+	scratch->last.l = val;
+}
+void count_diff_lfta_l_LFTA_AGGR_OUTPUT_(struct gs_string* res, gs_sp_t scratch) {
+	res->data = (gs_sp_t)scratch;
+	res->length = sizeof(struct lfta_count_diff_scratch);
+	res->owner = NULL;
+}
+void count_diff_lfta_l_LFTA_AGGR_DESTROY_(gs_sp_t s) { }
+gs_retval_t count_diff_lfta_l_LFTA_AGGR_FLUSHME_(gs_sp_t s) {
+	return 0;
+}
+
+//	string
+
+static gs_uint64_t local_hash_string(struct gs_string *x){
+	gs_uint32_t i;
+	gs_uint64_t ret=0,tmp_sum = 0;
+	for(i=0;i<x->length;++i){
+		tmp_sum |= (x->data[i]) << (8*(i%4));
+		if((i%4) == 3){
+			ret = tmp_sum + 12916008961267169387ull * ret;
+			tmp_sum = 0;
+		}
+	}
+	if((i%4)!=0) ret = tmp_sum + 12916008961267169387ull * ret;
+	return(ret);
+}
+
+
+void count_diff_lfta_s_LFTA_AGGR_INIT_(gs_sp_t s) {
+	struct lfta_count_diff_scratch* scratch = (struct lfta_count_diff_scratch*)s;
+	scratch->count = 0;
+	scratch->first.ul = 0;
+	scratch->last.ul = 0;
+}
+void count_diff_lfta_s_LFTA_AGGR_UPDATE_(gs_sp_t s, struct gs_string* val) {
+	struct lfta_count_diff_scratch* scratch = (struct lfta_count_diff_scratch*)s;
+	gs_uint64_t hashval;
+	hashval = local_hash_string(val);
+	if(scratch->count==0){
+		scratch->count = 1;
+		scratch->first.ul = hashval;
+	}else{
+		if(scratch->last.ul != hashval)
+			scratch->count++;
+	}
+	scratch->last.ul = hashval;
+}
+void count_diff_lfta_s_LFTA_AGGR_OUTPUT_(struct gs_string* res, gs_sp_t scratch) {
+	res->data = (gs_sp_t)scratch;
+	res->length = sizeof(struct lfta_count_diff_scratch);
+	res->owner = NULL;
+}
+void count_diff_lfta_s_LFTA_AGGR_DESTROY_(gs_sp_t s) { }
+gs_retval_t count_diff_lfta_s_LFTA_AGGR_FLUSHME_(gs_sp_t s) {
+	return 0;
+}
+
+
+
+
+
+
+	
+
+
 
 
 /////////////////////////////////////////////////////////

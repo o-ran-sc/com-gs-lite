@@ -274,6 +274,7 @@ gs_float_t extr_avg_fcn(vstring *v){
 //		FIRST aggregate
 // hfta only
 
+// uint
 void FIRST_HFTA_AGGR_INIT_(gs_uint32_t* scratch) {
 	*scratch = UINT_MAX;		// we will encode uninitialized value of UINT_MAX
 }
@@ -287,6 +288,22 @@ void FIRST_HFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch) {
 }
 void FIRST_HFTA_AGGR_DESTROY_(gs_uint32_t* scratch) { }
 
+// int
+
+void FIRST_HFTA_AGGR_INIT_(gs_int32_t* scratch) {
+	*scratch = UINT_MAX;		// we will encode uninitialized value of UINT_MAX
+}
+void FIRST_HFTA_AGGR_REINIT_(gs_int32_t* scratch) { }
+void FIRST_HFTA_AGGR_UPDATE_(gs_int32_t* scratch, gs_int32_t val) {
+	if (*scratch == UINT_MAX)
+		*scratch = val;
+}
+void FIRST_HFTA_AGGR_OUTPUT_(gs_int32_t* res, gs_int32_t* scratch) {
+	*res = *scratch;
+}
+void FIRST_HFTA_AGGR_DESTROY_(gs_int32_t* scratch) { }
+
+// ullong
 void FIRST_HFTA_AGGR_INIT_(gs_uint64_t* scratch) {
 	*scratch = UINT_MAX;		// we will encode uninitialized value of UINT_MAX
 }
@@ -300,89 +317,100 @@ void FIRST_HFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch) {
 }
 void FIRST_HFTA_AGGR_DESTROY_(gs_uint64_t* scratch) { }
 
-
-
-void FIRST_ULL_HFTA_AGGR_INIT_(gs_uint64_t* scratch) {
+// llong
+void FIRST_HFTA_AGGR_INIT_(gs_int64_t* scratch) {
 	*scratch = UINT_MAX;		// we will encode uninitialized value of UINT_MAX
 }
-
-void FIRST_ULL_HFTA_AGGR_REINIT_(gs_uint64_t* scratch) { }
-
-void FIRST_ULL_HFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val) {
+void FIRST_HFTA_AGGR_REINIT_(gs_int64_t* scratch) { }
+void FIRST_HFTA_AGGR_UPDATE_(gs_int64_t* scratch, gs_int64_t val) {
 	if (*scratch == UINT_MAX)
 		*scratch = val;
 }
-
-void FIRST_ULL_HFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch) {
+void FIRST_HFTA_AGGR_OUTPUT_(gs_int64_t* res, gs_int64_t* scratch) {
 	*res = *scratch;
 }
+void FIRST_HFTA_AGGR_DESTROY_(gs_int64_t* scratch) { }
 
-void FIRST_ULL_HFTA_AGGR_DESTROY_(gs_uint64_t* scratch) { }
-
-
-void FIRST_STR_HFTA_AGGR_INIT_(vstring* scratch) {
+// string
+void FIRST_HFTA_AGGR_INIT_(vstring* scratch) {
 	scratch->offset= 0;
 }
-
-void FIRST_STR_HFTA_AGGR_REINIT_(vstring* scratch) { }
-
-void FIRST_STR_HFTA_AGGR_UPDATE_(vstring* scratch, vstring* val) {
+void FIRST_HFTA_AGGR_REINIT_(vstring* scratch) { }
+void FIRST_HFTA_AGGR_UPDATE_(vstring* scratch, vstring* val) {
 	if (!scratch->offset) {
     scratch->length = val->length;
     scratch->offset = val->offset;
     scratch->reserved = SHALLOW_COPY;
 	}
 }
-
-void FIRST_STR_HFTA_AGGR_OUTPUT_(vstring* res, vstring* scratch) {
+void FIRST_HFTA_AGGR_OUTPUT_(vstring* res, vstring* scratch) {
 	*res = *scratch;
 }
-
-void FIRST_STR_HFTA_AGGR_DESTROY_(vstring* scratch) { }
+void FIRST_HFTA_AGGR_DESTROY_(vstring* scratch) { }
 
 // hfta/lfta split
 
+// uint
 void FIRST_hfta_HFTA_AGGR_INIT_(gs_uint32_t* scratch) {
 	*scratch = UINT_MAX;		// we will encode uninitialized value of UINT_MAX
 }
-
 void FIRST_hfta_HFTA_AGGR_REINIT_(gs_uint32_t* scratch) { }
-
 void FIRST_hfta_HFTA_AGGR_UPDATE_(gs_uint32_t* scratch, gs_uint32_t val) {
 	if (*scratch == UINT_MAX)
 		*scratch = val;
 }
-
 void FIRST_hfta_HFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch) {
 	*res = *scratch;
 }
-
 void FIRST_hfta_HFTA_AGGR_DESTROY_(gs_uint32_t* scratch) { }
 
+// int
+void FIRST_INT_hfta_HFTA_AGGR_INIT_(gs_int32_t* scratch) {
+	*scratch = UINT_MAX;		// we will encode uninitialized value of UINT_MAX
+}
+void FIRST_INT_hfta_HFTA_AGGR_REINIT_(gs_int32_t* scratch) { }
+void FIRST_INT_hfta_HFTA_AGGR_UPDATE_(gs_int32_t* scratch, gs_int32_t val) {
+	if (*scratch == UINT_MAX)
+		*scratch = val;
+}
+void FIRST_INT_hfta_HFTA_AGGR_OUTPUT_(gs_int32_t* res, gs_int32_t* scratch) {
+	*res = *scratch;
+}
+void FIRST_INT_hfta_HFTA_AGGR_DESTROY_(gs_int32_t* scratch) { }
+
+// ullong
 void FIRST_ULL_hfta_HFTA_AGGR_INIT_(gs_uint64_t* scratch) {
 	*scratch = UINT_MAX;		// we will encode uninitialized value of UINT_MAX
 }
-
 void FIRST_ULL_hfta_HFTA_AGGR_REINIT_(gs_uint64_t* scratch) { }
-
 void FIRST_ULL_hfta_HFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val) {
 	if (*scratch == UINT_MAX)
 		*scratch = val;
 }
-
 void FIRST_ULL_hfta_HFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch) {
 	*res = *scratch;
 }
-
 void FIRST_ULL_hfta_HFTA_AGGR_DESTROY_(gs_uint64_t* scratch) { }
 
+// llong
+void FIRST_LL_hfta_HFTA_AGGR_INIT_(gs_int64_t* scratch) {
+	*scratch = UINT_MAX;		// we will encode uninitialized value of UINT_MAX
+}
+void FIRST_LL_hfta_HFTA_AGGR_REINIT_(gs_int64_t* scratch) { }
+void FIRST_LL_hfta_HFTA_AGGR_UPDATE_(gs_int64_t* scratch, gs_int64_t val) {
+	if (*scratch == UINT_MAX)
+		*scratch = val;
+}
+void FIRST_LL_hfta_HFTA_AGGR_OUTPUT_(gs_int64_t* res, gs_int64_t* scratch) {
+	*res = *scratch;
+}
+void FIRST_LL_hfta_HFTA_AGGR_DESTROY_(gs_int64_t* scratch) { }
 
+// string
 void FIRST_STR_hfta_HFTA_AGGR_INIT_(vstring* scratch) {
 	scratch->offset= 0;
 }
-
 void FIRST_STR_hfta_HFTA_AGGR_REINIT_(vstring* scratch) { }
-
 void FIRST_STR_hfta_HFTA_AGGR_UPDATE_(vstring* scratch, vstring* val) {
 	if (!scratch->offset) {
     scratch->length = val->length;
@@ -390,11 +418,9 @@ void FIRST_STR_hfta_HFTA_AGGR_UPDATE_(vstring* scratch, vstring* val) {
     scratch->reserved = SHALLOW_COPY;
 	}
 }
-
 void FIRST_STR_hfta_HFTA_AGGR_OUTPUT_(vstring* res, vstring* scratch) {
 	*res = *scratch;
 }
-
 void FIRST_STR_hfta_HFTA_AGGR_DESTROY_(vstring* scratch) { }
 
 
@@ -403,6 +429,7 @@ void FIRST_STR_hfta_HFTA_AGGR_DESTROY_(vstring* scratch) { }
 
 // hfta only
 
+// uint
 void LAST_HFTA_AGGR_INIT_(gs_uint32_t* scratch) { }
 void LAST_HFTA_AGGR_REINIT_(gs_uint32_t* scratch) { }
 void LAST_HFTA_AGGR_UPDATE_(gs_uint32_t* scratch, gs_uint32_t val) {
@@ -413,7 +440,30 @@ void LAST_HFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch) {
 }
 void LAST_HFTA_AGGR_DESTROY_(gs_uint32_t* scratch) { }
 
+// int
+void LAST_HFTA_AGGR_INIT_(gs_int32_t* scratch) { }
+void LAST_HFTA_AGGR_REINIT_(gs_int32_t* scratch) { }
+void LAST_HFTA_AGGR_UPDATE_(gs_int32_t* scratch, gs_int32_t val) {
+	*scratch = val;
+}
+void LAST_HFTA_AGGR_OUTPUT_(gs_int32_t* res, gs_int32_t* scratch) {
+	*res = *scratch;
+}
+void LAST_HFTA_AGGR_DESTROY_(gs_int32_t* scratch) { }
 
+// llong
+void LAST_HFTA_AGGR_INIT_(gs_int64_t* scratch) { }
+void LAST_HFTA_AGGR_REINIT_(gs_int64_t* scratch) { }
+void LAST_HFTA_AGGR_UPDATE_(gs_int64_t* scratch, gs_int64_t val) {
+	*scratch = val;
+}
+void LAST_HFTA_AGGR_OUTPUT_(gs_int64_t* res, gs_int64_t* scratch) {
+	*res = *scratch;
+}
+void LAST_HFTA_AGGR_DESTROY_(gs_int64_t* scratch) { }
+
+
+// ullong
 void LAST_HFTA_AGGR_INIT_(gs_uint64_t* scratch) { }
 void LAST_HFTA_AGGR_REINIT_(gs_uint64_t* scratch) { }
 void LAST_HFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val) {
@@ -424,89 +474,192 @@ void LAST_HFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch) {
 }
 void LAST_HFTA_AGGR_DESTROY_(gs_uint64_t* scratch) { }
 
-
-
-void LAST_ULLHFTA_AGGR_INIT_(gs_uint64_t* scratch) { }
-
-void LAST_ULL_HFTA_AGGR_REINIT_(gs_uint64_t* scratch) { }
-
-void LAST_ULL_HFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val) {
-	*scratch = val;
-}
-
-void LAST_ULL_HFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch) {
-	*res = *scratch;
-}
-
-void LAST_ULL_HFTA_AGGR_DESTROY_(gs_uint64_t* scratch) { }
-
-
-void LAST_STR_HFTA_AGGR_INIT_(vstring* scratch) {
+// string
+void LAST_HFTA_AGGR_INIT_(vstring* scratch) {
 	scratch->offset= 0;
 }
-
-void LAST_STR_HFTA_AGGR_REINIT_(vstring* scratch) { }
-
-void LAST_STR_HFTA_AGGR_UPDATE_(vstring* scratch, vstring* val) {
+void LAST_HFTA_AGGR_REINIT_(vstring* scratch) { }
+void LAST_HFTA_AGGR_UPDATE_(vstring* scratch, vstring* val) {
 	scratch->length = val->length;
   scratch->offset = val->offset;
   scratch->reserved = SHALLOW_COPY;
 }
-
-void LAST_STR_HFTA_AGGR_OUTPUT_(vstring* res, vstring* scratch) {
+void LAST_HFTA_AGGR_OUTPUT_(vstring* res, vstring* scratch) {
 	*res = *scratch;
 }
-
-void LAST_STR_HFTA_AGGR_DESTROY_(vstring* scratch) { }
+void LAST_HFTA_AGGR_DESTROY_(vstring* scratch) { }
 
 // hfta/lfta split
 
 void LAST_hfta_HFTA_AGGR_INIT_(gs_uint32_t* scratch) { }
-
 void LAST_hfta_HFTA_AGGR_REINIT_(gs_uint32_t* scratch) { }
-
 void LAST_hfta_HFTA_AGGR_UPDATE_(gs_uint32_t* scratch, gs_uint32_t val) {
 	*scratch = val;
 }
-
 void LAST_hfta_HFTA_AGGR_OUTPUT_(gs_uint32_t* res, gs_uint32_t* scratch) {
 	*res = *scratch;
 }
-
 void LAST_hfta_HFTA_AGGR_DESTROY_(gs_uint32_t* scratch) { }
 
+void LAST_INT_hfta_HFTA_AGGR_INIT_(gs_int32_t* scratch) { }
+void LAST_INT_hfta_HFTA_AGGR_REINIT_(gs_int32_t* scratch) { }
+void LAST_INT_hfta_HFTA_AGGR_UPDATE_(gs_int32_t* scratch, gs_int32_t val) {
+	*scratch = val;
+}
+void LAST_INT_hfta_HFTA_AGGR_OUTPUT_(gs_int32_t* res, gs_int32_t* scratch) {
+	*res = *scratch;
+}
+void LAST_INT_hfta_HFTA_AGGR_DESTROY_(gs_int32_t* scratch) { }
+
 void LAST_ULL_hfta_HFTA_AGGR_INIT_(gs_uint64_t* scratch) { }
-
 void LAST_ULL_hfta_HFTA_AGGR_REINIT_(gs_uint64_t* scratch) { }
-
 void LAST_ULL_hfta_HFTA_AGGR_UPDATE_(gs_uint64_t* scratch, gs_uint64_t val) {
 	*scratch = val;
 }
-
 void LAST_ULL_hfta_HFTA_AGGR_OUTPUT_(gs_uint64_t* res, gs_uint64_t* scratch) {
 	*res = *scratch;
 }
-
 void LAST_ULL_hfta_HFTA_AGGR_DESTROY_(gs_uint64_t* scratch) { }
+
+void LAST_LL_hfta_HFTA_AGGR_INIT_(gs_int64_t* scratch) { }
+void LAST_LL_hfta_HFTA_AGGR_REINIT_(gs_int64_t* scratch) { }
+void LAST_LL_hfta_HFTA_AGGR_UPDATE_(gs_int64_t* scratch, gs_int64_t val) {
+	*scratch = val;
+}
+void LAST_LL_hfta_HFTA_AGGR_OUTPUT_(gs_int64_t* res, gs_int64_t* scratch) {
+	*res = *scratch;
+}
+void LAST_LL_hfta_HFTA_AGGR_DESTROY_(gs_int64_t* scratch) { }
 
 
 void LAST_STR_hfta_HFTA_AGGR_INIT_(vstring* scratch) {
 	scratch->offset= 0;
 }
-
 void LAST_STR_hfta_HFTA_AGGR_REINIT_(vstring* scratch) { }
-
 void LAST_STR_hfta_HFTA_AGGR_UPDATE_(vstring* scratch, vstring* val) {
 	scratch->length = val->length;
   scratch->offset = val->offset;
   scratch->reserved = SHALLOW_COPY;
 }
-
 void LAST_STR_hfta_HFTA_AGGR_OUTPUT_(vstring* res, vstring* scratch) {
 	*res = *scratch;
 }
-
 void LAST_STR_hfta_HFTA_AGGR_DESTROY_(vstring* scratch) { }
+
+
+////////////////////////////////////////////////////////////
+//		count different (# of times the value is different than the previous)
+
+struct count_diff_scratch{
+	gs_uint32_t count;
+	union{
+		gs_uint32_t ui;
+		gs_int32_t i;
+		gs_uint64_t ul;
+		gs_int64_t l;
+	} r;
+};
+
+//////////  HFTA only
+
+// uint32
+void count_diff_HFTA_AGGR_INIT_(gs_sp_t s){
+	count_diff_scratch *scratch = (count_diff_scratch *)s;
+	scratch->count = 0;
+	scratch->r.ul = 0;
+}
+void count_diff_HFTA_AGGR_REINIT_(gs_sp_t s){
+	count_diff_scratch *scratch = (count_diff_scratch *)s;
+	scratch->count = 0;
+}
+void count_diff_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint32_t val){
+	count_diff_scratch *scratch = (count_diff_scratch *)s;
+	if(scratch->count==0 || scratch->r.ui != val)
+		scratch->count++;
+	scratch->r.ui = val;
+}
+void count_diff_HFTA_AGGR_OUTPUT_(gs_uint32_t *res, gs_sp_t s){
+	count_diff_scratch *scratch = (count_diff_scratch *)s;
+	*res = scratch->count;
+}
+void count_diff_HFTA_AGGR_DESTROY_(gs_sp_t s){ }
+
+// int32
+void count_diff_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_int32_t val){
+	count_diff_scratch *scratch = (count_diff_scratch *)s;
+	if(scratch->count==0 || scratch->r.i != val)
+		scratch->count++;
+	scratch->r.i = val;
+}
+
+// uint64
+void count_diff_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint64_t val){
+	count_diff_scratch *scratch = (count_diff_scratch *)s;
+	if(scratch->count==0 || scratch->r.ul != val)
+		scratch->count++;
+	scratch->r.ul = val;
+}
+
+// int64
+void count_diff_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_int64_t val){
+	count_diff_scratch *scratch = (count_diff_scratch *)s;
+	if(scratch->count==0 || scratch->r.l != val)
+		scratch->count++;
+	scratch->r.l = val;
+}
+
+// vstring
+void count_diff_HFTA_AGGR_UPDATE_(gs_sp_t s, vstring* val){
+	count_diff_scratch *scratch = (count_diff_scratch *)s;
+	gs_uint64_t hashval = hfta_vstr_long_hashfunc(val);
+	if(scratch->count==0 || scratch->r.l != hashval)
+		scratch->count++;
+	scratch->r.l = hashval;
+}
+
+////////// HFTA / LFTA split
+
+struct lfta_count_diff_scratch{
+	gs_uint32_t count;
+	union{
+		gs_uint32_t ui;
+		gs_int32_t i;
+		gs_uint64_t ul;
+		gs_int64_t l;
+	} first;
+	union{
+		gs_uint32_t ui;
+		gs_int32_t i;
+		gs_uint64_t ul;
+		gs_int64_t l;
+	} last;
+};
+
+
+void count_diff_hfta_HFTA_AGGR_INIT_(gs_sp_t s){
+	count_diff_scratch *scratch = (count_diff_scratch *)s;
+	scratch->count = 0;
+	scratch->r.ul = 0;
+}
+void count_diff_hfta_HFTA_AGGR_REINIT_(gs_sp_t s){
+	count_diff_scratch *scratch = (count_diff_scratch *)s;
+	scratch->count = 0;
+	scratch->r.ul = 0;
+}
+void count_diff_hfta_HFTA_AGGR_UPDATE_(gs_sp_t s, vstring *v){
+	lfta_count_diff_scratch *val = (lfta_count_diff_scratch *)v;
+	count_diff_scratch *scratch = (count_diff_scratch *)(v->offset);
+	scratch->count += val->count - 1;
+	if(scratch->r.l != val->first.l)
+		scratch->count++;
+	scratch->r.l = val->last.l;
+}
+void count_diff_hfta_HFTA_AGGR_OUTPUT_(gs_uint32_t *res, gs_sp_t s){
+	count_diff_scratch *scratch = (count_diff_scratch *)s;
+	*res = (scratch->count)+1;
+}
+void count_diff_hfta_HFTA_AGGR_DESTROY_(gs_sp_t scratch){ }
+	
 
 
 /////////////////////////////////////////////////////////

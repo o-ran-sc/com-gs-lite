@@ -316,6 +316,8 @@ struct query_list_t;
 #define STREAM_SCHEMA 2
 #define OPERATOR_VIEW_SCHEMA 3
 #define UNPACK_FCNS_SCHEMA 4
+#define WATCHLIST_SCHEMA 5
+
 
 //			Represent a STREAM, PROTOCOL, OPERATOR_VIEW, or UNPACK_FCN list.
 
@@ -332,6 +334,7 @@ private:
 	param_list *op_properties;
 	std::vector<subquery_spec *> qspec_list;
 	param_list *selpush;
+	std::vector<std::string> key_flds;	// keys of a watchlist
 
 public:
 //		for unpacking function group specs.
@@ -418,6 +421,13 @@ public:
 		return op_properties->val_of(s);
 	};
 
+	void set_keys(const std::vector<std::string> &kf){
+		key_flds = kf;
+	}
+	std::vector<std::string> get_keys(){
+		return key_flds;
+	}
+
 //		Used in generating the LFTA prefilter
 	std::string get_field_basetable(std::string f);
 
@@ -451,6 +461,10 @@ public:
 		std::string ret = this->to_string();
 		schema_type = tmp_sch;
 		return ret;
+	}
+
+	bool is_stream(){
+		return(schema_type == PROTOCOL_SCHEMA || schema_type == STREAM_SCHEMA || schema_type == OPERATOR_VIEW_SCHEMA);
 	}
 };
 
@@ -554,6 +568,10 @@ public:
 	int get_schema_id(int t){
 		return(tbl_list[t]->get_schema_id());
 	};
+
+	bool is_stream(int t){
+		return tbl_list[t]->is_stream();
+	}
 
 	std::string get_op_prop(int t, std::string s){
 		return(tbl_list[t]->get_op_prop(s));
