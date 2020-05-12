@@ -4914,6 +4914,7 @@ vector<qp_node *> join_eq_hash_qpn::split_node_for_fta(ext_fcn_list *Ext_fcns, t
 			child_qpn->table_name = new tablevar_t(
 			   from[f]->get_interface().c_str(), from[f]->get_schema_name().c_str(), from[f]->get_ifq());
 			child_qpn->table_name->set_range_var(from[f]->get_var_name());
+			child_qpn->table_name->set_machine(from[f]->get_machine());
 
 			child_vec.push_back(child_qpn);
 			select_vec.push_back(&(child_qpn->select_list));
@@ -7026,6 +7027,29 @@ static string generate_equality_test(string &lhs_op, string &rhs_op, data_type *
 	}else{
 		ret.append(lhs_op );
 		ret.append(" == ");
+		ret.append(rhs_op );
+	}
+
+	return(ret);
+}
+
+static string generate_lt_test(string &lhs_op, string &rhs_op, data_type *dt){
+	string ret;
+
+    if(dt->complex_comparison(dt) ){
+		ret.append(dt->get_hfta_comparison_fcn(dt));
+		ret.append("(");
+			if(dt->is_buffer_type() )
+				ret.append("&");
+		ret.append(lhs_op);
+		ret.append(", ");
+			if(dt->is_buffer_type() )
+				ret.append("&");
+		ret.append(rhs_op );
+		ret.append(") == 1");
+	}else{
+		ret.append(lhs_op );
+		ret.append(" < ");
 		ret.append(rhs_op );
 	}
 
@@ -12863,13 +12887,13 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 		for(g=0;g<gb_tbl.size();g++){
 			data_type *gdt = gb_tbl.get_data_type(g);
 			if(gdt->is_temporal()){
-			  sprintf(tmpstr,"last_gb%d",g);
+			  sprintf(tmpstr,"curr_gb%d",g);
 			  ret+="\t"+gb_tbl.get_data_type(g)->make_host_cvar(tmpstr)+";\n";
-			  sprintf(tmpstr,"last_flushed_gb%d",g);
+			  sprintf(tmpstr,"last_gb%d",g);
 			  ret+="\t"+gb_tbl.get_data_type(g)->make_host_cvar(tmpstr)+";\n";
 			}
 		}
-		ret += "\tbool needs_temporal_flush;\n";
+		ret += "\tgs_int32_t needs_temporal_flush;\n";
 	}
 
 //			The publicly exposed functions
@@ -12907,6 +12931,7 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 
 //		temporal flush variables
 //		ASSUME that structured values won't be temporal.
+	gs_int32_t temporal_gb = 0;
 	if(uses_temporal_flush){
 		ret += "//\t\tInitialize temporal flush variables.\n";
 		for(g=0;g<gb_tbl.size();g++){
@@ -12915,9 +12940,12 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 				literal_t gl(gdt->type_indicator());
 				sprintf(tmpstr,"\tlast_gb%d = %s;\n",g, gl.to_hfta_C_code("").c_str());
 				ret.append(tmpstr);
+				sprintf(tmpstr,"\tcurr_gb%d = %s;\n",g, gl.to_hfta_C_code("").c_str());
+				ret.append(tmpstr);
+				temporal_gb = g;
 			}
 		}
-		ret += "\tneeds_temporal_flush = false;\n";
+		ret += "\tneeds_temporal_flush = 0;\n";
 	}
 
 	//		Init temporal attributes referenced in select list
@@ -13031,35 +13059,39 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 //			set flush indicator and update stored GB vars if there is any change.
 
 	if(uses_temporal_flush){
-		ret+= "\tif( !( (";
+		ret+= "\tif( ( (";
 		bool first_one = true;
 		for(g=0;g<gb_tbl.size();g++){
 			data_type *gdt = gb_tbl.get_data_type(g);
 
 			if(gdt->is_temporal()){
-			  sprintf(tmpstr,"last_gb%d",g);   string lhs_op = tmpstr;
+			  sprintf(tmpstr,"curr_gb%d",g);   string lhs_op = tmpstr;
 			  sprintf(tmpstr,"gbval->gb_var%d",g);   string rhs_op = tmpstr;
 			  if(first_one){first_one = false;} else {ret += ") && (";}
-			  ret += generate_equality_test(lhs_op, rhs_op, gdt);
+			  ret += generate_lt_test(lhs_op, rhs_op, gdt);
 			}
 		}
 		ret += ") ) ){\n";
 		for(g=0;g<gb_tbl.size();g++){
 		  data_type *gdt = gb_tbl.get_data_type(g);
 		  if(gdt->is_temporal()){
-			  if(gdt->is_buffer_type()){
+				temporal_gb = g;
+			  if(gdt->is_buffer_type()){	// TODO first, last?  or delete?
 				sprintf(tmpstr,"\t\t%s(&(gbval->gb_var%d),&last_gb%d);\n",gdt->get_hfta_buffer_replace().c_str(),g,g);
 			  }else{
-				sprintf(tmpstr,"\t\tlast_flushed_gb%d = last_gb%d;\n",g,g);
-				ret += tmpstr;
-				sprintf(tmpstr,"\t\tlast_gb%d = gbval->gb_var%d;\n",g,g);
+				ret += "\t\tif(curr_gb"+to_string(g)+"==0){\n";
+				ret += "\t\t\tlast_gb"+to_string(g)+" = gbval->gb_var"+to_string(g)+";\n";
+				ret += "\t\t}else{\n";
+				ret += "\t\t\tlast_gb"+to_string(g)+" = curr_gb"+to_string(g)+";\n";
+				ret += "\t\t}\n";
+				sprintf(tmpstr,"\t\tcurr_gb%d = gbval->gb_var%d;\n",g,g);
 			  }
 			  ret += tmpstr;
 			}
 		}
-		ret += "\t\tneeds_temporal_flush=true;\n";
+		ret += "\t\tneeds_temporal_flush = curr_gb"+to_string (temporal_gb)+" - last_gb"+to_string(temporal_gb)+";\n"; 
 		ret += "\t\t}else{\n"
-			"\t\t\tneeds_temporal_flush=false;\n"
+			"\t\t\tneeds_temporal_flush=0;\n"
 			"\t\t}\n";
 	}
 
@@ -13230,13 +13262,22 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 //---------------------------------------------------
 //			Flush test
 
-	ret += "\tbool flush_needed(){\n";
+	ret += "gs_int32_t flush_needed(){\n";
 	if(uses_temporal_flush){
-		ret += "\t\treturn needs_temporal_flush;\n";
+		ret += "\treturn needs_temporal_flush;\n";
 	}else{
-		ret += "\t\treturn false;\n";
+		ret += "\treturn 0;\n";
 	}
-	ret += "\t};\n";
+	ret += "};\n";
+
+//------------------------------------------------
+//	time bucket management
+	ret += "void advance_last_tb(){\n";
+	ret += "\tlast_gb"+to_string(temporal_gb)+"++;\n";
+	ret += "}\n\n";
+	ret += "void reset_last_tb(){\n";
+	ret += "\tlast_gb"+to_string(temporal_gb)+" = curr_gb"+to_string(temporal_gb)+";\n";
+	ret += "}\n\n";
 
 //---------------------------------------------------
 //			create output tuple
@@ -13469,7 +13510,7 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 		if(sdt->is_temporal()){
 			sprintf(tmpstr,"\ttuple->tuple_var%d = ",s);
 	  		ret += tmpstr;
-			sprintf(tmpstr,"(flush_finished) ? %s : %s ", generate_se_code(select_list[s]->se,schema).c_str(), generate_se_code_fm_aggr(select_list[s]->se,"last_flushed_gb", "", schema).c_str());
+			sprintf(tmpstr,"(flush_finished) ? %s : %s ", generate_se_code(select_list[s]->se,schema).c_str(), generate_se_code_fm_aggr(select_list[s]->se,"last_gb", "", schema).c_str());
 			ret += tmpstr;
 	  		ret += ";\n";
 		}

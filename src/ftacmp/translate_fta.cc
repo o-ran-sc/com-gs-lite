@@ -1907,7 +1907,11 @@ for(q=0;q<hfta_sets.size();++q){
 		string lmach = hostname;
 		if(tvec.size()>0){
 			liface = tvec[0]->get_interface();	// iface queries have been resolved
-			lmach = tvec[0]->get_machine();
+			if(tvec[0]->get_machine() != ""){
+				lmach = tvec[0]->get_machine();
+			}else{
+				fprintf(stderr,"WARNING, lfta %s has empty machine name, using %s\n",  split_queries[l]->query_plan[0]->node_name.c_str(), hostname.c_str());
+			}
 		} // else{
 	  		interface_names.push_back(liface);
 	  		machine_names.push_back(lmach);

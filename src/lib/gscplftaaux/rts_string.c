@@ -110,15 +110,11 @@ gs_uint32_t byte_match_offset( gs_uint32_t offset, gs_uint32_t val, struct gs_st
 gs_retval_t str_compare( struct gs_string * str1, struct gs_string * str2)
 {
     gs_int32_t len;
-    gs_int32_t x;
+    gs_int32_t x, ret;
     len = (str1->length>str2->length)?str2->length:str1->length;
     for(x=0;x<len;x++) {
-	if (str1->data[x]>str2->data[x]) {
-	    return 1;
-	}
-	if (str1->data[x]<str2->data[x]) {
-	    return -1;
-	}
+        if (ret = (str1->data[x]-str2->data[x]))
+            return ret;
     }
 
     if (str1->length>str2->length) {
@@ -127,6 +123,22 @@ gs_retval_t str_compare( struct gs_string * str1, struct gs_string * str2)
     if (str2->length>str1->length) {
 	return -1;
     }
+    return 0;
+}
+
+gs_retval_t str_equal( struct gs_string * str1, struct gs_string * str2)
+{
+    gs_int32_t x;
+
+    if (str1->length != str2->length)
+        return -1;
+
+    for(x=0;x<str1->length;x++) {
+        if (str1->data[x]!=str2->data[x]) {
+            return -1;
+        }
+    }
+    
     return 0;
 }
 

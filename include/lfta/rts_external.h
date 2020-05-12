@@ -69,6 +69,9 @@ gs_retval_t str_exists_substr( struct gs_string * str1, struct gs_string * str2)
 
 gs_retval_t str_compare( struct gs_string * str1, struct gs_string * str2);
 
+/* String equality */
+
+gs_retval_t str_equal( struct gs_string * str1, struct gs_string * str2);
 
 /*	Construct a string constant */
 

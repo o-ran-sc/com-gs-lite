@@ -277,7 +277,7 @@ n_calls=0; n_iters=0; n_eqk=0;
 
 	    int tup_order=func.compare_ts_with_ts(&tup_ts,max_input_ts[tup.channel]);
 		if (tup_order < 0){
-printf("out of order ts.\n");
+printf("%s: out of order ts.\n", op_name);
 			tup.free_tuple();
 
 			// even for out of order temporal tuples we need to post new temporal tuple
