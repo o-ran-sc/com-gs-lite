@@ -38,7 +38,7 @@
 #define STARTSZ 1       // T1024
 
 // Use blocking ringbuffer
-#define BLOCKRINGBUFFER
+//#define BLOCKRINGBUFFER
 
 //#define LOCALIP // restricts sockets to localhost IP
 
