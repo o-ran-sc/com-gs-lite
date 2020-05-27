@@ -33,9 +33,9 @@
 #include <sys/socket.h>
 
 gs_retval_t main_csv(gs_int32_t devicenum, gs_sp_t device, gs_int32_t mapcnt, gs_sp_t map[]);
-gs_retval_t main_csv2(gs_int32_t devicenum, gs_sp_t device, gs_int32_t mapcnt, gs_sp_t map[]);
 gs_retval_t main_gdat(gs_int32_t devicenum, gs_sp_t device, gs_int32_t mapcnt, gs_sp_t map[]);
 gs_retval_t main_dproto(gs_int32_t devicenum, gs_sp_t device, gs_int32_t mapcnt, gs_sp_t map[]);
+gs_retval_t main_kafka(gs_int32_t devicenum, gs_sp_t device, gs_int32_t mapcnt, gs_sp_t map[]);
 
 int main (int argc, char* argv[]) {
     gs_int32_t pid;
@@ -51,6 +51,7 @@ int main (int argc, char* argv[]) {
     gs_int32_t tip1,tip2,tip3,tip4;
     endpoint gshub;
     gs_sp_t instance_name;
+    gs_sp_t kafka;
     
     
 	gsopenlog(argv[0]);
@@ -153,22 +154,20 @@ int main (int argc, char* argv[]) {
                 exit(1);
             }
             
-            if (strcmp(interfacetype,"CSV")==0) {
-                main_csv(x,device[x],lmapcnt,lmap);        
+            if ((kafka = get_iface_properties(device[x],(gs_sp_t)"kafka")) && !strcmp(kafka,"TRUE")) {
+                main_kafka(x,device[x],lmapcnt,lmap);
+            } else if (strcmp(interfacetype,"CSV")==0) {
+                main_csv(x,device[x],lmapcnt,lmap);             
+            } else if (strncmp(interfacetype,"GDAT",4)==0) {
+                main_gdat(x,device[x],lmapcnt,lmap);
+			} else if (strncmp(interfacetype,"PROTO",5)==0) {
+                main_dproto(x,device[x],lmapcnt,lmap);
             } else {
-           		if (strncmp(interfacetype,"GDAT",4)==0) {
-                    main_gdat(x,device[x],lmapcnt,lmap);
-				}else{
-	           		if (strncmp(interfacetype,"PROTO",5)==0) {
-                    	main_dproto(x,device[x],lmapcnt,lmap);
-                	} else {
-						fprintf(stderr,"interface type %s not recognized\n",interfacetype);
-                    	gslog(LOG_ERR,"UNKNOWN InterfaceType\n");
-                    	exit(0);
-                	}
-				}
+    		    fprintf(stderr,"interface type %s not recognized\n",interfacetype);
+           	    gslog(LOG_ERR,"UNKNOWN InterfaceType\n");
+           	    exit(0);
             }
-            
+			
             /* should never return */
             gslog(LOG_EMERG,"lfta init returned");
             exit(1);	    

@@ -35,13 +35,7 @@ struct ipv6_str{
 struct csv {
     gs_uint32_t numberfields;
     gs_sp_t fields[CSVELEMENTS];
-};
-
-struct csv2 {       // SSE accelerated CSV processor
-    gs_uint32_t numberfields;
-    gs_sp_t fields[CSVELEMENTS];
-    gs_uint32_t field_lens[CSVELEMENTS];
-    gs_uint8_t parsed[CSVELEMENTS];
+    gs_uint32_t field_lens[CSVELEMENTS];    
 };
 
 struct gdat {
@@ -62,7 +56,6 @@ struct packet {
 	gs_schemahandle_t schema;
     union {
         struct csv csv; /* content of CSV record being processed */
-        struct csv2 csv2;     
         struct gdat gdat;
 		struct packed packed;
 	} record;

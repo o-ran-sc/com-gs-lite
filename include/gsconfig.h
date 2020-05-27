@@ -17,6 +17,8 @@
 
 // Contains all defines etc... . As we don't have a proper configure script yet at least that way all the defines are in one place.
 
+#include "gsoptions.h"
+
 // ==================================================
 // General defines
 // ==================================================

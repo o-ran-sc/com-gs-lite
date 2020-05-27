@@ -13,11 +13,11 @@
 #   limitations under the License.
 # -------------------------------------------
 
-CC=gcc  -g -O3 -msse4.2 -fexpensive-optimizations -I libdag/include -I ../../../include/lfta/ -I ../../../include/ -I ./include/ -I ../gscphost/include
-CXX=g++  -g -O3 -msse4.2 -fexpensive-optimizations -I libdag/include -I ../../../include/lfta/ -I ../../../include/ -I ./include/ -I ../gscphost/include
+CC=gcc  -g -O3 -msse2 -fexpensive-optimizations -I libdag/include -I ../../../include/lfta/ -I ../../../include/ -I ./include/ -I ../gscphost/include
+CXX=g++  -g -O3 -msse2 -fexpensive-optimizations -I libdag/include -I ../../../include/lfta/ -I ../../../include/ -I ./include/ -I ../gscphost/include
 
-SOURCE_C =   rts_main.c rts_env.c rts_csv.c rts_gdat.c
-SOURCE_CC =   rts_csv2.cc
+SOURCE_C =   rts_main.c rts_env.c rts_gdat.c rts_kafka.c
+SOURCE_CC =   rts_csv.cc
 SOURCE =   $(SOURCE_C) $(SOURCE_CC) 
 
 
@@ -37,11 +37,12 @@ rts_main.c : $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) $(INCDIR/lapp.h) $(INCDIR/
 
 rts_env.c : $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) $(INCDIR/lapp.h) $(INCDIR/fta.h) $(LFTA_DIR/rts.h)
 
-rts_csv.c : $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) $(INCDIR/lapp.h) $(INCDIR/fta.h) $(LFTA_DIR/rts.h) $(INCDIR/packet.h)
-
-rts_csv2.cc : $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) $(INCDIR/lapp.h) $(INCDIR/fta.h) $(LFTA_DIR/rts.h) $(INCDIR/packet.h)
+rts_csv.cc : $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) $(INCDIR/lapp.h) $(INCDIR/fta.h) $(LFTA_DIR/rts.h) $(INCDIR/packet.h)
 
 rts_gdat.c : $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) $(INCDIR/lapp.h) $(INCDIR/fta.h) $(LFTA_DIR/rts.h) $(INCDIR/packet.h)
+
+rts_kafka.c : $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) $(INCDIR/lapp.h) $(INCDIR/fta.h) $(LFTA_DIR/rts.h) $(INCDIR/packet.h)
+
 
 install: all
 	cp libgscprts.a  ../../../lib/ ; ranlib ../../../lib/libgscprts.a

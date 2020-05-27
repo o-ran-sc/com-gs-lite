@@ -376,10 +376,9 @@ printf("%s: out of order ts.\n", op_name);
 		int qcmp = compare_qts();
 		int minq = 0; if(qcmp>0) minq = 1;
 
-		host_tuple empty_tuple;
-		empty_tuple.tuple_size = 0; empty_tuple.data = NULL;
-		host_tuple& left_tuple = empty_tuple;
-		host_tuple& right_tuple = empty_tuple;
+		host_tuple left_tuple, right_tuple;
+		left_tuple.tuple_size=0; left_tuple.data=NULL;
+		right_tuple.tuple_size=0; right_tuple.data=NULL;
 
 		if (minq == 0) {
 			if(max_input_ts[minq]) {

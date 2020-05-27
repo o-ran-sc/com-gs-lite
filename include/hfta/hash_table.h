@@ -119,7 +119,7 @@ private:
 public:
 
 
-	hash_table(const size_t n_buckets = 65536, const double load = 0.5) {
+	hash_table(const size_t n_buckets = 65536, const double load = 1.0) {
 		load_factor = load;
 		int nb;
 		for(nb=2;nb<n_buckets;nb*=2);
@@ -333,22 +333,32 @@ public:
 		if (_size) {
 			fprintf(stderr, "Error: rehashing non-empty hash table\n");
 			exit(1);
-		}
+		}		
 
 		double max_load = (1.0 * _max_size) / num_buckets;
-		if (max_load > load_factor ) {
-			delete[] buckets;
-			// roughly double the size of the table
 
-			num_buckets *= 2;
+		// reize table if its maximum load exceed the load factor
+		// OR it was less then half of the load factor
+		size_t min_buckets = 0;
+		if ((max_load > load_factor) || ((2 * max_load) < load_factor)) {
+			min_buckets = _max_size / load_factor;
+		} 
+
+		if (min_buckets) {
+			// find power-of-2 size large than min_buckets;
+			int nb;
+			for(nb=2;nb<min_buckets;nb*=2);
+			num_buckets = nb;
+
+			delete[] buckets;
 			hash_mask = num_buckets-1;
 
-			buckets = new hash_bucket[num_buckets];
-			total_memory = num_buckets * sizeof(hash_bucket);
+			buckets = new hash_bucket[num_buckets];		
 		}
-		_max_size = _size;
+
 		return 0;
 	}
+
 
 
 	size_t size() const {
@@ -441,7 +451,7 @@ private:
 	hash_bucket* buckets;
 
 public:
-	hash_set(const size_t n_buckets = 131072, const double load = 0.75) {
+	hash_set(const size_t n_buckets = 65536, const double load = 1.0) {
 		load_factor = load;
 
 		int nb;
@@ -574,19 +584,29 @@ public:
 		if (_size) {
 			fprintf(stderr, "Error: rehashing non-empty hash table\n");
 			exit(1);
-		}
+		}		
 
 		double max_load = (1.0 * _max_size) / num_buckets;
 
-		if (max_load > load_factor ) {
-			delete[] buckets;
-			// roughly double the size of the table
+		// reize table if its maximum load exceed the load factor
+		// OR it was less then half of the load factor
+		size_t min_buckets = 0;
+		if ((max_load > load_factor) || ((2 * max_load) < load_factor)) {
+			min_buckets = _max_size / load_factor;
+		} 
 
-			num_buckets *= 2;
-			hash_mask = num_buckets -1;
-			buckets = new hash_bucket[num_buckets];
+		if (min_buckets) {
+			// find power-of-2 size large than min_buckets;
+			int nb;
+			for(nb=2;nb<min_buckets;nb*=2);
+			num_buckets = nb;
+
+			delete[] buckets;
+			hash_mask = num_buckets-1;
+
+			buckets = new hash_bucket[num_buckets];		
 		}
-		_max_size = _size;
+
 		return 0;
 	}
 

@@ -55,6 +55,8 @@ Copyright 2014 AT&T Intellectual Property
 #include"xml_t.h"
 #include"field_list.h"
 
+#include "gsconfig.h"
+
 extern int xmlParserparse(void);
 extern FILE *xmlParserin;
 extern int xmlParserdebug;
@@ -3082,19 +3084,34 @@ void generate_makefile(vector<string> &input_file_names, int nfiles,
 		vector<string> ift = ifdb->get_iface_vals(ifmachines[ifnm],ifnm, "InterfaceType", erri, err_str);
 		for(int ift_i=0;ift_i<ift.size();ift_i++){
 			if(ift[ift_i]=="PROTO"){
+#ifdef PROTO_ENABLED				
 				use_proto = true;
+#else
+				fprintf(stderr,"Runtime libraries built without PROTO support. Rebuild with PROTO_ENABLED defined in gsoptions.h\n");
+				exit(0);
+#endif
 			}
 		}
 		ift = ifdb->get_iface_vals(ifmachines[ifnm],ifnm, "BSA", erri, err_str);
 		for(int ift_i=0;ift_i<ift.size();ift_i++){
 			if(ift[ift_i] == "TRUE" || ift[ift_i] == "True" || ift[ift_i] == "true"){	
+#ifdef BSA_ENABLED				
 				use_bsa = true;
+#else
+				fprintf(stderr,"Runtime libraries built without BSA support. Rebuild with BSA_ENABLED defined in gsoptions.h\n");
+				exit(0);
+#endif					
 			}
 		}
 		ift = ifdb->get_iface_vals(ifmachines[ifnm],ifnm, "KAFKA", erri, err_str);
 		for(int ift_i=0;ift_i<ift.size();ift_i++){
 			if(ift[ift_i] == "TRUE" || ift[ift_i] == "True" || ift[ift_i] == "true"){	
+#ifdef KAFKA_ENABLED				
 				use_kafka = true;
+#else
+				fprintf(stderr,"Runtime libraries built without KAFKA support. Rebuild with KAFKA_ENABLED defined in gsoptions.h\n");
+				exit(0);
+#endif	
 			}
 		}
 	}
@@ -3124,12 +3141,16 @@ void generate_makefile(vector<string> &input_file_names, int nfiles,
 		fprintf(outfl," -last ");
 	if(use_pads)
 		fprintf(outfl, " -ldll -ldl ");
-	if(use_proto)
-		fprintf(outfl, " -L/usr/local/lib/ -lprotobuf-c ");
-	if(use_bsa)
-		fprintf(outfl, " -lbsa_stream ");
-	if(use_kafka)
-		fprintf(outfl, " -lrdkafka ");
+
+#ifdef PROTO_ENABLED	
+	fprintf(outfl, " -L/usr/local/lib/ -lprotobuf-c ");
+#endif
+#ifdef BSA_ENABLED	
+	fprintf(outfl, " -lbsa_stream ");
+#endif
+#ifdef KAFKA_ENABLED	
+	fprintf(outfl, " -lrdkafka ");
+#endif
 	fprintf(outfl," -lgscpaux");
 #ifdef GCOV
 	fprintf(outfl," -fprofile-arcs");

@@ -119,7 +119,7 @@ string res_a, res_v;
 	bool iface_t::has_multiple_schemas(){
 		if(vals.count("interfacetype") == 0) return true;
 		string iface_type = vals["interfacetype"][0];
-		if(iface_type=="GDAT" || iface_type=="CSV" || iface_type=="CSV2")
+		if(iface_type=="GDAT" || iface_type=="CSV")
 			return false;
 		return true;
 	}
