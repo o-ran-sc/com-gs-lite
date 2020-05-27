@@ -22,11 +22,11 @@
 static gs_uint32_t max_field = CSVELEMENTS;
 
 
-static gs_uint8_t csvdel;
+static gs_uint8_t delim;
 
 
 static inline void csv_set_delim(gs_uint8_t del) {
-    csvdel = del;
+    delim = del;
 }
 
 static inline void csv_set_maxfield(gs_uint32_t max) {
@@ -44,7 +44,7 @@ static inline void csv_parse_line(gs_sp_t line, ssize_t len) {
     while(i<len){
 		last_field_start=i;
         cur_packet.record.csv.fields[p]=&line[i];
-        while((i<len)&&(line[i] != csvdel)) {
+        while((i<len)&&(line[i] != delim)) {
             i++;
         }
         cur_packet.record.csv.field_lens[p]=i-last_field_start;
