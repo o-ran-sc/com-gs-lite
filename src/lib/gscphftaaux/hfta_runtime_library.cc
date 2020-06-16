@@ -31,6 +31,8 @@ extern "C" {
 #include <host_tuple.h>
 #include <fta.h>
 
+#include<map>
+
 // for htonl,ntohl
 #include <netinet/in.h>
 
@@ -550,4 +552,87 @@ gs_uint32_t byte_match_offset( gs_uint32_t offset, gs_uint32_t val,vstring *s2)
   return (st2[offset]==v)?1:0;
 }
 
+
+// -------------------------------------------------------
+//		map_int_to_string and its support functions, structs
+
+struct int_to_string_map_struct{
+	std::map<gs_int64_t, vstring> i2s_map;
+	std::string fname;
+	vstring empty_string;
+};
+
+gs_param_handle_t register_handle_for_int_to_string_map_slot_1(vstring *filename){
+	int_to_string_map_struct *map_struct;
+
+	map_struct = new int_to_string_map_struct();
+	if(map_struct == NULL){
+		gslog(LOG_EMERG, "int_to_string_map:: Could not allocate handle memory\n");
+		return 0;
+	}
+
+	map_struct->empty_string.offset = (gs_p_t)malloc(1);
+	map_struct->empty_string.reserved = INTERNAL;
+	map_struct->empty_string.length = 0;
+
+	gs_sp_t filenamec;
+	filenamec = (gs_sp_t)alloca(filename->length+1);
+	if (filenamec==0) {
+		gslog(LOG_EMERG, "int_to_string_map:: Could not allocate filename memory\n");
+		return 0;
+	}
+	memcpy(filenamec,(gs_sp_t)filename->offset,filename->length);
+	filenamec[filename->length]=0;	
+	map_struct->fname = filenamec;
+
+	FILE *fl = fopen(filenamec, "r");
+	if(fl==NULL){
+		gslog(LOG_EMERG, "int_to_string_map:: Could not open regex file %s \n",filename);
+		return 0;
+	}
+	
+	char buf[10000], buf_str[10000];
+	gs_int32_t buflen;
+	gs_int64_t val;
+	while(fgets(buf, buflen, fl) > 0){
+		int nvals = sscanf(buf, "%lld,%s", &val, buf_str);
+		if(nvals >= 2){
+			vstring new_str;
+			new_str.reserved = SHALLOW_COPY;
+			new_str.length = strlen(buf_str);
+			new_str.offset = (gs_p_t)malloc(new_str.length);
+			memcpy((char *)new_str.offset, buf_str, new_str.length);
+			map_struct->i2s_map[val] = new_str;
+		}
+	}
+
+	fclose(fl);
+
+	return (gs_param_handle_t) map_struct;
+}
+
+gs_retval_t int_to_string_map(vstring *result, gs_int64_t val, gs_param_handle_t handle){
+	int_to_string_map_struct *map_struct = (int_to_string_map_struct *)handle;
+	if(map_struct->i2s_map.count(val)>0){
+		vstring ret = map_struct->i2s_map[val];
+		result->offset = ret.offset;
+		result->reserved = ret.reserved;
+		result->length = ret.length;
+	}else{
+		result->offset = map_struct->empty_string.offset;
+		result->reserved = map_struct->empty_string.reserved;
+		result->length = map_struct->empty_string.length;
+	}
+
+	return 0;
+}
+
+gs_param_handle_t deregister_handle_for_int_to_string_map_slot_1(gs_param_handle_t handle){
+	int_to_string_map_struct *map_struct = (int_to_string_map_struct *)handle;
+	for(std::map<gs_int64_t, vstring>::iterator i2si = map_struct->i2s_map.begin(); i2si!=map_struct->i2s_map.end(); ++i2si){
+		free((void *)((*i2si).second.offset));
+	}
+	free((void *)(map_struct->empty_string.offset));
+	delete map_struct;
+}
 

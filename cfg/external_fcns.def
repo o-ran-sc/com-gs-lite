@@ -704,3 +704,11 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 	string UDAF [RUNNING] running_array_aggr_hfta string (string);
 	string UDAF [RUNNING] running_array_aggr_lfta fstring17 (uint);
 	
+//////////////////////////////////////////////////////////
+//	Mapping functions
+//	Should eventually be replaced by watchlist join ?
+//////////////////////////////////
+	string FUN [HFTA_ONLY, COST EXPENSIVE] int_to_string_map(llong, string HANDLE);
+	string FUN [HFTA_ONLY, COST EXPENSIVE] int_to_string_map(ullong, string HANDLE);
+	string FUN [HFTA_ONLY, COST EXPENSIVE] int_to_string_map(int, string HANDLE);
+	string FUN [HFTA_ONLY, COST EXPENSIVE] int_to_string_map(uint, string HANDLE);

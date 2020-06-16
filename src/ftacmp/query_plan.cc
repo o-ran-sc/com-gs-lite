@@ -11134,84 +11134,67 @@ string join_eq_hash_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_
 
 
 //		create a temp status tuple
-	ret += "int create_temp_status_tuple(const host_tuple &tup0, const host_tuple &tup1, host_tuple& result) {\n\n";
+	ret += "int create_temp_status_tuple("+this->generate_functor_name()+"_tempeqdef *lts,"+this->generate_functor_name()+"_tempeqdef *rts, host_tuple& result) {\n\n";
 
 	ret += "\tgs_retval_t retval = 0;\n";
 	ret += "\tgs_int32_t problem = 0;\n";
 
-	ret += "\tif(tup0.data){\n";
-
-//		Unpack all the temporal attributes references in select list
-	col_id_set found_cids;
-
-	for(s=0;s<select_list.size();s++){
-		if (select_list[s]->se->get_data_type()->is_temporal()) {
-//			Find the set of	attributes accessed in this SE
-			col_id_set new_cids;
-			get_new_se_cids(select_list[s]->se,found_cids, new_cids, NULL);
-		}
+	for(p=0;p<temporal_dt.size();p++){
+		sprintf(tmpstr,"lhs_var");
+		ret+="\t"+temporal_dt[p]->make_host_cvar(tmpstr)+";\n";		
+		sprintf(tmpstr,"rhs_var");
+		ret+="\t"+temporal_dt[p]->make_host_cvar(tmpstr)+";\n";		
 	}
 
-	//			Deal with outer join stuff
-	l_cids.clear(), r_cids.clear();
-	for(ocsi=found_cids.begin();ocsi!=found_cids.end();++ocsi){
-		if((*ocsi).tblvar_ref == 0) l_cids.insert((*ocsi));
-		else						r_cids.insert((*ocsi));
+	ret += "\tif(lts!=NULL){\n";
+	for(p=0;p<temporal_dt.size();p++){
+		ret += "\t\tlhs_var = lts->tempeq_var"+to_string(p)+";\n";
 	}
-	unpack_null = "";
-	extra_cids.clear();
-	for(ocsi=r_cids.begin();ocsi!=r_cids.end();++ocsi){
-		string field = (*ocsi).field;
-		if(r_equiv.count(field)){
-			unpack_null+="\t\tunpack_var_"+field+"_1="+generate_se_code(r_equiv[field],schema)+";\n";
-			col_id_set addnl_cids;
-			get_new_se_cids(r_equiv[field],l_cids,addnl_cids,NULL);
-		}else{
-	    	int schref = (*ocsi).schema_ref;
-			data_type dt(schema->get_type_name(schref,field));
-			literal_t empty_lit(dt.type_indicator());
-			if(empty_lit.is_cpx_lit()){
-				sprintf(tmpstr,"&(unpack_var_%s_1)",field.c_str());
-				unpack_null += "\t"+empty_lit.to_hfta_C_code(tmpstr)+";\n";
-			}else{
-				unpack_null+="\tunpack_var_"+field+"_1="+empty_lit.to_hfta_C_code("")+";\n";
-			}
-		}
+	ret += "\t}else{\n";
+	for(p=0;p<temporal_dt.size();p++){
+		ret += "\t\tlhs_var = 0;\n";
 	}
-	ret += gen_unpack_cids(schema,  l_cids, "1", needs_xform);
-	ret += gen_unpack_cids(schema,  extra_cids, "1", needs_xform);
-	ret += unpack_null;
+	ret += "\t}\n";
 
-	ret+="\t}else if (tup1.data) {\n";
-	unpack_null = ""; extra_cids.clear();
-	for(ocsi=l_cids.begin();ocsi!=l_cids.end();++ocsi){
-		string field = (*ocsi).field;
-		if(l_equiv.count(field)){
-			unpack_null+="\t\tunpack_var_"+field+"_0="+generate_se_code(l_equiv[field],schema)+";\n";
-			col_id_set addnl_cids;
-			get_new_se_cids(l_equiv[field],r_cids,addnl_cids,NULL);
-		}else{
-	    	int schref = (*ocsi).schema_ref;
-			data_type dt(schema->get_type_name(schref,field));
-			literal_t empty_lit(dt.type_indicator());
-			if(empty_lit.is_cpx_lit()){
-				sprintf(tmpstr,"&(unpack_var_%s_0)",field.c_str());
-				unpack_null += "\t"+empty_lit.to_hfta_C_code(tmpstr)+";\n";
-			}else{
-				unpack_null+="\tunpack_var_"+field+"_0="+empty_lit.to_hfta_C_code("")+";\n";
-			}
-		}
+	ret += "\tif(rts!=NULL){\n";
+	for(p=0;p<temporal_dt.size();p++){
+		ret += "\t\trhs_var = rts->tempeq_var"+to_string(p)+";\n";
 	}
-	ret += gen_unpack_cids(schema,  r_cids, "1", needs_xform);
-	ret += gen_unpack_cids(schema,  extra_cids, "1", needs_xform);
-	ret += unpack_null;
-	ret+="\t}\n";
+	ret += "\t}else{\n";
+	for(p=0;p<temporal_dt.size();p++){
+		ret += "\t\trhs_var = 0;\n";
+	}
+	ret += "\t}\n";
 
 	ret += gen_init_temp_status_tuple(this->get_node_name());
 
 //		Start packing.
-	ret += "//\t\tPack the fields into the tuple.\n";
-	ret += gen_pack_tuple(schema,select_list,this->get_node_name(), true );
+
+
+//		This is checked in the query analyzer so I think its safe,
+//		But a lot of older code has complex code to propagate multiple
+//		timestamps
+    for(s=0;s<select_list.size();s++){
+		scalarexp_t *se  = select_list[s]->se;
+        data_type *sdt = se->get_data_type();
+		if(sdt->is_temporal()){
+			string target = "\ttuple->tuple_var"+to_string(s)+" = ";
+			if(from[0]->get_property()==0 && from[1]->get_property()==0){ // INNER
+				ret += target+"(lhs_var>rhs_var ? lhs_var : rhs_var); // INNER\n";
+			}
+			if(from[0]->get_property()!=0 && from[1]->get_property()==0){ // LEFT
+				ret += target+"lhs_var; // LEFT\n";
+//				ret += target+"rhs_var; // LEFT\n";
+			}
+			if(from[0]->get_property()==0 && from[1]->get_property()!=0){ // RIGHT
+				ret += target+"rhs_var; // RIGHT\n";
+//				ret += target+"lhs_var; // RIGHT\n";
+			}
+			if(from[0]->get_property()!=0 && from[1]->get_property()!=0){ // OUTER
+				ret += target+"(lhs_var<rhs_var ? lhs_var : rhs_var); // OUTER\n";
+			}
+		}
+	}
 
 
 	ret += "\treturn 0;\n";

@@ -693,8 +693,8 @@ public:
 #define LEFT_OUTER_JOIN_PROPERTY 1
 #define RIGHT_OUTER_JOIN_PROPERTY 2
 #define OUTER_JOIN_PROPERTY 3
-#define WATCHLIST_JOIN_PROPERTY 3
-#define FILTER_JOIN_PROPERTY 4
+#define WATCHLIST_JOIN_PROPERTY 4
+#define FILTER_JOIN_PROPERTY 5
 
 //		tablevar_list_t is the list of tablevars in a FROM clause
 

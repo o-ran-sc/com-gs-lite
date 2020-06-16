@@ -126,6 +126,12 @@ inline gs_uint32_t str_match_offset( gs_uint32_t offset, struct vstring * s1, st
 	return 1;
 }
 
+// -------------------------------------------------------
+//		map_int_to_string and its support functions, structs
+
+gs_param_handle_t register_handle_for_int_to_string_map_slot_1(vstring *filename);
+gs_retval_t int_to_string_map(vstring *result, gs_int64_t val, gs_param_handle_t handle);
+gs_param_handle_t deregister_handle_for_int_to_string_map_slot_1(gs_param_handle_t handle);
 
 
 #endif
