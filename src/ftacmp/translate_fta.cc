@@ -1353,6 +1353,7 @@ fprintf(stderr,"Parsing file %s\n",qpathname.c_str());
 	}
 	if(dangling_ospecs!=""){
 		fprintf(stderr,"WARNING, the following entries in output_spec.cfg don't have a matching query: %s\n",dangling_ospecs.c_str());
+		exit(1);
 	}
 
 	string dangling_par = "";
@@ -2317,7 +2318,6 @@ for(i=0;i<hfta_list.size();++i){		// query also has an HFTA component
 //			if(hfta_namespace == "")
 //				warning_str += "\tnamespace not found.\n";
 
-// STOPPED HERE
 //	There is a get_tbl_keys method implemented for qp_nodes,
 //	integrate it into steam_query, then call it to find keys,
 //	and annotate feidls with their key-ness.

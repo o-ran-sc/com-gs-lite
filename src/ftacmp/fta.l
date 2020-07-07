@@ -219,7 +219,7 @@ SELECTION_PUSHDOWN			{ flex_fta_ch+=FtaParserleng; return SELECTION_PUSHDOWN; }
 "."[0-9]*	|
 [0-9]+[eE][+-]?[0-9]+	|
 [0-9]+"."[0-9]*[eE][+-]?[0-9]+ |
-"."[0-9]*[eE][+-]?[0-9]+	{ flex_fta_ch+=FtaParserleng; FtaParserlval.strval = strdup(yytext); return APPROXNUM; }
+"."[0-9]+[eE][+-]?[0-9]+	{ flex_fta_ch+=FtaParserleng; FtaParserlval.strval = strdup(yytext); return APPROXNUM; }
 
 	/* strings */
 
