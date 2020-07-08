@@ -93,7 +93,7 @@
 #define MAXSZ (((MAXTUPLESZ+128)>MAXMSGSZ?MAXTUPLESZ+128:MAXMSGSZ))
 
 #define SOCK_BUF_SZ 160*(MAXMSGSZ+4)
-#define SOCKET_HASH_SZ 512
+#define SOCKET_HASH_SZ 1024
 #define MAX_NUMBER_OF_SHM 64
 
 //#define PRINTMSG // prints low level IPC messages for debugging VERY VERBOSE
