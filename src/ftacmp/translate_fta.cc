@@ -397,24 +397,26 @@ int main(int argc, char **argv){
 		while(fgets(tmpstr,TMPSTRLEN,osp_in)){
 			o_lineno++;
 			int nflds = split_string(tmpstr,',',flds,MAXFLDS);
-			if(nflds == 7){
+			if(tmpstr[0]!='\n' && tmpstr[0]!='\r' && tmpstr[0]!='\0' && tmpstr[0]!='#'){
+				if(nflds == 7){
 // 		make operator type lowercase
-				char *tmpc;
-				for(tmpc=flds[1];*tmpc!='\0';++tmpc)
-					*tmpc = tolower(*tmpc);
-
-				ospec_str *tmp_ospec = new ospec_str();
-				tmp_ospec->query = flds[0];
-				tmp_ospec->operator_type = flds[1];
-				tmp_ospec->operator_param = flds[2];
-				tmp_ospec->output_directory = flds[3];
-				tmp_ospec->bucketwidth = atoi(flds[4]);
-				tmp_ospec->partitioning_flds = flds[5];
-				tmp_ospec->n_partitions = atoi(flds[6]);
-				qname_to_ospec.insert(pair<string,int>(tmp_ospec->query,output_specs.size()));
-				output_specs.push_back(tmp_ospec);
-			}else{
-				fprintf(stderr,"Warning, line %d corrupted in output_spec.cfg, has %d fields.\n",o_lineno,nflds);
+					char *tmpc;
+					for(tmpc=flds[1];*tmpc!='\0';++tmpc)
+						*tmpc = tolower(*tmpc);
+	
+					ospec_str *tmp_ospec = new ospec_str();
+					tmp_ospec->query = flds[0];
+					tmp_ospec->operator_type = flds[1];
+					tmp_ospec->operator_param = flds[2];
+					tmp_ospec->output_directory = flds[3];
+					tmp_ospec->bucketwidth = atoi(flds[4]);
+					tmp_ospec->partitioning_flds = flds[5];
+					tmp_ospec->n_partitions = atoi(flds[6]);
+					qname_to_ospec.insert(pair<string,int>(tmp_ospec->query,output_specs.size()));
+					output_specs.push_back(tmp_ospec);
+				}else{
+					fprintf(stderr,"Warning, line %d corrupted in output_spec.cfg, has %d fields.\n",o_lineno,nflds);
+				}
 			}
 		}
 		fclose(osp_in);
