@@ -591,10 +591,12 @@ gs_param_handle_t register_handle_for_int_to_string_map_slot_1(vstring *filename
 		return 0;
 	}
 	
-	char buf[10000], buf_str[10000];
-	gs_int32_t buflen;
+	gs_int32_t buflen = 10000;
+	char buf[buflen], buf_str[buflen];
 	gs_int64_t val;
-	while(fgets(buf, buflen, fl) > 0){
+	char *fret;
+	fret = fgets(buf, buflen, fl);
+	while(fret != NULL){
 		int nvals = sscanf(buf, "%lld,%s", &val, buf_str);
 		if(nvals >= 2){
 			vstring new_str;
@@ -604,6 +606,7 @@ gs_param_handle_t register_handle_for_int_to_string_map_slot_1(vstring *filename
 			memcpy((char *)new_str.offset, buf_str, new_str.length);
 			map_struct->i2s_map[val] = new_str;
 		}
+		fret = fgets(buf, buflen, fl);
 	}
 
 	fclose(fl);
