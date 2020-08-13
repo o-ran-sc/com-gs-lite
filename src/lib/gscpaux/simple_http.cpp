@@ -56,6 +56,7 @@ int http_get_request(endpoint addr, gs_csp_t url, gs_uint32_t* http_code, gs_sp_
 
 	if (connect(sockfd, (sockaddr*)&servaddr, sizeof(servaddr))) {
 		fprintf(stderr, "Unable to connect to HTTP server\n");
+		close(sockfd);
 		return -1;
 	}
 
@@ -192,6 +193,7 @@ int http_post_request_hdr(endpoint addr, gs_csp_t url, gs_sp_t json_request, gs_
 
 	if (connect(sockfd, (sockaddr*)&servaddr, sizeof(servaddr))) {
 		fprintf(stderr, "Unable to connect to HTTP server\n");
+		close(sockfd);
 		return -1;
 	}
 
