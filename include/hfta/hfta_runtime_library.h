@@ -32,14 +32,16 @@ Copyright 2014 AT&T Intellectual Property
 //		Internal functions
 gs_retval_t Vstring_Constructor(vstring *, gs_csp_t);
 gs_retval_t hfta_vstr_length(vstring *);
-void hfta_vstr_assign_with_copy_in_tuple(vstring32 *, vstring *, gs_sp_t, int);
-void hfta_vstr_assign_with_copy(vstring *, vstring *);
+void hfta_vstr_assign_with_copy_in_tuple(vstring32 *, const vstring *,
+	gs_sp_t, int);
+void hfta_vstr_assign_with_copy(vstring *, const vstring *);
 void hfta_vstr_destroy(vstring *);
-void hfta_vstr_replace(vstring *, vstring *);
+void hfta_vstr_replace(vstring *, const vstring *);
 
 gs_uint32_t hfta_vstr_hashfunc(const vstring *);
 gs_uint64_t hfta_vstr_long_hashfunc(const vstring *);
 gs_retval_t hfta_vstr_compare(const vstring *, const vstring *);
+gs_retval_t hfta_vstr_equal(const vstring *, const vstring *);
 
 gs_retval_t hfta_ipv6_compare(const hfta_ipv6_str &i1, const hfta_ipv6_str &i2);
 hfta_ipv6_str And_Ipv6(const hfta_ipv6_str &i1, const hfta_ipv6_str &i2);
@@ -63,6 +65,7 @@ inline static gs_retval_t str_truncate(vstring * result, vstring *str, gs_uint32
 
 gs_retval_t str_exists_substr(vstring * s1, vstring * s2);
 gs_retval_t str_compare(vstring * s1, vstring * s2);
+gs_retval_t str_equal(vstring * s1, vstring * s2);
 
 gs_uint32_t str_match_offset(gs_uint32_t offset,vstring *s1,vstring *s2);
 gs_uint32_t byte_match_offset( gs_uint32_t offset, gs_uint32_t val,vstring *s2);

@@ -693,11 +693,18 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 	string UDAF  count_diff_lfta_s fstring20 (string);
 
 
+////////////////////////////////////////////////////////////////
+//	string aggregation via catenation
+//////////////////////////////////////////////////////
+
+	string UDAF [HFTA_ONLY] CAT_aggr fstring8 (string, string);
+
 ///////////////////////////////////////////////////////////
-//               integer array aggregation funciton
+//               integer array aggregation function
 //	We are going to store 4 values in LFTA in fixed size buffer
-//  plus one byte for array length (17 bytes total)
-//  HFTA will combine partial aggregates
+//  	plus one byte for array length (17 bytes total)
+//  	HFTA will combine partial aggregates
+//		This seems to create a string with a comma-separated list of the uints
 ///////////////////////////////////////////////////////////
 
 	string UDAF [RUNNING, SUBAGGR running_array_aggr_lfta, SUPERAGGR running_array_aggr_hfta] running_array_aggr string (uint);
@@ -712,3 +719,33 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 	string FUN [HFTA_ONLY, COST EXPENSIVE] int_to_string_map(ullong, string HANDLE);
 	string FUN [HFTA_ONLY, COST EXPENSIVE] int_to_string_map(int, string HANDLE);
 	string FUN [HFTA_ONLY, COST EXPENSIVE] int_to_string_map(uint, string HANDLE);
+
+//////////////////////////////////////////////////////////
+//	time-averaged aggregate.
+//	time_avg(sample, ts, window_size)
+	float UDAF [HFTA_ONLY, RUNNING] time_avg fstring44 (uint, llong, llong) ;
+	float UDAF [HFTA_ONLY, RUNNING] time_avg fstring44 (int, llong, llong) ;
+	float UDAF [HFTA_ONLY, RUNNING] time_avg fstring44 (ullong, llong, llong) ;
+	float UDAF [HFTA_ONLY, RUNNING] time_avg fstring44 (llong, llong, llong) ;
+	float UDAF [HFTA_ONLY, RUNNING] time_avg fstring44 (float, llong, llong) ;
+
+// ------------------------------------------------------------
+//		running_sum_max : get the running sum of an int,
+//		be able to report this sum and also its max value
+//		during the time window
+
+	llong EXTR running_sum run_sum_max extr_running_sum (uint);
+	llong EXTR running_sum run_sum_max extr_running_sum (int);
+	llong EXTR running_sum run_sum_max extr_running_sum (llong);
+	llong EXTR running_sum run_sum_max extr_running_sum (ullong);
+	llong FUN [COST LOW] extr_running_sum(string);
+	llong EXTR running_sum_max run_sum_max extr_running_sum_max (uint);
+	llong EXTR running_sum_max run_sum_max extr_running_sum_max (int);
+	llong EXTR running_sum_max run_sum_max extr_running_sum_max (llong);
+	llong EXTR running_sum_max run_sum_max extr_running_sum_max (ullong);
+	llong FUN [COST LOW] extr_running_sum_max(string);
+	string UDAF [HFTA_ONLY, RUNNING] run_sum_max fstring16 (uint);
+	string UDAF [HFTA_ONLY, RUNNING] run_sum_max fstring16 (int);
+	string UDAF [HFTA_ONLY, RUNNING] run_sum_max fstring16 (ullong);
+	string UDAF [HFTA_ONLY, RUNNING] run_sum_max fstring16 (llong);
+

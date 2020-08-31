@@ -1172,8 +1172,18 @@ string data_type::get_comparison_fcn(data_type *dt){
 	default:
 		return("ERROR_NO_SUCH_COMPARISON_FCN");
 	}
-
-
+}
+string data_type::get_equals_fcn(data_type *dt){
+  switch(type){
+	case timeval_t:
+		return("Compare_Timeval");
+	case v_str_t:
+		return("str_equal");
+	case ipv6_t:
+		return("ipv6_compare");
+	default:
+		return("ERROR_NO_SUCH_COMPARISON_FCN");
+	}
 }
 
 string data_type::get_hfta_comparison_fcn(data_type *dt){
@@ -1182,6 +1192,18 @@ string data_type::get_hfta_comparison_fcn(data_type *dt){
 		return("hfta_Compare_Timeval");
 	case v_str_t:
 		return("hfta_vstr_compare");
+	case ipv6_t:
+		return("hfta_ipv6_compare");
+	default:
+		return("ERROR_NO_SUCH_COMPARISON_FCN");
+	}
+}
+string data_type::get_hfta_equals_fcn(data_type *dt){
+  switch(type){
+	case timeval_t:
+		return("hfta_Compare_Timeval");
+	case v_str_t:
+		return("hfta_vstr_equal");
 	case ipv6_t:
 		return("hfta_ipv6_compare");
 	default:

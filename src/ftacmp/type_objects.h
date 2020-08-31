@@ -95,6 +95,8 @@ public:
   bool complex_comparison(data_type *dt);
   std::string get_comparison_fcn(data_type *dt);
   std::string get_hfta_comparison_fcn(data_type *dt);
+  std::string get_equals_fcn(data_type *dt);
+  std::string get_hfta_equals_fcn(data_type *dt);
 
   bool complex_operator(data_type *dt, std::string &op);
   std::string get_complex_operator(data_type *dt, std::string &op);

@@ -492,6 +492,7 @@ public:
 
 	int lfta_disorder;		// maximum disorder in the steam between lfta, hfta
 	int hfta_disorder;		// maximum disorder in the  hfta
+	int hfta_slow_flush;	// outputs per input, 0 means no slow flush
 
 //		rollup, cube, and grouping_sets cannot be readily reconstructed by
 //		analyzing the patterns, so explicitly record them here.
@@ -517,11 +518,15 @@ public:
 
 	std::string generate_operator(int i, std::string params);
   	std::string get_include_file(){
-			if(hfta_disorder <= 1){
-				return("#include <groupby_operator.h>\n");
+		if(hfta_disorder <= 1){
+			if(hfta_slow_flush>0){
+				return("#include <groupby_slowflush_operator.h>\n");
 			}else{
-				return("#include <groupby_operator_oop.h>\n");
+				return("#include <groupby_operator.h>\n");
 			}
+		}else{
+			return("#include <groupby_operator_oop.h>\n");
+		}
 	};
 
     std::vector<select_element *> get_select_list(){return select_list;};
@@ -554,10 +559,12 @@ public:
 	sgah_qpn(){
 		lfta_disorder = 1;
 		hfta_disorder = 1;
+		hfta_slow_flush = 0;
 	};
 	sgah_qpn(query_summary_class *qs,table_list *Schema){
 		lfta_disorder = 1;
 		hfta_disorder = 1;
+		hfta_slow_flush = 0;
 
 //				Get the table name.
 //				NOTE the colrefs have the tablevar ref (an int)
@@ -640,6 +647,7 @@ public:
 							param_tbl->handle_access(param_names[pi]));
 		}
 		ret->definitions = definitions;
+		ret->hfta_slow_flush = hfta_slow_flush;
 
 		ret->node_name = node_name + suffix;
 

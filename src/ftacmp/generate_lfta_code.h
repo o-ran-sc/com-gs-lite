@@ -30,7 +30,8 @@ std::string generate_lfta_block(qp_node *fs, table_list *schema, int gid,
 std::string generate_lfta_prefilter(std::vector<cnf_set *> &pred_list, col_id_set &temp_cids, table_list *Schema, ext_fcn_list *Ext_fcns, std::vector<col_id_set> &lfta_cols, std::vector<long long int> &lfta_sigs, vector<int> &lfta_snap_lens, std::string iface);
 std::string generate_lfta_prefilter_struct(col_id_set &temp_cids, table_list *Schema);
 
-int compute_snap_len(qp_node *fs, table_list *schema);
+// a snap_type of "index" computes position, else use snap_len metadata
+int compute_snap_len(qp_node *fs, table_list *schema, string snap_type);
 
 std::string generate_watchlist_element_name(std::string node_name);
 std::string generate_watchlist_struct_name(std::string node_name);

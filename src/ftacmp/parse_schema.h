@@ -542,6 +542,9 @@ public:
 		return tbl_list[t]->get_field(tbl_list[t]->get_field_idx(f));
 	}
 	int get_field_idx(std::string t, std::string f);
+	int get_field_idx(int t, std::string f){
+		return tbl_list[t]->get_field_idx(f);
+	}
 
 	int find_tbl(std::string t);
 

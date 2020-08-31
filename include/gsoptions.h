@@ -26,5 +26,8 @@
 // support for KAFKA interfaces
 //#define KAFKA_ENABLED
 
+// support for SSL decryption
+//#define SSL_ENABLED
+
 #endif
 
