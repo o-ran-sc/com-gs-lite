@@ -40,7 +40,11 @@ public :
 		value_type second;
 		data_item* next;	// next data item in overflow chain
 
-		data_item(const key_type& k, const value_type& v) : first(k), second(v), next(NULL) { }
+		data_item(const key_type& k, const value_type& v) {
+			first = k;
+			second = v;
+			next = NULL;
+		 }
 	};
 
 	struct hash_bucket {
@@ -101,15 +105,19 @@ private:
 	equal_func equal;
 
 	double load_factor;
-//	double max_load;
 
 	size_t _size;
 	size_t _max_size;
 	size_t num_buckets;
 	size_t hash_mask;
 
+	// bucket allocation happens on first insert
+	// this flag indicates that buckets has been allocated
+	unsigned allocated;
+
+
 	hash_bucket* first_bucket;	// first used bucket
-	hash_bucket* last_bucket;		// last used bucket
+	hash_bucket* last_bucket;	// last used bucket
 
 	hash_bucket* buckets;
 
@@ -119,24 +127,38 @@ private:
 public:
 
 
-	hash_table(const size_t n_buckets = 65536, const double load = 1.0) {
-		load_factor = load;
+	hash_table(const size_t expected_size = 100000, const double max_load = 1.25) {
+
+		size_t min_buckets = (size_t)(expected_size / max_load);
+		load_factor = max_load;
 		int nb;
-		for(nb=2;nb<n_buckets;nb*=2);
+		for(nb=2;nb<min_buckets;nb*=2);
 		num_buckets = nb;
 		hash_mask = nb-1;
-		buckets = new hash_bucket[num_buckets];
+
+		// we will make hash table start with 0-size and expand of first insertion
+		buckets = new hash_bucket[0];
+		allocated = 0;
 
 		_size = 0;
 		_max_size = 0;
-//		max_load = 0.0;
 		first_bucket = 0;
 		last_bucket = 0;
 
-		total_memory = num_buckets * sizeof(hash_bucket);
+		total_memory = 0;
 	}
 
 	int insert(const key_type& key, const value_type& val) {
+
+		if (__builtin_expect(!allocated, 0)) {		// we expect buckets to be allocated most of the time
+			delete buckets;
+			buckets = new hash_bucket[num_buckets];
+			allocated = 1;	
+			total_memory = num_buckets * sizeof(hash_bucket);
+
+			fprintf(stderr, "Initial allocaton of %d buckets\n", (int)num_buckets);
+		}
+
 		data_item* d = new data_item(key, val);
 		total_memory += sizeof(data_item);
 
@@ -182,6 +204,12 @@ public:
 	iterator find(const key_type& key) {
 		iterator iter;
 
+		if (__builtin_expect(!allocated, 0)) {		// we expect buckets to be allocated most of the time
+			iter.bucket = NULL;
+			iter.data = NULL;
+			return iter;
+		}		
+
 		// find the insertion bucket
 		size_t bucket_index = hasher(key) & hash_mask;
 		// if the bucket is empty just add new data_item
@@ -205,6 +233,11 @@ public:
 	}
 
 	void erase(const key_type& key) {
+
+		if (__builtin_expect(!allocated, 0)) {		// we expect buckets to be allocated most of the time
+			return;
+		}	
+
 		// find the  bucket
 		size_t bucket_index = hasher(key) & hash_mask;
 		// if the bucket is empty just add new data_item
@@ -247,6 +280,11 @@ public:
 	}
 
 	void erase_full(const key_type& key) {
+
+		if (__builtin_expect(!allocated, 0)) {		// we expect buckets to be allocated most of the time
+			return;
+		}
+
 		// find the  bucket
 		size_t bucket_index = hasher(key) & hash_mask;
 		// if the bucket is empty just add new data_item
@@ -284,8 +322,8 @@ public:
 		}else{
 			prev->next = temp->next;
 		}
-        delete (*temp).first;
-        delete (*temp).second;
+//        delete (*temp).first;
+//        delete (*temp).second;
         delete temp;
         total_memory -= sizeof(data_item);
 	}
@@ -326,14 +364,13 @@ public:
 		last_bucket = NULL;
 		_size = 0;
 		total_memory = num_buckets * sizeof(hash_bucket);
-
 	}
 
-	int rehash() {
+	int resize() {
 		if (_size) {
-			fprintf(stderr, "Error: rehashing non-empty hash table\n");
+			fprintf(stderr, "Error: resizing non-empty hash table\n");
 			exit(1);
-		}		
+		}
 
 		double max_load = (1.0 * _max_size) / num_buckets;
 
@@ -350,19 +387,23 @@ public:
 			for(nb=2;nb<min_buckets;nb*=2);
 			num_buckets = nb;
 
+			fprintf(stderr, "Resizing to %d buckets\n", (int)num_buckets);
 			delete[] buckets;
 			hash_mask = num_buckets-1;
 
-			buckets = new hash_bucket[num_buckets];		
+			buckets = new hash_bucket[num_buckets];
+			total_memory = num_buckets * sizeof(hash_bucket);			
 		}
 
 		return 0;
-	}
-
-
+	}		
 
 	size_t size() const {
 		return _size;
+	}
+
+	size_t max_size() const {
+		return _max_size;
 	}
 
 	bool empty() const {
@@ -438,7 +479,6 @@ private:
 	equal_func equal;
 
 	double load_factor;
-//	double max_load;
 
 	size_t _size;
 	size_t _max_size;
@@ -451,19 +491,19 @@ private:
 	hash_bucket* buckets;
 
 public:
-	hash_set(const size_t n_buckets = 65536, const double load = 1.0) {
-		load_factor = load;
 
+	hash_set(const size_t expected_size = 100000, const double max_load = 1.25) {
+
+		size_t min_buckets = (size_t)(expected_size / max_load);
+		load_factor = max_load;
 		int nb;
-		for(nb=2;nb<n_buckets;nb*=2);
+		for(nb=2;nb<min_buckets;nb*=2);
 		num_buckets = nb;
-		hash_mask = num_buckets-1;
-
+		hash_mask = nb-1;
 		buckets = new hash_bucket[num_buckets];
 
 		_size = 0;
 		_max_size = 0;
-//		max_load = 0.0;
 		first_bucket = 0;
 		last_bucket = 0;
 	}
@@ -580,12 +620,12 @@ public:
 
 	}
 
-	int rehash() {
+	int resize() {
 		if (_size) {
-			fprintf(stderr, "Error: rehashing non-empty hash table\n");
+			fprintf(stderr, "Error: resizing non-empty hash table\n");
 			exit(1);
-		}		
-
+		}
+		
 		double max_load = (1.0 * _max_size) / num_buckets;
 
 		// reize table if its maximum load exceed the load factor
@@ -601,6 +641,7 @@ public:
 			for(nb=2;nb<min_buckets;nb*=2);
 			num_buckets = nb;
 
+			fprintf(stderr, "Resizing to %d buckets\n", num_buckets);
 			delete[] buckets;
 			hash_mask = num_buckets-1;
 

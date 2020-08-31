@@ -220,6 +220,47 @@ void count_diff_hfta_HFTA_AGGR_UPDATE_(gs_sp_t s, vstring *val);
 void count_diff_hfta_HFTA_AGGR_OUTPUT_(gs_uint32_t *res, gs_sp_t s);
 void count_diff_hfta_HFTA_AGGR_DESTROY_(gs_sp_t scratch);
 
+//////////////////////////////////////////////
+//	CAT_aggr, aggregate strings by catenation
+//////////////////////////////////////////////
+void CAT_aggr_HFTA_AGGR_INIT_(gs_sp_t s);
+void CAT_aggr_HFTA_AGGR_REINIT_(gs_sp_t s);
+void CAT_aggr_HFTA_AGGR_UPDATE_(gs_sp_t s, vstring *sep, vstring *str);
+void CAT_aggr_HFTA_AGGR_OUTPUT_(vstring *res, gs_sp_t s);
+void CAT_aggr_HFTA_AGGR_DESTROY_(gs_sp_t s);
+
+/////////////////////////////////////////////////////////
+//	time-averaged sum, from aperiodic reports
+////////////////////////////////////////////////////////
+
+void time_avg_HFTA_AGGR_INIT_(gs_sp_t s);
+void time_avg_HFTA_AGGR_DESTROY_(gs_sp_t s);
+void time_avg_HFTA_AGGR_REINIT_(gs_sp_t s);
+void time_avg_HFTA_AGGR_OUTPUT_(gs_float_t *result, gs_sp_t s);
+void time_avg_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_float_t val, gs_int64_t ts, gs_int64_t window);
+void time_avg_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint32_t val, gs_int64_t ts, gs_int64_t window);
+void time_avg_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_int32_t val, gs_int64_t ts, gs_int64_t window);
+void time_avg_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint64_t val, gs_int64_t ts, gs_int64_t window);
+void time_avg_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_int64_t val, gs_int64_t ts, gs_int64_t window);
+
+// ------------------------------------------------------------
+//		running_sum_max : get the running sum of an int,
+//		be able to report this sum and also its max value
+//		during the time window
+// ------------------------------------------------------------
+
+void run_sum_max_HFTA_AGGR_INIT_(gs_sp_t s);
+void run_sum_max_HFTA_AGGR_REINIT_(gs_sp_t s);
+void run_sum_max_HFTA_AGGR_OUTPUT_(vstring *r,gs_sp_t b);
+void run_sum_max_HFTA_AGGR_DESTROY_(gs_sp_t b);
+void run_sum_max_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint64_t v);
+void run_sum_max_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_int64_t v);
+void run_sum_max_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint32_t v);
+void run_sum_max_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_int32_t v);
+gs_int64_t extr_running_sum(vstring *v);
+gs_int64_t extr_running_sum_max(vstring *v);
+
+
 
 
 ///////////////////////////////////////////////////////////////

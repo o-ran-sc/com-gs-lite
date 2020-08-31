@@ -183,6 +183,7 @@ int http_post_request_hdr(endpoint addr, gs_csp_t url, gs_sp_t json_request, gs_
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (!sockfd) {
 		fprintf(stderr, "Unable to create socket for HTTP connection\n");
+		close(sockfd);
 		return -1;
 	}
 
@@ -193,7 +194,6 @@ int http_post_request_hdr(endpoint addr, gs_csp_t url, gs_sp_t json_request, gs_
 
 	if (connect(sockfd, (sockaddr*)&servaddr, sizeof(servaddr))) {
 		fprintf(stderr, "Unable to connect to HTTP server\n");
-		close(sockfd);
 		return -1;
 	}
 

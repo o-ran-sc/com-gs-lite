@@ -3874,7 +3874,7 @@ vector<qp_node *> rsgah_qpn::split_node_for_fta(ext_fcn_list *Ext_fcns, table_li
 					new_opl.push_back(new_se);
 				}
 			}
-			stream_node->aggr_tbl.add_aggr(aggr_tbl.get_op(a), aggr_tbl.get_fcn_id(a), new_opl, aggr_tbl.get_storage_type(a),false, false,aggr_tbl.has_bailout(a));
+			stream_node->aggr_tbl.add_aggr(aggr_tbl.get_op(a), aggr_tbl.get_fcn_id(a), new_opl, aggr_tbl.get_storage_type(a),aggr_tbl.is_superaggr(a), aggr_tbl.is_running_aggr(a),aggr_tbl.has_bailout(a));
 			hse = new scalarexp_t(aggr_tbl.get_op(a).c_str(),new_opl);
 			hse->set_data_type(Ext_fcns->get_fcn_dt(aggr_tbl.get_fcn_id(a)));
 			hse->set_fcn_id(aggr_tbl.get_fcn_id(a));
@@ -4332,12 +4332,12 @@ vector<qp_node *> sgah_qpn::split_node_for_fta(ext_fcn_list *Ext_fcns, table_lis
 		stream_node->set_node_name( node_name );
 		stream_node->table_name->set_range_var(table_name->get_var_name());
 
-//			allowed stream disorder.  Default is 2,
+//			allowed stream disorder.  Default is 1,
 //			can override with max_lfta_disorder setting.
 //			Also limit the hfta disorder, set to lfta disorder + 1.
 //			can override with max_hfta_disorder.
 
-	fta_node->lfta_disorder = 2;
+	fta_node->lfta_disorder = 1;
 	if(this->get_val_of_def("max_lfta_disorder") != ""){
 		int d = atoi(this->get_val_of_def("max_lfta_disorder").c_str() );
 		if(d<1){
@@ -4363,6 +4363,7 @@ printf("node %s setting lfta_disorder = %d\n",node_name.c_str(),fta_node->lfta_d
 			fta_node->hfta_disorder = fta_node->lfta_disorder + 1;
 		}
 	}
+
 
 //			First, process the group-by variables.
 //			The fta must supply the values of all the gbvars.
@@ -6823,7 +6824,7 @@ static string generate_predicate_code(predicate_t *pr,table_list *schema){
 			ret.append("( ");
 
 	        if(ldt->complex_comparison(ldt) ){
-				ret.append( ldt->get_hfta_comparison_fcn(ldt) );
+				ret.append( ldt->get_hfta_equals_fcn(ldt) );
 				ret.append("( ");
 				if(ldt->is_buffer_type() )
 					ret.append("&");
@@ -6855,6 +6856,7 @@ static string generate_predicate_code(predicate_t *pr,table_list *schema){
 
 		ret.append("( ");
         if(ldt->complex_comparison(rdt) ){
+// TODO can use get_hfta_equals_fcn if op is "=" ?
 			ret.append(ldt->get_hfta_comparison_fcn(rdt));
 			ret.append("(");
 			if(ldt->is_buffer_type() )
@@ -6924,7 +6926,7 @@ static string generate_predicate_code_fm_aggr(predicate_t *pr, string gbvar, str
 			ret.append("( ");
 
 	        if(ldt->complex_comparison(ldt) ){
-				ret.append( ldt->get_hfta_comparison_fcn(ldt) );
+				ret.append( ldt->get_hfta_equals_fcn(ldt) );
 				ret.append("( ");
 				if(ldt->is_buffer_type() )
 					ret.append("&");
@@ -6956,6 +6958,7 @@ static string generate_predicate_code_fm_aggr(predicate_t *pr, string gbvar, str
 
 		ret.append("( ");
         if(ldt->complex_comparison(rdt) ){
+// TODO can use get_hfta_equals_fcn if op is "=" ?
 			ret.append(ldt->get_hfta_comparison_fcn(rdt));
 			ret.append("(");
 			if(ldt->is_buffer_type() )
@@ -7014,7 +7017,7 @@ static string generate_equality_test(string &lhs_op, string &rhs_op, data_type *
 	string ret;
 
     if(dt->complex_comparison(dt) ){
-		ret.append(dt->get_hfta_comparison_fcn(dt));
+		ret.append(dt->get_hfta_equals_fcn(dt));
 		ret.append("(");
 			if(dt->is_buffer_type() )
 				ret.append("&");
@@ -7056,28 +7059,28 @@ static string generate_lt_test(string &lhs_op, string &rhs_op, data_type *dt){
 	return(ret);
 }
 
-static string generate_comparison(string &lhs_op, string &rhs_op, data_type *dt){
-	string ret;
-
-    if(dt->complex_comparison(dt) ){
-		ret.append(dt->get_hfta_comparison_fcn(dt));
-		ret.append("(");
-			if(dt->is_buffer_type() )
-				ret.append("&");
-		ret.append(lhs_op);
-		ret.append(", ");
-			if(dt->is_buffer_type() )
-				ret.append("&");
-		ret.append(rhs_op );
-		ret.append(") == 0");
-	}else{
-		ret.append(lhs_op );
-		ret.append(" == ");
-		ret.append(rhs_op );
-	}
-
-	return(ret);
-}
+//static string generate_comparison(string &lhs_op, string &rhs_op, data_type *dt){
+//	string ret;
+//
+//    if(dt->complex_comparison(dt) ){
+//		ret.append(dt->get_hfta_equals_fcn(dt));
+//		ret.append("(");
+//			if(dt->is_buffer_type() )
+//				ret.append("&");
+//		ret.append(lhs_op);
+//		ret.append(", ");
+//			if(dt->is_buffer_type() )
+//				ret.append("&");
+//		ret.append(rhs_op );
+//		ret.append(") == 0");
+//	}else{
+//		ret.append(lhs_op );
+//		ret.append(" == ");
+//		ret.append(rhs_op );
+//	}
+//
+//	return(ret);
+//}
 
 
 //		Here I assume that only MIN and MAX aggregates can be computed
@@ -8881,6 +8884,18 @@ string sgah_qpn::generate_functor_name(){
 string sgah_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_fcns, vector<bool> &needs_xform){
 	int a,g,w,s;
 
+//			Regular or slow flush?
+	hfta_slow_flush = 0;
+	if(this->get_val_of_def("hfta_slow_flush") != ""){
+		int d = atoi(this->get_val_of_def("hfta_slow_flush").c_str() );
+		if(d<0){
+			fprintf(stderr,"Warning, hfta_slow_flush in node %s is %d, must be at least 0, setting to 0.\n",node_name.c_str(), d);
+			hfta_slow_flush = 0;
+		}else{
+			hfta_slow_flush = d;
+		}
+	}
+	
 
 //			Initialize generate utility globals
 	segen_gb_tbl = &(gb_tbl);
@@ -8902,12 +8917,12 @@ string sgah_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_fcns, ve
 		ret+="\t"+this->gb_tbl.get_data_type(g)->make_host_cvar(tmpstr)+";\n";
 	}
 //		empty strucutred literals
-	map<int, string>::iterator sii;
-	for(sii=structured_types.begin();sii!=structured_types.end();++sii){
-		data_type dt(sii->second);
-		literal_t empty_lit(sii->first);
-		ret += "\t"+dt.make_host_cvar(empty_lit.hfta_empty_literal_name())+";\n";
-	}
+//	map<int, string>::iterator sii;
+//	for(sii=structured_types.begin();sii!=structured_types.end();++sii){
+//		data_type dt(sii->second);
+//		literal_t empty_lit(sii->first);
+//		ret += "\t"+dt.make_host_cvar(empty_lit.hfta_empty_literal_name())+";\n";
+//	}
 //		Constructors
 	if(structured_types.size()==0){
 		ret += "\t"+generate_functor_name() + "_groupdef(){};\n";
@@ -8916,22 +8931,34 @@ string sgah_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_fcns, ve
 	}
 
 
+	ret += "\t// shallow copy constructors\n";
 	ret += "\t"+generate_functor_name() + "_groupdef("+
-		this->generate_functor_name() + "_groupdef *gd){\n";
+		"const " + this->generate_functor_name() + "_groupdef &gd){\n";
 	for(g=0;g<gb_tbl.size();g++){
 		data_type *gdt = gb_tbl.get_data_type(g);
-		if(gdt->is_buffer_type()){
-			sprintf(tmpstr,"\t\t%s(&gb_var%d, &(gd->gb_var%d));\n",
-			  gdt->get_hfta_buffer_assign_copy().c_str(),g,g );
-			ret += tmpstr;
-		}else{
-			sprintf(tmpstr,"\t\tgb_var%d = gd->gb_var%d;\n",g,g);
-			ret += tmpstr;
-		}
+		sprintf(tmpstr,"\t\tgb_var%d = gd.gb_var%d;\n",g,g);
+		ret += tmpstr;
+// TODO : do strings perisist after the call?  its a shllow copy 
+//		if(gdt->is_buffer_type()){
+//			sprintf(tmpstr,"\t\t%s(&gb_var%d, &(gd->gb_var%d));\n",
+//			  gdt->get_hfta_buffer_assign_copy().c_str(),g,g );
+//			ret += tmpstr;
+//		}else{
+//			sprintf(tmpstr,"\t\tgb_var%d = gd->gb_var%d;\n",g,g);
+//			ret += tmpstr;
+//		}
 	}
 	ret += "\t}\n";
 	ret += "\t"+generate_functor_name() + "_groupdef("+
-		this->generate_functor_name() + "_groupdef *gd, bool *pattern){\n";
+		"const " + this->generate_functor_name() + "_groupdef &gd, bool *pattern){\n";
+//	-- For patterns, need empty strucutred literals
+	map<int, string>::iterator sii;
+	for(sii=structured_types.begin();sii!=structured_types.end();++sii){
+		data_type dt(sii->second);
+		literal_t empty_lit(sii->first);
+		ret += "\t"+dt.make_host_cvar(empty_lit.hfta_empty_literal_name())+";\n";
+	}
+
 	for(sii=structured_types.begin();sii!=structured_types.end();++sii){
 		literal_t empty_lit(sii->first);
 		ret += "\t\t"+empty_lit.to_hfta_C_code("&"+empty_lit.hfta_empty_literal_name())+";\n";
@@ -8939,14 +8966,17 @@ string sgah_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_fcns, ve
 	for(g=0;g<gb_tbl.size();g++){
 		data_type *gdt = gb_tbl.get_data_type(g);
 		ret += "\t\tif(pattern["+int_to_string(g)+"]){\n";
-		if(gdt->is_buffer_type()){
-			sprintf(tmpstr,"\t\t\t%s(&gb_var%d, &(gd->gb_var%d));\n",
-			  gdt->get_hfta_buffer_assign_copy().c_str(),g,g );
-			ret += tmpstr;
-		}else{
-			sprintf(tmpstr,"\t\t\tgb_var%d = gd->gb_var%d;\n",g,g);
-			ret += tmpstr;
-		}
+		sprintf(tmpstr,"\t\t\tgb_var%d = gd.gb_var%d;\n",g,g);
+		ret += tmpstr;
+//	TODO Do strings persist long enough?  its a shllow copy constructor?
+//		if(gdt->is_buffer_type()){
+//			sprintf(tmpstr,"\t\t\t%s(&gb_var%d, &(gd->gb_var%d));\n",
+//			  gdt->get_hfta_buffer_assign_copy().c_str(),g,g );
+//			ret += tmpstr;
+//		}else{
+//			sprintf(tmpstr,"\t\t\tgb_var%d = gd->gb_var%d;\n",g,g);
+//			ret += tmpstr;
+//		}
 		ret += "\t\t}else{\n";
 		literal_t empty_lit(gdt->type_indicator());
 		if(empty_lit.is_cpx_lit()){
@@ -8957,6 +8987,23 @@ string sgah_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_fcns, ve
 		ret += "\t\t}\n";
 	}
 	ret += "\t};\n";
+
+	ret += "\t// deep assignment operator\n";
+	ret += "\t"+generate_functor_name() + "_groupdef& operator=(const "+
+                this->generate_functor_name() + "_groupdef &gd){\n";
+        for(g=0;g<gb_tbl.size();g++){
+                data_type *gdt = gb_tbl.get_data_type(g);
+                if(gdt->is_buffer_type()){
+                        sprintf(tmpstr,"\t\t%s(&gb_var%d, &(gd.gb_var%d));\n",
+                          gdt->get_hfta_buffer_assign_copy().c_str(),g,g );
+                        ret += tmpstr;
+                }else{
+                        sprintf(tmpstr,"\t\tgb_var%d = gd.gb_var%d;\n",g,g);
+                        ret += tmpstr;
+                }
+        }
+        ret += "\t}\n";
+
 //		destructor
 	ret += "\t~"+ generate_functor_name() + "_groupdef(){\n";
 	for(g=0;g<gb_tbl.size();g++){
@@ -9158,6 +9205,7 @@ string sgah_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_fcns, ve
 			}
 		}
 		ret += "\tbool needs_temporal_flush;\n";
+		ret += "\tbool disordered_arrival;\n";
 	}
 
 
@@ -9266,6 +9314,14 @@ string sgah_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_fcns, ve
 "}\n\n"
 ;
 
+//---------------------------------------
+//		Parameterized number of tuples output per slow flush
+	ret += 
+"int gb_flush_per_tuple(){\n"
+"	return "+int_to_string(hfta_slow_flush)+";\n"
+"}\n\n";
+
+
 
 
 
@@ -9337,16 +9393,18 @@ string sgah_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_fcns, ve
 ret += "// hfta_disorder = "+int_to_string(hfta_disorder)+"\n";
 	if(hfta_disorder < 2){
 		if(uses_temporal_flush){
-			ret+= "\tif( !( (";
+			ret+= "\tif( ( (";
 			bool first_one = true;
+			string disorder_test;
 			for(g=0;g<gb_tbl.size();g++){
 				data_type *gdt = gb_tbl.get_data_type(g);
 
 				if(gdt->is_temporal()){
-			  	sprintf(tmpstr,"last_gb%d",g);   string lhs_op = tmpstr;
-			  	sprintf(tmpstr,"gbval->gb_var%d",g);   string rhs_op = tmpstr;
-			  	if(first_one){first_one = false;} else {ret += ") && (";}
-			  	ret += generate_equality_test(lhs_op, rhs_op, gdt);
+			  		sprintf(tmpstr,"last_gb%d",g);   string lhs_op = tmpstr;
+			  		sprintf(tmpstr,"gbval->gb_var%d",g);   string rhs_op = tmpstr;
+			  		if(first_one){first_one = false;} else {ret += ") && (";}
+			  		ret += generate_lt_test(lhs_op, rhs_op, gdt);
+			  		disorder_test += generate_lt_test(rhs_op, lhs_op, gdt);
 				}
 			}
 			ret += ") ) ){\n";
@@ -9364,9 +9422,17 @@ ret += "// hfta_disorder = "+int_to_string(hfta_disorder)+"\n";
 				}
 			}
 			ret += "\t\tneeds_temporal_flush=true;\n";
-			ret += "\t\t}else{\n"
-				"\t\t\tneeds_temporal_flush=false;\n"
-				"\t\t}\n";
+			ret += "\t}else{\n"
+				"\t\tneeds_temporal_flush=false;\n"
+				"\t}\n";
+
+			ret += "\tdisordered_arrival = "+disorder_test+";\n";
+//			ret += "\tif( ( ("+disorder_test+") ) ){\n";
+//			ret += "\t\tdisordered_arrival=true;\n";
+//			ret += "\t}else{\n";
+//			ret += "\t\tdisordered_arrival=false;\n";
+//			ret += "\t}\n";
+
 		}
 	}else{
 		ret+= "\tif(temp_tuple_received && !( (";
@@ -9515,8 +9581,8 @@ ret += "// hfta_disorder = "+int_to_string(hfta_disorder)+"\n";
 //			update an aggregate object
 
 	ret += "void update_aggregate(host_tuple &tup0, "
-		+generate_functor_name()+"_groupdef *gbval, "+
-		generate_functor_name()+"_aggrdef *aggval){\n";
+		+generate_functor_name()+"_groupdef &gbval, "+
+		generate_functor_name()+"_aggrdef &aggval){\n";
 	//		Variables for execution of the function.
 	ret += "\tgs_int32_t problem = 0;\n";	// return unpack failure
 
@@ -9527,7 +9593,7 @@ ret += "// hfta_disorder = "+int_to_string(hfta_disorder)+"\n";
 //		Unpack all remaining attributes
 	ret += gen_remaining_colrefs(schema, cid_set, found_cids, "", needs_xform);
 	for(a=0;a<aggr_tbl.size();a++){
-	  sprintf(tmpstr,"aggval->aggr_var%d",a);
+	  sprintf(tmpstr,"aggval.aggr_var%d",a);
 	  string varname = tmpstr;
 	  ret.append(generate_aggr_update(varname,&aggr_tbl,a, schema));
 	}
@@ -9546,6 +9612,8 @@ ret += "// hfta_disorder = "+int_to_string(hfta_disorder)+"\n";
 	}
 	ret += "\t};\n";
 
+	ret += "bool disordered(){return disordered_arrival;}\n";
+
 //---------------------------------------------------
 //			create output tuple
 //			Unpack the partial functions ref'd in the where clause,
@@ -9556,15 +9624,15 @@ ret += "// hfta_disorder = "+int_to_string(hfta_disorder)+"\n";
 //			so I'll leave it in longhand.
 
 	ret += "host_tuple create_output_tuple("
-		+generate_functor_name()+"_groupdef *gbval, "+
-		generate_functor_name()+"_aggrdef *aggval, bool &failed){\n";
+		+generate_functor_name()+"_groupdef &gbval, "+
+		generate_functor_name()+"_aggrdef &aggval, bool &failed){\n";
 
 	ret += "\thost_tuple tup;\n";
 	ret += "\tfailed = false;\n";
 	ret += "\tgs_retval_t retval = 0;\n";
 
-	string gbvar = "gbval->gb_var";
-	string aggvar = "aggval->";
+	string gbvar = "gbval.gb_var";
+	string aggvar = "aggval.";
 
 //			Create cached temporaries for UDAF return values.
    	for(a=0;a<aggr_tbl.size();a++){
@@ -9779,18 +9847,18 @@ ret += "// hfta_disorder = "+int_to_string(hfta_disorder)+"\n";
 
 	ret += "struct "+generate_functor_name()+"_hash_func{\n";
 	ret += "\tgs_uint32_t operator()(const "+generate_functor_name()+
-				"_groupdef *grp) const{\n";
+				"_groupdef &grp) const{\n";
 	ret += "\t\treturn( (";
 	for(g=0;g<gb_tbl.size();g++){
 		if(g>0) ret += "^";
 		data_type *gdt = gb_tbl.get_data_type(g);
 		if(gdt->use_hashfunc()){
 			if(gdt->is_buffer_type())
-				sprintf(tmpstr,"(%s*%s(&(grp->gb_var%d)))",hash_nums[g%NRANDS].c_str(),gdt->get_hfta_hashfunc().c_str(),g);
+				sprintf(tmpstr,"(%s*%s(&(grp.gb_var%d)))",hash_nums[g%NRANDS].c_str(),gdt->get_hfta_hashfunc().c_str(),g);
 			else
-				sprintf(tmpstr,"(%s*%s(grp->gb_var%d))",hash_nums[g%NRANDS].c_str(),gdt->get_hfta_hashfunc().c_str(),g);
+				sprintf(tmpstr,"(%s*%s(grp.gb_var%d))",hash_nums[g%NRANDS].c_str(),gdt->get_hfta_hashfunc().c_str(),g);
 		}else{
-			sprintf(tmpstr,"(%s*grp->gb_var%d)",hash_nums[g%NRANDS].c_str(),g);
+			sprintf(tmpstr,"(%s*grp.gb_var%d)",hash_nums[g%NRANDS].c_str(),g);
 		}
 		ret += tmpstr;
 	}
@@ -9802,22 +9870,22 @@ ret += "// hfta_disorder = "+int_to_string(hfta_disorder)+"\n";
 //			The comparison function
 
 	ret += "struct "+generate_functor_name()+"_equal_func{\n";
-	ret += "\tbool operator()(const "+generate_functor_name()+"_groupdef *grp1, "+
-			generate_functor_name()+"_groupdef *grp2) const{\n";
+	ret += "\tbool operator()(const "+generate_functor_name()+"_groupdef &grp1, "+
+			"const "+generate_functor_name()+"_groupdef &grp2) const{\n";
 	ret += "\t\treturn( (";
 
 	for(g=0;g<gb_tbl.size();g++){
 		if(g>0) ret += ") && (";
 		data_type *gdt = gb_tbl.get_data_type(g);
 		if(gdt->complex_comparison(gdt)){
-	  	if(gdt->is_buffer_type())
-			sprintf(tmpstr,"(%s(&(grp1->gb_var%d), &(grp2->gb_var%d))==0)",
-				gdt->get_hfta_comparison_fcn(gdt).c_str(),g,g);
-	  	else
-			sprintf(tmpstr,"(%s((grp1->gb_var%d), (grp2->gb_var%d))==0)",
-				gdt->get_hfta_comparison_fcn(gdt).c_str(),g,g);
+	  		if(gdt->is_buffer_type())
+				sprintf(tmpstr,"(%s(&(grp1.gb_var%d), &(grp2.gb_var%d))==0)",
+					gdt->get_hfta_equals_fcn(gdt).c_str(),g,g);
+	  		else
+				sprintf(tmpstr,"(%s((grp1.gb_var%d), (grp2.gb_var%d))==0)",
+					gdt->get_hfta_equals_fcn(gdt).c_str(),g,g);
 		}else{
-			sprintf(tmpstr,"grp1->gb_var%d == grp2->gb_var%d",g,g);
+			sprintf(tmpstr,"grp1.gb_var%d == grp2.gb_var%d",g,g);
 		}
 		ret += tmpstr;
 	}
@@ -9832,14 +9900,17 @@ ret += "// hfta_disorder = "+int_to_string(hfta_disorder)+"\n";
 string sgah_qpn::generate_operator(int i, string params){
 
 	if(hfta_disorder < 2){
+		string op_name = "groupby_operator";
+		if(hfta_slow_flush>0)
+			op_name = "groupby_slowflush_operator";
 		return(
-			"	groupby_operator<" +
+			"	"+op_name+"<" +
 			generate_functor_name()+","+
 			generate_functor_name() + "_groupdef, " +
 			generate_functor_name() + "_aggrdef, " +
 			generate_functor_name()+"_hash_func, "+
 			generate_functor_name()+"_equal_func "
-			"> *op"+int_to_string(i)+" = new groupby_operator<"+
+			"> *op"+int_to_string(i)+" = new "+op_name+"<"+
 			generate_functor_name()+","+
 			generate_functor_name() + "_groupdef, " +
 			generate_functor_name() + "_aggrdef, " +
@@ -11244,10 +11315,10 @@ string join_eq_hash_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_
 		if(hashkey_dt[p]->complex_comparison(hashkey_dt[p])){
 		  if(hashkey_dt[p]->is_buffer_type())
 			sprintf(tmpstr,"(%s(&(key1->hashkey_var%d), &(key2->hashkey_var%d))==0)",
-				hashkey_dt[p]->get_hfta_comparison_fcn(hashkey_dt[p]).c_str(),p,p);
+				hashkey_dt[p]->get_hfta_equals_fcn(hashkey_dt[p]).c_str(),p,p);
 		  else
 			sprintf(tmpstr,"(%s((key1->hashkey_var%d), (key2->hashkey_var%d))==0)",
-				hashkey_dt[p]->get_hfta_comparison_fcn(hashkey_dt[p]).c_str(),p,p);
+				hashkey_dt[p]->get_hfta_equals_fcn(hashkey_dt[p]).c_str(),p,p);
 		}else{
 			sprintf(tmpstr,"key1->hashkey_var%d == key2->hashkey_var%d",p,p);
 		}
@@ -12591,10 +12662,10 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 		if(gdt->complex_comparison(gdt)){
 		  if(gdt->is_buffer_type())
 			sprintf(tmpstr,"(%s(&(grp1->gb_var%d), &(grp2->gb_var%d))==0)",
-				gdt->get_hfta_comparison_fcn(gdt).c_str(),g,g);
+				gdt->get_hfta_equals_fcn(gdt).c_str(),g,g);
 		  else
 			sprintf(tmpstr,"(%s((grp1->gb_var%d), (grp2->gb_var%d))==0)",
-				gdt->get_hfta_comparison_fcn(gdt).c_str(),g,g);
+				gdt->get_hfta_equals_fcn(gdt).c_str(),g,g);
 		}else{
 			sprintf(tmpstr,"grp1->gb_var%d == grp2->gb_var%d",g,g);
 		}
@@ -12621,10 +12692,10 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 				if(gdt->complex_comparison(gdt)){
 				  if(gdt->is_buffer_type())
 					sprintf(tmpstr,"(%s(&(grp1->gb_var%d), &(grp2->gb_var%d))==0)",
-						gdt->get_hfta_comparison_fcn(gdt).c_str(),g,g);
+						gdt->get_hfta_equals_fcn(gdt).c_str(),g,g);
 				  else
 					sprintf(tmpstr,"(%s((grp1->gb_var%d), (grp2->gb_var%d))==0)",
-						gdt->get_hfta_comparison_fcn(gdt).c_str(),g,g);
+						gdt->get_hfta_equals_fcn(gdt).c_str(),g,g);
 				}else{
 					sprintf(tmpstr,"grp1->gb_var%d == grp2->gb_var%d",g,g);
 				}
@@ -12695,21 +12766,34 @@ string rsgah_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_fcns, v
 		ret+="\t"+this->gb_tbl.get_data_type(g)->make_host_cvar(tmpstr)+";\n";
 	}
 //		Constructors
+
 	ret += "\t"+generate_functor_name() + "_groupdef(){};\n";
+	ret += "\t// shallow copy constructor\n";
 	ret += "\t"+generate_functor_name() + "_groupdef("+
-		this->generate_functor_name() + "_groupdef *gd){\n";
+		this->generate_functor_name() + "_groupdef &gd){\n";
 	for(g=0;g<gb_tbl.size();g++){
 		data_type *gdt = gb_tbl.get_data_type(g);
-		if(gdt->is_buffer_type()){
-			sprintf(tmpstr,"\t\t%s(&gb_var%d, &(gd->gb_var%d));\n",
-			  gdt->get_hfta_buffer_assign_copy().c_str(),g,g );
-			ret += tmpstr;
-		}else{
-			sprintf(tmpstr,"\t\tgb_var%d = gd->gb_var%d;\n",g,g);
-			ret += tmpstr;
-		}
+		sprintf(tmpstr,"\t\tgb_var%d = gd.gb_var%d;\n",g,g);
+		ret += tmpstr;
 	}
 	ret += "\t};\n";
+
+	ret += "\t// deep assignment operator\n";
+	ret += "\t"+generate_functor_name() + "_groupdef& operator=(const "+
+            this->generate_functor_name() + "_groupdef &gd){\n";
+    for(g=0;g<gb_tbl.size();g++){
+            data_type *gdt = gb_tbl.get_data_type(g);
+            if(gdt->is_buffer_type()){
+                    sprintf(tmpstr,"\t\t%s(&gb_var%d, &(gd.gb_var%d));\n",
+                      gdt->get_hfta_buffer_assign_copy().c_str(),g,g );
+                    ret += tmpstr;
+            }else{
+                    sprintf(tmpstr,"\t\tgb_var%d = gd.gb_var%d;\n",g,g);
+                    ret += tmpstr;
+            }
+    }
+    ret += "\t}\n";	
+
 //		destructor
 	ret += "\t~"+ generate_functor_name() + "_groupdef(){\n";
 	for(g=0;g<gb_tbl.size();g++){
@@ -12877,6 +12961,7 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 			}
 		}
 		ret += "\tgs_int32_t needs_temporal_flush;\n";
+		ret += "\tbool disordered_arrival;\n";
 	}
 
 //			The publicly exposed functions
@@ -12914,18 +12999,16 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 
 //		temporal flush variables
 //		ASSUME that structured values won't be temporal.
-	gs_int32_t temporal_gb = 0;
 	if(uses_temporal_flush){
 		ret += "//\t\tInitialize temporal flush variables.\n";
 		for(g=0;g<gb_tbl.size();g++){
 			data_type *gdt = gb_tbl.get_data_type(g);
 			if(gdt->is_temporal()){
 				literal_t gl(gdt->type_indicator());
-				sprintf(tmpstr,"\tlast_gb%d = %s;\n",g, gl.to_hfta_C_code("").c_str());
-				ret.append(tmpstr);
 				sprintf(tmpstr,"\tcurr_gb%d = %s;\n",g, gl.to_hfta_C_code("").c_str());
 				ret.append(tmpstr);
-				temporal_gb = g;
+				sprintf(tmpstr,"\tlast_gb%d = %s;\n",g, gl.to_hfta_C_code("").c_str());
+				ret.append(tmpstr);
 			}
 		}
 		ret += "\tneeds_temporal_flush = 0;\n";
@@ -13044,6 +13127,7 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 	if(uses_temporal_flush){
 		ret+= "\tif( ( (";
 		bool first_one = true;
+		string disorder_test;
 		for(g=0;g<gb_tbl.size();g++){
 			data_type *gdt = gb_tbl.get_data_type(g);
 
@@ -13052,30 +13136,43 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 			  sprintf(tmpstr,"gbval->gb_var%d",g);   string rhs_op = tmpstr;
 			  if(first_one){first_one = false;} else {ret += ") && (";}
 			  ret += generate_lt_test(lhs_op, rhs_op, gdt);
+			  disorder_test += generate_lt_test(rhs_op, lhs_op, gdt);
 			}
 		}
 		ret += ") ) ){\n";
+		int temporal_gb=-1;
 		for(g=0;g<gb_tbl.size();g++){
 		  data_type *gdt = gb_tbl.get_data_type(g);
 		  if(gdt->is_temporal()){
-				temporal_gb = g;
-			  if(gdt->is_buffer_type()){	// TODO first, last?  or delete?
-				sprintf(tmpstr,"\t\t%s(&(gbval->gb_var%d),&last_gb%d);\n",gdt->get_hfta_buffer_replace().c_str(),g,g);
+			  if(gdt->is_buffer_type()){
+				sprintf(tmpstr,"\t\t%s(&(gbval->gb_var%d),&curr_gb%d);\n",gdt->get_hfta_buffer_replace().c_str(),g,g);
 			  }else{
+//				sprintf(tmpstr,"\t\tlast_gb%d = curr_gb%d;\n",g,g);
+//				ret += tmpstr;
+//				sprintf(tmpstr,"\t\tcurr_gb%d = gbval->gb_var%d;\n",g,g);
+
 				ret += "\t\tif(curr_gb"+to_string(g)+"==0){\n";
 				ret += "\t\t\tlast_gb"+to_string(g)+" = gbval->gb_var"+to_string(g)+";\n";
 				ret += "\t\t}else{\n";
 				ret += "\t\t\tlast_gb"+to_string(g)+" = curr_gb"+to_string(g)+";\n";
 				ret += "\t\t}\n";
 				sprintf(tmpstr,"\t\tcurr_gb%d = gbval->gb_var%d;\n",g,g);
+				temporal_gb=g;
 			  }
 			  ret += tmpstr;
 			}
 		}
-		ret += "\t\tneeds_temporal_flush = curr_gb"+to_string (temporal_gb)+" - last_gb"+to_string(temporal_gb)+";\n"; 
-		ret += "\t\t}else{\n"
-			"\t\t\tneeds_temporal_flush=0;\n"
-			"\t\t}\n";
+		ret += "\t\tneeds_temporal_flush = curr_gb"+to_string (temporal_gb)+" - last_gb"+to_string(temporal_gb)+";\n";
+		ret += "\t}else{\n"
+			"\t\tneeds_temporal_flush=0;\n"
+			"\t}\n";
+
+		ret += "\tdisordered_arrival = "+disorder_test+";\n";
+//		ret += "\tif( ( ("+disorder_test+") ) ){\n";
+//		ret += "\t\tdisordered_arrival=true;\n";
+//		ret += "\t}else{\n";
+//		ret += "\t\tdisordered_arrival=false;\n";
+//		ret += "\t}\n";
 	}
 
 
@@ -13184,8 +13281,8 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 //			update an aggregate object
 
 	ret += "void update_aggregate(host_tuple &tup0, "
-		+generate_functor_name()+"_groupdef *gbval, "+
-		generate_functor_name()+"_aggrdef *aggval){\n";
+		+generate_functor_name()+"_groupdef &gbval, "+
+		generate_functor_name()+"_aggrdef &aggval){\n";
 	//		Variables for execution of the function.
 	ret += "\tgs_int32_t problem = 0;\n";	// return unpack failure
 
@@ -13196,7 +13293,7 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 //		Unpack all remaining attributes
 	ret += gen_remaining_colrefs(schema, cid_set, found_cids, "", needs_xform);
 	for(a=0;a<aggr_tbl.size();a++){
-	  sprintf(tmpstr,"aggval->aggr_var%d",a);
+	  sprintf(tmpstr,"aggval.aggr_var%d",a);
 	  string varname = tmpstr;
 	  ret.append(generate_aggr_update(varname,&aggr_tbl,a, schema));
 	}
@@ -13208,29 +13305,31 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 //			reinitialize an aggregate object
 
 	ret += "void reinit_aggregates( "+
-		generate_functor_name()+"_groupdef *gbval, "+
-		generate_functor_name()+"_aggrdef *aggval){\n";
+		generate_functor_name()+"_groupdef &gbval, "+
+		generate_functor_name()+"_aggrdef &aggval){\n";
 	//		Variables for execution of the function.
 	ret += "\tgs_int32_t problem = 0;\n";	// return unpack failure
 
 //			use of temporaries depends on the aggregate,
 //			generate them in generate_aggr_update
 
+	int temporal_gb;	// track the # of the temporal gb
 	for(g=0;g<gb_tbl.size();g++){
 	  data_type *gdt = gb_tbl.get_data_type(g);
 	  if(gdt->is_temporal()){
 		  if(gdt->is_buffer_type()){
-			sprintf(tmpstr,"\t\t%s(&(gbval->gb_var%d),&last_gb%d);\n",gdt->get_hfta_buffer_replace().c_str(),g,g);
+			sprintf(tmpstr,"\t\t%s(&(gbval.gb_var%d),&last_gb%d);\n",gdt->get_hfta_buffer_replace().c_str(),g,g);
 		  }else{
-			sprintf(tmpstr,"\t\t gbval->gb_var%d =last_gb%d;\n",g,g);
+			sprintf(tmpstr,"\t\t gbval.gb_var%d =last_gb%d;\n",g,g);
 		  }
 		  ret += tmpstr;
+		  temporal_gb = g;
 		}
 	}
 
 //		Unpack all remaining attributes
 	for(a=0;a<aggr_tbl.size();a++){
-	  sprintf(tmpstr,"aggval->aggr_var%d",a);
+	  sprintf(tmpstr,"aggval.aggr_var%d",a);
 	  string varname = tmpstr;
 	  ret.append(generate_aggr_reinitialize(varname,&aggr_tbl,a, schema));
 	}
@@ -13249,9 +13348,11 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 	if(uses_temporal_flush){
 		ret += "\treturn needs_temporal_flush;\n";
 	}else{
-		ret += "\treturn 0;\n";
+		ret += "\treturn false;\n";
 	}
 	ret += "};\n";
+
+	ret += "bool disordered(){return disordered_arrival;}\n";
 
 //------------------------------------------------
 //	time bucket management
@@ -13272,15 +13373,15 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 //			so I'll leave it in longhand.
 
 	ret += "host_tuple create_output_tuple("
-		+generate_functor_name()+"_groupdef *gbval, "+
-		generate_functor_name()+"_aggrdef *aggval, bool &failed){\n";
+		+generate_functor_name()+"_groupdef &gbval, "+
+		generate_functor_name()+"_aggrdef &aggval, bool &failed){\n";
 
 	ret += "\thost_tuple tup;\n";
 	ret += "\tfailed = false;\n";
 	ret += "\tgs_retval_t retval = 0;\n";
 
-	string gbvar = "gbval->gb_var";
-	string aggvar = "aggval->";
+	string gbvar = "gbval.gb_var";
+	string aggvar = "aggval.";
 
 
 //			First, get the return values from the UDAFS
@@ -13424,14 +13525,14 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 //		been unpacked.  delete the string udaf return values at the end.
 
 	ret += "bool cleaning_when("
-		+generate_functor_name()+"_groupdef *gbval, "+
-		generate_functor_name()+"_aggrdef *aggval){\n";
+		+generate_functor_name()+"_groupdef &gbval, "+
+		generate_functor_name()+"_aggrdef &aggval){\n";
 
 	ret += "\tbool retval = true;\n";
 
 
-	gbvar = "gbval->gb_var";
-	aggvar = "aggval->";
+	gbvar = "gbval.gb_var";
+	aggvar = "aggval.";
 
 
 	set<int> clw_pfcns;
@@ -13508,7 +13609,7 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 
 	ret += "struct "+generate_functor_name()+"_hash_func{\n";
 	ret += "\tgs_uint32_t operator()(const "+generate_functor_name()+
-				"_groupdef *grp) const{\n";
+				"_groupdef &grp) const{\n";
 	ret += "\t\treturn(0";
 	for(g=0;g<gb_tbl.size();g++){
 		data_type *gdt = gb_tbl.get_data_type(g);
@@ -13516,11 +13617,11 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 			ret += "^";
 			if(gdt->use_hashfunc()){
 				if(gdt->is_buffer_type())
-					sprintf(tmpstr,"(%s*%s(&(grp->gb_var%d)))",hash_nums[g%NRANDS].c_str(),gdt->get_hfta_hashfunc().c_str(),g);
+					sprintf(tmpstr,"(%s*%s(&(grp.gb_var%d)))",hash_nums[g%NRANDS].c_str(),gdt->get_hfta_hashfunc().c_str(),g);
 					else
-				sprintf(tmpstr,"(%s*%s(grp->gb_var%d))",hash_nums[g%NRANDS].c_str(),gdt->get_hfta_hashfunc().c_str(),g);
+				sprintf(tmpstr,"(%s*%s(grp.gb_var%d))",hash_nums[g%NRANDS].c_str(),gdt->get_hfta_hashfunc().c_str(),g);
 			}else{
-				sprintf(tmpstr,"(%s*grp->gb_var%d)",hash_nums[g%NRANDS].c_str(),g);
+				sprintf(tmpstr,"(%s*grp.gb_var%d)",hash_nums[g%NRANDS].c_str(),g);
 			}
 			ret += tmpstr;
 		}
@@ -13533,8 +13634,8 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 //			The comparison function
 
 	ret += "struct "+generate_functor_name()+"_equal_func{\n";
-	ret += "\tbool operator()(const "+generate_functor_name()+"_groupdef *grp1, "+
-			generate_functor_name()+"_groupdef *grp2) const{\n";
+	ret += "\tbool operator()(const "+generate_functor_name()+"_groupdef &grp1, "+
+			"const "+generate_functor_name()+"_groupdef &grp2) const{\n";
 	ret += "\t\treturn( (";
 
 	string hcmpr = "";
@@ -13545,13 +13646,13 @@ aggr_table_entry *ate = aggr_tbl.agr_tbl[a];
 			if(first_exec){first_exec=false;}else{ hcmpr += ") && (";}
 			if(gdt->complex_comparison(gdt)){
 			  if(gdt->is_buffer_type())
-				sprintf(tmpstr,"(%s(&(grp1->gb_var%d), &(grp2->gb_var%d))==0)",
-				gdt->get_hfta_comparison_fcn(gdt).c_str(),g,g);
+				sprintf(tmpstr,"(%s(&(grp1.gb_var%d), &(grp2.gb_var%d))==0)",
+				gdt->get_hfta_equals_fcn(gdt).c_str(),g,g);
 			  else
-				sprintf(tmpstr,"(%s((grp1->gb_var%d), (grp2->gb_var%d))==0)",
-				gdt->get_hfta_comparison_fcn(gdt).c_str(),g,g);
+				sprintf(tmpstr,"(%s((grp1.gb_var%d), (grp2.gb_var%d))==0)",
+				gdt->get_hfta_equals_fcn(gdt).c_str(),g,g);
 			}else{
-				sprintf(tmpstr,"grp1->gb_var%d == grp2->gb_var%d",g,g);
+				sprintf(tmpstr,"grp1.gb_var%d == grp2.gb_var%d",g,g);
 			}
 			hcmpr += tmpstr;
 		}

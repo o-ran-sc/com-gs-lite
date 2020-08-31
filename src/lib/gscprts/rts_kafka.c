@@ -167,6 +167,7 @@ static gs_retval_t kafka_replay_init(gs_sp_t device)
 	gs_sp_t	verbosetmp;
 	gs_sp_t	delaytmp;
 	gs_sp_t	tempdel;
+	gs_sp_t	maxfieldtmp;	
 
 	if ((verbosetmp=get_iface_properties(device,(gs_sp_t)"verbose"))!=0) {
 		if (strncmp(verbosetmp,"TRUE",4)==0) {
@@ -195,10 +196,14 @@ static gs_retval_t kafka_replay_init(gs_sp_t device)
 
 	if ((delaytmp=get_iface_properties(device,(gs_sp_t)"startupdelay"))!=0) {
 		if (verbose) {
-				fprintf(stderr,"Startup delay of %u seconds\n",atoi(get_iface_properties(device,(gs_sp_t)"startupdelay")));
+				fprintf(stderr,"Startup delay of %u seconds\n",atoi(delaytmp));
 		}
-		startupdelay=atoi(get_iface_properties(device,(gs_sp_t)"startupdelay"));
+		startupdelay=atoi(delaytmp);
 	}
+
+	if ((maxfieldtmp=get_iface_properties(device,(gs_sp_t)"_max_csv_pos"))!=0) {
+		max_field_kafka=atoi(maxfieldtmp);
+	}	
 
 	// set maximum field nubmer to be extracted by csv parser
 	csv_set_maxfield(max_field_kafka);

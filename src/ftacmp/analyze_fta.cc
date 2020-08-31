@@ -5252,7 +5252,7 @@ void gather_pr_opcmp_fcns(predicate_t *pr, set<string> &fcn_set){
 	case PRED_IN:
 		ldt = pr->get_left_se()->get_data_type();
 		if(ldt->complex_comparison(ldt) ){
-			fcn_set.insert( ldt->get_comparison_fcn(ldt) );
+			fcn_set.insert( ldt->get_equals_fcn(ldt) );
 		}
 		gather_se_opcmp_fcns(pr->get_left_se(), fcn_set);
 		return;
@@ -5260,7 +5260,7 @@ void gather_pr_opcmp_fcns(predicate_t *pr, set<string> &fcn_set){
 		ldt = pr->get_left_se()->get_data_type();
 		rdt = pr->get_right_se()->get_data_type();
 		if(ldt->complex_comparison(rdt) ){
-			fcn_set.insert( ldt->get_comparison_fcn(rdt) );
+			fcn_set.insert( ldt->get_comparison_fcn(ldt) );
 		}
 		gather_se_opcmp_fcns(pr->get_left_se(),fcn_set) ;
 		gather_se_opcmp_fcns(pr->get_right_se(),fcn_set) ;

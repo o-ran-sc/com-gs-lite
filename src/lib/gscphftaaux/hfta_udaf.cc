@@ -207,7 +207,7 @@ struct avg_udaf_lfta_struct_t{
         gs_uint32_t cnt;
 };
 
-//              sctarchpad struct
+//              scratchpad struct
 struct avg_udaf_hfta_struct_t{
         gs_int64_t sum;
         gs_uint32_t cnt;
@@ -714,4 +714,214 @@ void running_array_aggr_hfta_HFTA_AGGR_OUTPUT_(vstring* res, vstring* scratch) {
 void running_array_aggr_hfta_HFTA_AGGR_DESTROY_(vstring* scratch) {
   hfta_vstr_destroy(scratch);
  }
+
+
+////////////////////////////////////////////
+//		Aggregate strings by catenation
+	
+
+struct CAT_aggr_scratch{
+	std::string val;
+	int x;
+};
+
+struct CAT_aggr_scratch_ptr{
+	CAT_aggr_scratch *ptr;
+};
+
+void CAT_aggr_HFTA_AGGR_INIT_(gs_sp_t s){
+	CAT_aggr_scratch_ptr *p = (CAT_aggr_scratch_ptr *)s;
+	CAT_aggr_scratch *v = new CAT_aggr_scratch();
+	v->x = 101;
+
+	p->ptr = v;
+}
+void CAT_aggr_HFTA_AGGR_REINIT_(gs_sp_t s){
+	CAT_aggr_scratch_ptr *p = (CAT_aggr_scratch_ptr *)s;
+	CAT_aggr_scratch *v = p->ptr;
+	v->val="";
+}
+void CAT_aggr_HFTA_AGGR_UPDATE_(gs_sp_t s, vstring *sep, vstring *str){
+char buf1[MAXTUPLESZ-20], buf2[MAXTUPLESZ-20];
+int i;
+for(i=0;i<sep->length;++i) buf1[i] = *(((char *)sep->offset)+i);
+buf1[i]='\0';
+for(i=0;i<str->length;++i) buf2[i] = *(((char *)str->offset)+i);
+buf2[i]='\0';
+	CAT_aggr_scratch_ptr *p = (CAT_aggr_scratch_ptr *)s;
+	CAT_aggr_scratch *v = p->ptr;
+	if(v->val.size()>0)
+		v->val.append((char *)(sep->offset), sep->length);
+	v->val.append((char *)(str->offset), str->length);
+//printf("sep=%s, str=%s, val=%s\n",buf1,buf2,v->val.c_str());
+}
+void CAT_aggr_HFTA_AGGR_OUTPUT_(vstring *res, gs_sp_t s){
+	CAT_aggr_scratch_ptr *p = (CAT_aggr_scratch_ptr *)s;
+	CAT_aggr_scratch *v = p->ptr;
+//printf("output val=%s\n",v->val.c_str());
+	res->offset = (gs_p_t)malloc(v->val.size());
+	res->length = v->val.size();
+	if(res->length>MAXTUPLESZ-20)
+		res->length=MAXTUPLESZ-20;
+//	v->val.copy((char *)(res->offset), 0, res->length);
+	const char *dat = v->val.c_str();
+	memcpy((char *)(res->offset), dat, res->length);
+//	for(int i=0;i<res->length;++i)
+//		*(((char *)res->offset)+i) = dat[i];
+	res->reserved = INTERNAL;
+}
+void CAT_aggr_HFTA_AGGR_DESTROY_(gs_sp_t s){
+	CAT_aggr_scratch_ptr *p = (CAT_aggr_scratch_ptr *)s;
+	CAT_aggr_scratch *v = p->ptr;
+	delete v;
+}
+
+	
+	
+///////////////////////////////////////////////////////////////
+//	time_avg((sample, ts, window_size)
+//  Compute time-weighted average sum(sample*duration)/window_size
+//  duration is difference between current and next ts.
+//  The idea is to compute a sum over a step function.
+//  
+	
+struct time_avg_udaf_str{
+	gs_float_t sum;
+	gs_float_t last_val;
+	gs_uint64_t last_ts;
+	gs_uint64_t window;
+	gs_uint64_t first_ts;
+	gs_uint8_t event_occurred;
+};
+	
+void time_avg_HFTA_AGGR_INIT_(gs_sp_t s){
+	time_avg_udaf_str *scratch = (time_avg_udaf_str *)s;
+	scratch->sum = 0.0;
+	scratch->last_val = 0.0;
+	scratch->last_ts = 0;
+	scratch->first_ts = 0;
+	scratch->event_occurred = 0;
+}
+
+void time_avg_HFTA_AGGR_DESTROY_(gs_sp_t s){
+}
+
+void time_avg_HFTA_AGGR_REINIT_(gs_sp_t s){
+	time_avg_udaf_str *scratch = (time_avg_udaf_str *)s;
+	scratch->event_occurred = 0;
+	scratch->sum = 0;
+//printf("time_avg_reinit: occurred=%d, last_val=%lf, sum=%lf, first_ts=%lld, last_ts=%lld\n",scratch->event_occurred, scratch->last_val, scratch->sum, scratch->first_ts, scratch->last_ts);
+}
+
+void time_avg_HFTA_AGGR_OUTPUT_(gs_float_t *result, gs_sp_t s){
+	time_avg_udaf_str *scratch = (time_avg_udaf_str *)s;
+	if(scratch->event_occurred==0){
+		*result =  scratch->last_val;
+//printf("\ttime_avg outpt1 sum=%lf, last_val=%lf, result=%lf\n", scratch->sum, scratch->last_val, *result);
+		return;
+	}
+	gs_int64_t end_time = scratch->window * (scratch->last_ts/scratch->window + 1);
+	scratch->sum += (end_time - scratch->last_ts) * (gs_float_t)(scratch->last_val); 
+	gs_int64_t start_time = end_time - scratch->window;
+	if(scratch->first_ts > start_time){
+		*result = scratch->sum / (end_time - scratch->first_ts);
+//printf("\ttime_avg outpt2 sum=%lf, start_time=%lld, end_time=%lld, first_ts=%lld, last_ts=%lld,result=%lf\n", scratch->sum, start_time, end_time, scratch->first_ts, scratch->last_ts, *result);
+	}else{
+		*result = scratch->sum / (end_time - start_time);
+//printf("\ttime_avg outpt3 sum=%lf, start_time=%lld, end_time=%lld, first_ts=%lld, last_ts=%lld,result=%lf\n", scratch->sum, start_time, end_time, scratch->first_ts, scratch->last_ts, *result);
+	}
+}
+
+void time_avg_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_float_t val, gs_int64_t ts, gs_int64_t window){
+	time_avg_udaf_str *scratch = (time_avg_udaf_str *)s;
+	scratch->window = window;
+	if(scratch->first_ts==0){
+		scratch->first_ts = ts;
+	}else{
+		if(scratch->event_occurred){
+
+			scratch->sum += (ts - scratch->last_ts) * scratch->last_val;
+		}else{
+			gs_int64_t start_time = scratch->window * (scratch->last_ts/scratch->window);
+			scratch->sum += (ts - start_time) * scratch->last_val;
+		}
+	}
+//printf("time_avg_upd: val=%lf, occurred=%d, last_val=%lf, sum=%lf, ts=%lld, first_ts=%lld, last_ts=%lld\n",val, scratch->event_occurred, scratch->last_val, scratch->sum, ts, scratch->first_ts, scratch->last_ts);
+	scratch->last_val = val;
+	scratch->last_ts = ts;
+	scratch->event_occurred = 1;
+}
+void time_avg_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint32_t val, gs_int64_t ts, gs_int64_t window){
+	time_avg_HFTA_AGGR_UPDATE_(s, (gs_float_t)val, ts, window);
+}
+void time_avg_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_int32_t val, gs_int64_t ts, gs_int64_t window){
+	time_avg_HFTA_AGGR_UPDATE_(s, (gs_float_t)val, ts, window);
+}
+void time_avg_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint64_t val, gs_int64_t ts, gs_int64_t window){
+	time_avg_HFTA_AGGR_UPDATE_(s, (gs_float_t)val, ts, window);
+}
+void time_avg_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_int64_t val, gs_int64_t ts, gs_int64_t window){
+	time_avg_HFTA_AGGR_UPDATE_(s, (gs_float_t)val, ts, window);
+}
+	
+
+// ------------------------------------------------------------
+//		running_sum_max : get the running sum of an int,
+//		be able to report this sum and also its max value
+//		during the time window
+
+struct run_sum_max_udaf_str{
+	gs_int64_t sum;
+	gs_int64_t max;
+};
+void run_sum_max_HFTA_AGGR_INIT_(gs_sp_t s){
+	run_sum_max_udaf_str *scratch = (run_sum_max_udaf_str *)s;
+	scratch->sum = 0;
+	scratch->max = 0;
+}
+void run_sum_max_HFTA_AGGR_REINIT_(gs_sp_t s){
+	run_sum_max_udaf_str *scratch = (run_sum_max_udaf_str *)s;
+	scratch->max = scratch->sum;
+}
+void run_sum_max_HFTA_AGGR_OUTPUT_(vstring *r,gs_sp_t b){
+        r->length = sizeof(run_sum_max_udaf_str);
+        r->offset = (gs_p_t)(b);
+        r->reserved = SHALLOW_COPY;
+}
+void run_sum_max_HFTA_AGGR_DESTROY_(gs_sp_t b){
+        return;
+}
+
+void run_sum_max_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint64_t v){
+	run_sum_max_udaf_str *scratch = (run_sum_max_udaf_str *)s;
+	scratch->sum+=v;
+	if(scratch->sum>scratch->max) scratch->max=scratch->sum;
+}
+void run_sum_max_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_int64_t v){
+	run_sum_max_udaf_str *scratch = (run_sum_max_udaf_str *)s;
+	scratch->sum+=v;
+	if(scratch->sum>scratch->max) scratch->max=scratch->sum;
+}
+void run_sum_max_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_uint32_t v){
+	run_sum_max_udaf_str *scratch = (run_sum_max_udaf_str *)s;
+	scratch->sum+=v;
+	if(scratch->sum>scratch->max) scratch->max=scratch->sum;
+}
+void run_sum_max_HFTA_AGGR_UPDATE_(gs_sp_t s, gs_int32_t v){
+	run_sum_max_udaf_str *scratch = (run_sum_max_udaf_str *)s;
+	scratch->sum+=v;
+	if(scratch->sum>scratch->max) scratch->max=scratch->sum;
+}
+//	the extraction functions
+gs_int64_t extr_running_sum(vstring *v){
+	if(v->length != sizeof(run_sum_max_udaf_str)) return 0;
+	run_sum_max_udaf_str *vs = (run_sum_max_udaf_str *)(v->offset);
+	return vs->sum;
+}
+gs_int64_t extr_running_sum_max(vstring *v){
+	if(v->length != sizeof(run_sum_max_udaf_str)) return 0;
+	run_sum_max_udaf_str *vs = (run_sum_max_udaf_str *)(v->offset);
+	return vs->max;
+}
+
 

@@ -219,7 +219,7 @@ int n_calls, n_iters, n_eqk;
 				}
 			}
 		}
-		join_tbl[i].clear(); join_tbl[i].rehash();
+		join_tbl[i].clear(); join_tbl[i].resize();
 	}
 
   }

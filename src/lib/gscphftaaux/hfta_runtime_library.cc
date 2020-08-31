@@ -65,8 +65,8 @@ gs_retval_t hfta_vstr_length(vstring *str) {
 }
 
 //		Assume that SRC is either INTERNAL or SHALLOW_COPY
-void hfta_vstr_assign_with_copy_in_tuple(vstring32 * target, vstring * src,
-	gs_sp_t data_offset,  gs_retval_t int_offset) {
+void hfta_vstr_assign_with_copy_in_tuple(vstring32 * target,
+		const vstring * src, gs_sp_t data_offset,  gs_retval_t int_offset) {
 	target->length = src->length;
 	target->offset = int_offset;
 	target->reserved = PACKED;
@@ -77,7 +77,7 @@ void hfta_vstr_assign_with_copy_in_tuple(vstring32 * target, vstring * src,
 //		Ted wrote the following function.
 //		make deep copy of src.  Assume that dst is already empty.
 //		Assume that SRC is either INTERNAL or SHALLOW_COPY
-void hfta_vstr_assign_with_copy(vstring *dst, vstring *src){
+void hfta_vstr_assign_with_copy(vstring *dst, const vstring *src){
 	dst->length=src->length;
 	if(src->length){
 		dst->offset=(gs_p_t)malloc(dst->length);
@@ -89,7 +89,7 @@ void hfta_vstr_assign_with_copy(vstring *dst, vstring *src){
 //		Ted wrote the following function.
 //		Make a deep copy of src.  garbage collect dst if needed.
 //		Assume that SRC is either INTERNAL or SHALLOW_COPY
-void hfta_vstr_replace(vstring *dst, vstring *src){
+void hfta_vstr_replace(vstring *dst, const vstring *src){
 	hfta_vstr_destroy(dst);
 	hfta_vstr_assign_with_copy(dst,src);
 }
@@ -169,6 +169,23 @@ gs_retval_t hfta_vstr_compare(const vstring * s1, const vstring * s2) {
 
 	if(cmp_ret) return cmp_ret;
 	return(s1->length - s2->length);
+}
+
+gs_retval_t hfta_vstr_equal(const vstring * s1, const vstring * s2) {
+	gs_int32_t x;
+
+	if(s1->length != s2->length)
+		return -1;
+
+//	cmp_ret=memcmp((void *)s1->offset,(void *)s2->offset,s1->length);
+    for(x=0;x<s1->length;x++) {
+        if (((char *)(s1->offset))[x]!=((char *)(s2->offset))[x]) {
+            return -1;
+        }
+    }
+
+
+	return 0;
 }
 
 

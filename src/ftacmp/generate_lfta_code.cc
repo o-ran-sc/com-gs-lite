@@ -1053,7 +1053,7 @@ static string generate_predicate_code(predicate_t *pr,table_list *schema){
 			ret += "( ";
 
 	        if(ldt->complex_comparison(ldt) ){
-				ret +=  ldt->get_comparison_fcn(ldt) ;
+				ret +=  ldt->get_equals_fcn(ldt) ;
 				ret += "( ";
 				if(ldt->is_buffer_type() ) ret += "&";
 				ret += generate_se_code(pr->get_left_se(), schema);
@@ -1083,6 +1083,7 @@ static string generate_predicate_code(predicate_t *pr,table_list *schema){
 
 		ret += "( ";
         if(ldt->complex_comparison(rdt) ){
+// TODO can use get_equals_fcn if op is "=" ?
 			ret += ldt->get_comparison_fcn(rdt);
 			ret += "(";
 			if(ldt->is_buffer_type() ) ret += "&";
@@ -1153,7 +1154,7 @@ static string generate_equality_test(string &lhs_op, string &rhs_op, data_type *
 	string ret;
 
     if(dt->complex_comparison(dt) ){
-		ret += dt->get_comparison_fcn(dt);
+		ret += dt->get_equals_fcn(dt);
 		ret += "(";
 			if(dt->is_buffer_type() ) ret += "&";
 		ret += lhs_op;
@@ -1170,26 +1171,26 @@ static string generate_equality_test(string &lhs_op, string &rhs_op, data_type *
 	return(ret);
 }
 
-static string generate_comparison(string &lhs_op, string &rhs_op, data_type *dt){
-	string ret;
-
-    if(dt->complex_comparison(dt) ){
-		ret += dt->get_comparison_fcn(dt);
-		ret += "(";
-			if(dt->is_buffer_type() ) ret += "&";
-		ret += lhs_op;
-		ret += ", ";
-			if(dt->is_buffer_type() ) ret += "&";
-		ret += rhs_op;
-		ret += ") == 0";
-	}else{
-		ret += lhs_op;
-		ret += " == ";
-		ret += rhs_op;
-	}
-
-	return(ret);
-}
+//static string generate_comparison(string &lhs_op, string &rhs_op, data_type *dt){
+//	string ret;
+//
+ //   if(dt->complex_comparison(dt) ){
+//		ret += dt->get_equals_fcn(dt);
+//		ret += "(";
+//			if(dt->is_buffer_type() ) ret += "&";
+//		ret += lhs_op;
+//		ret += ", ";
+//			if(dt->is_buffer_type() ) ret += "&";
+//		ret += rhs_op;
+//		ret += ") == 0";
+//	}else{
+//		ret += lhs_op;
+//		ret += " == ";
+//		ret += rhs_op;
+//	}
+//
+//	return(ret);
+//}
 
 //		Here I assume that only MIN and MAX aggregates can be computed
 //		over BUFFER data types.
@@ -4630,7 +4631,7 @@ string generate_lfta_block(qp_node *fs, table_list *schema, int gid,
 
 
 
-int compute_snap_len(qp_node *fs, table_list *schema){
+int compute_snap_len(qp_node *fs, table_list *schema, string snap_type){
 
 //		Initialize global vars
 	gb_tbl = NULL;
@@ -4691,15 +4692,21 @@ int compute_snap_len(qp_node *fs, table_list *schema){
 	int tblref = (*csi).tblvar_ref;
     string field = (*csi).field;
 
-	param_list *field_params = schema->get_modifier_list(schref, field);
-	if(field_params->contains_key("snap_len")){
-		string fld_snap_str = field_params->val_of("snap_len");
-		int fld_snap;
-		if(sscanf(fld_snap_str.c_str(),"%d",&fld_snap)>0){
-			if(fld_snap > snap_len) snap_len = fld_snap;
-			n_snap++;
-		}else{
-			fprintf(stderr,"CONFIGURATION ERROR: field %s has a non-numeric snap length (%s), ignoring\n",field.c_str(), fld_snap_str.c_str() );
+	if(snap_type == "index"){
+		int pos = schema->get_field_idx(schref, field);
+		if(pos>snap_len) snap_len = pos;
+		n_snap++;
+	}else{
+		param_list *field_params = schema->get_modifier_list(schref, field);
+		if(field_params->contains_key("snap_len")){
+			string fld_snap_str = field_params->val_of("snap_len");
+			int fld_snap;
+			if(sscanf(fld_snap_str.c_str(),"%d",&fld_snap)>0){
+				if(fld_snap > snap_len) snap_len = fld_snap;
+				n_snap++;
+			}else{
+				fprintf(stderr,"CONFIGURATION ERROR: field %s has a non-numeric snap length (%s), ignoring\n",field.c_str(), fld_snap_str.c_str() );
+			}
 		}
 	}
   }
