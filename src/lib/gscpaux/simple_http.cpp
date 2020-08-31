@@ -193,7 +193,7 @@ int http_post_request_hdr(endpoint addr, gs_csp_t url, gs_sp_t json_request, gs_
 
 	if (connect(sockfd, (sockaddr*)&servaddr, sizeof(servaddr))) {
 		fprintf(stderr, "Unable to connect to HTTP server\n");
-		close(sockfd);
+		close(sockfd);		
 		return -1;
 	}
 

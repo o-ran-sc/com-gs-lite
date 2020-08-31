@@ -378,7 +378,7 @@ static gs_retval_t csv_replay_init(gs_sp_t device)
 	gs_sp_t compressortmp;
 	gs_sp_t bsatmp;  
 	gs_sp_t encryptedtmp;  
-	gs_sp_t maxfieldtmp
+	gs_sp_t maxfieldtmp;
 
 	gs_sp_t pkey_fname;  
 	gs_sp_t pwd_fname;  		
