@@ -30,6 +30,7 @@ Copyright 2014 AT&T Intellectual Property
 
 
 //		Internal functions
+void hfta_vstr_init(vstring * str);
 gs_retval_t Vstring_Constructor(vstring *, gs_csp_t);
 gs_retval_t hfta_vstr_length(vstring *);
 void hfta_vstr_assign_with_copy_in_tuple(vstring32 *, const vstring *,

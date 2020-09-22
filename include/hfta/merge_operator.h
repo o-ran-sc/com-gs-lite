@@ -214,6 +214,7 @@ if(is_temp_tuple){
 			top_tuple.channel = output_channel;
 			result.push_back(top_tuple);
 		}
+		merge_queue.clear();
 
 		queue_mem = 0;
 

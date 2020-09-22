@@ -1510,6 +1510,17 @@ string data_type::get_hfta_buffer_destroy(){
 
 	return("ERROR_NO_SUCH_buffer_destroy_FCN");
 }
+
+string data_type::get_hfta_buffer_init(){
+  switch(type){
+	case v_str_t:
+		return("hfta_vstr_init");
+	default:
+		break;
+	}
+
+	return("ERROR_NO_SUCH_buffer_init_FCN");
+}
 //-----------------------------
 
 

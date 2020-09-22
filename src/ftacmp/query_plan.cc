@@ -7856,9 +7856,9 @@ static string gen_unpack_cids(table_list *schema, col_id_set &new_cids, string o
 			unpack_fcn = dt.get_hfta_unpack_fcn_noxf();
 		}
 		if(dt.is_buffer_type()){
-			sprintf(tmpstr,"\t unpack_var_%s_%d = %s(tup%d.data, tup%d.tuple_size, unpack_offset_%s_%d, &problem);\n",field.c_str(), tblref, unpack_fcn.c_str(), tblref, tblref, field.c_str(), tblref);
+			sprintf(tmpstr,"\tunpack_var_%s_%d = %s(tup%d.data, tup%d.tuple_size, unpack_offset_%s_%d, &problem); // unpack_cid\n",field.c_str(), tblref, unpack_fcn.c_str(), tblref, tblref, field.c_str(), tblref);
 		}else{
-			sprintf(tmpstr,"\t unpack_var_%s_%d = %s_nocheck(tup%d.data,  unpack_offset_%s_%d);\n",field.c_str(), tblref, unpack_fcn.c_str(), tblref,  field.c_str(), tblref);
+			sprintf(tmpstr,"\tunpack_var_%s_%d = %s_nocheck(tup%d.data,  unpack_offset_%s_%d); // unpack_cid\n",field.c_str(), tblref, unpack_fcn.c_str(), tblref,  field.c_str(), tblref);
 		}
 		ret += tmpstr;
 		if(dt.is_buffer_type()){
@@ -8927,7 +8927,16 @@ string sgah_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_fcns, ve
 	if(structured_types.size()==0){
 		ret += "\t"+generate_functor_name() + "_groupdef(){};\n";
 	}else{
-		ret += "\t"+generate_functor_name() + "_groupdef(){}\n";
+		ret += "\t"+generate_functor_name() + "_groupdef(){\n";
+		for(g=0;g<gb_tbl.size();g++){
+			data_type *gdt = gb_tbl.get_data_type(g);
+			if(gdt->is_buffer_type()){
+				sprintf(tmpstr,"\t\t%s(&gb_var%d);\n",
+				  	gdt->get_hfta_buffer_init().c_str(), g );
+				ret += tmpstr;
+			}
+		}
+		ret += "\t};\n";
 	}
 
 
@@ -9476,7 +9485,10 @@ ret += "// hfta_disorder = "+int_to_string(hfta_disorder)+"\n";
 
 
 //		For temporal status tuple we don't need to do anything else
-	ret += "\tif (temp_tuple_received) return NULL;\n\n";
+	ret += "\tif (temp_tuple_received){\n";
+	ret += "\t\tdisordered_arrival = false;\n";
+	ret += "\t\treturn NULL;\n\n";
+	ret += "\t}\n";
 
 	for(w=0;w<where.size();++w){
 		sprintf(tmpstr,"//\t\tPredicate clause %d.\n",w);
@@ -11068,22 +11080,31 @@ string join_eq_hash_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_
 
 //			Deal with outer join stuff
 	col_id_set l_cids, r_cids;
+	col_id_set l_base_cids, r_base_cids; // l_cids and r_cids get modified
+										  // to account for extra_f fields to
+										  // unpack for value imputation
 	col_id_set::iterator ocsi;
 	for(ocsi=local_cids.begin();ocsi!=local_cids.end();++ocsi){
-		if((*ocsi).tblvar_ref == 0) l_cids.insert((*ocsi));
-		else						r_cids.insert((*ocsi));
+		if((*ocsi).tblvar_ref == 0){
+			l_cids.insert((*ocsi)); l_base_cids.insert((*ocsi));
+		}else{
+			r_cids.insert((*ocsi)); r_base_cids.insert((*ocsi));
+		}
 	}
 	for(ocsi=se_cids.begin();ocsi!=se_cids.end();++ocsi){
-		if((*ocsi).tblvar_ref == 0) l_cids.insert((*ocsi));
-		else						r_cids.insert((*ocsi));
+		if((*ocsi).tblvar_ref == 0){
+			l_cids.insert((*ocsi)); l_base_cids.insert((*ocsi));
+		}else{
+			r_cids.insert((*ocsi)); r_base_cids.insert((*ocsi));
+		}
 	}
 
 	ret += "\t}else if(tup0.data){\n";
 	string unpack_null = ""; col_id_set extra_cids;
-	for(ocsi=r_cids.begin();ocsi!=r_cids.end();++ocsi){
+	for(ocsi=r_base_cids.begin();ocsi!=r_base_cids.end();++ocsi){
 		string field = (*ocsi).field;
 		if(r_equiv.count(field)){
-			unpack_null+="\t\tunpack_var_"+field+"_1="+generate_se_code(r_equiv[field],schema)+";\n";
+			unpack_null+="\t\tunpack_var_"+field+"_1="+generate_se_code(r_equiv[field],schema)+"; // r_equiv\n";
 			get_new_se_cids(r_equiv[field],l_cids,new_cids,NULL);
 		}else{
 	    	int schref = (*ocsi).schema_ref;
@@ -11095,23 +11116,25 @@ string join_eq_hash_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_
 //					NB : works for string type only
 //					NNB: installed fix for ipv6, more of this should be pushed
 //						into the literal_t code.
-				unpack_null+="\tunpack_var_"+field+"_1= "+empty_lit.hfta_empty_literal_name()+";\n";
+				unpack_null+="\t\tunpack_var_"+field+"_1= "+empty_lit.hfta_empty_literal_name()+"; // empty\n";
 			}else{
-				unpack_null+="\tunpack_var_"+field+"_1="+empty_lit.to_hfta_C_code("")+";\n";
+				unpack_null+="\t\tunpack_var_"+field+"_1="+empty_lit.to_hfta_C_code("")+"; // empty\n";
 			}
 		}
 	}
+	ret += "// l_cids\n";
 	ret += gen_unpack_cids(schema,  l_cids, "tup", needs_xform);
+	ret += "// extra_cids\n";
 	ret += gen_unpack_cids(schema,  extra_cids, "tup", needs_xform);
 	ret += unpack_null;
 	ret += gen_unpack_partial_fcn(schema, partial_fcns, sl_pfcns, "tup");
 
 	ret+="\t}else{\n";
-	unpack_null = ""; extra_cids.clear();
-	for(ocsi=l_cids.begin();ocsi!=l_cids.end();++ocsi){
+	unpack_null = ""; extra_cids.clear(); new_cids.clear();
+	for(ocsi=l_base_cids.begin();ocsi!=l_base_cids.end();++ocsi){
 		string field = (*ocsi).field;
 		if(l_equiv.count(field)){
-			unpack_null+="\t\tunpack_var_"+field+"_0="+generate_se_code(l_equiv[field],schema)+";\n";
+			unpack_null+="\t\tunpack_var_"+field+"_0="+generate_se_code(l_equiv[field],schema)+"; // l_equiv\n";
 			get_new_se_cids(l_equiv[field],r_cids,new_cids,NULL);
 		}else{
 	    	int schref = (*ocsi).schema_ref;
@@ -11123,13 +11146,15 @@ string join_eq_hash_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_
 //					NB : works for string type only
 //					NNB: installed fix for ipv6, more of this should be pushed
 //						into the literal_t code.
-				unpack_null+="\tunpack_var_"+field+"_0= "+empty_lit.hfta_empty_literal_name()+";\n";
+				unpack_null+="\t\tunpack_var_"+field+"_0= "+empty_lit.hfta_empty_literal_name()+"; // empty\n";
 			}else{
-				unpack_null+="\tunpack_var_"+field+"_0="+empty_lit.to_hfta_C_code("")+";\n";
+				unpack_null+="\t\tunpack_var_"+field+"_0="+empty_lit.to_hfta_C_code("")+"; // empty\n";
 			}
 		}
 	}
+	ret += "// r_cids\n";
 	ret += gen_unpack_cids(schema,  r_cids, "tup", needs_xform);
+	ret += "// extra_cids\n";
 	ret += gen_unpack_cids(schema,  extra_cids, "tup", needs_xform);
 	ret += unpack_null;
 	ret += gen_unpack_partial_fcn(schema, partial_fcns, sl_pfcns, "tup");
@@ -12767,7 +12792,17 @@ string rsgah_qpn::generate_functor(table_list *schema, ext_fcn_list *Ext_fcns, v
 	}
 //		Constructors
 
-	ret += "\t"+generate_functor_name() + "_groupdef(){};\n";
+	ret += "\t"+generate_functor_name() + "_groupdef(){\n";
+	for(g=0;g<gb_tbl.size();g++){
+		data_type *gdt = gb_tbl.get_data_type(g);
+		if(gdt->is_buffer_type()){
+			sprintf(tmpstr,"\t\t%s(&gb_var%d);\n",
+			  	gdt->get_hfta_buffer_init().c_str(), g );
+			ret += tmpstr;
+		}
+	}
+	ret += "\t};\n";
+
 	ret += "\t// shallow copy constructor\n";
 	ret += "\t"+generate_functor_name() + "_groupdef("+
 		this->generate_functor_name() + "_groupdef &gd){\n";

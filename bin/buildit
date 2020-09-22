@@ -23,7 +23,7 @@ then
     exit -1
 fi
 
-$GSLITE_ROOT/bin/translate_fta -h localhost -c -M -R $GSLITE_ROOT -C $GSLITE_ROOT/cfg -l $GSLITE_ROOT/qlib packet_schema.txt *.gsql
+$GSLITE_ROOT/bin/translate_fta -f -N -h localhost -c -M -R $GSLITE_ROOT -C $GSLITE_ROOT/cfg -l $GSLITE_ROOT/qlib packet_schema.txt *.gsql
 ret=$?
 if [ $ret -ne 0 ]
 then

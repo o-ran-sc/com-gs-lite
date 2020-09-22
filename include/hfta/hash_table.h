@@ -156,7 +156,7 @@ public:
 			allocated = 1;	
 			total_memory = num_buckets * sizeof(hash_bucket);
 
-			fprintf(stderr, "Initial allocaton of %d buckets\n", (int)num_buckets);
+			// fprintf(stderr, "Initial allocaton of %d buckets\n", (int)num_buckets);
 		}
 
 		data_item* d = new data_item(key, val);
@@ -378,21 +378,24 @@ public:
 		// OR it was less then half of the load factor
 		size_t min_buckets = 0;
 		if ((max_load > load_factor) || ((2 * max_load) < load_factor)) {
-			min_buckets = _max_size / load_factor;
+			min_buckets = ceil(_max_size / load_factor);
 		} 
-
-		if (min_buckets) {
+ 
+ 
+ 		if (min_buckets) {
 			// find power-of-2 size large than min_buckets;
 			int nb;
 			for(nb=2;nb<min_buckets;nb*=2);
-			num_buckets = nb;
+			// make sure we actually changing the size
+			if (nb != num_buckets) {
+				fprintf(stderr, "Resizing from %d to %d buckets\n", (int)num_buckets, nb);
+				num_buckets = nb;
+				delete[] buckets;
+				hash_mask = num_buckets-1;
 
-			fprintf(stderr, "Resizing to %d buckets\n", (int)num_buckets);
-			delete[] buckets;
-			hash_mask = num_buckets-1;
-
-			buckets = new hash_bucket[num_buckets];
-			total_memory = num_buckets * sizeof(hash_bucket);			
+				buckets = new hash_bucket[num_buckets];
+				total_memory = num_buckets * sizeof(hash_bucket);
+			}
 		}
 
 		return 0;
@@ -430,7 +433,10 @@ public :
 		key_type key;
 		data_item* next;	// next data item in overflow chain
 
-		data_item(const key_type& k) : key(k), next(NULL) { }
+		data_item(const key_type& k) {
+			key = k;
+			next = NULL;
+		 }
 	};
 
 	struct hash_bucket {
@@ -632,20 +638,22 @@ public:
 		// OR it was less then half of the load factor
 		size_t min_buckets = 0;
 		if ((max_load > load_factor) || ((2 * max_load) < load_factor)) {
-			min_buckets = _max_size / load_factor;
+			min_buckets = ceil(_max_size / load_factor);
 		} 
 
 		if (min_buckets) {
 			// find power-of-2 size large than min_buckets;
 			int nb;
 			for(nb=2;nb<min_buckets;nb*=2);
-			num_buckets = nb;
+			// make sure we actually changing the size
+			if (nb != num_buckets) {
+				fprintf(stderr, "Resizing from %d to %d buckets\n", (int)num_buckets, nb);
+				num_buckets = nb;
+				delete[] buckets;
+				hash_mask = num_buckets-1;
 
-			fprintf(stderr, "Resizing to %d buckets\n", num_buckets);
-			delete[] buckets;
-			hash_mask = num_buckets-1;
-
-			buckets = new hash_bucket[num_buckets];		
+				buckets = new hash_bucket[num_buckets];		
+			}
 		}
 
 		return 0;

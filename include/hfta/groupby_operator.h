@@ -77,21 +77,21 @@ public:
 				flush_old(result);
 			}
 			if(n_patterns <= 1){
-				aggregate aggr;
+				char aggr_buffer[sizeof(aggregate)];
 				// create an aggregate in preallocated buffer
-				func.create_aggregate(tup, (char*)&aggr);
+				func.create_aggregate(tup, aggr_buffer);
 				// neeed operator= doing a deep copy
-				group_table.insert(grp, aggr);
+				group_table.insert(grp, (*(aggregate*)aggr_buffer));
 			}else{
 				int p;
 // TODO this code is wrong, must check if each pattern is in the group table.
 				for(p=0;p<n_patterns;++p){
 					// need shallow copy constructor for groups
 					group new_grp(grp, func.get_pattern(p));
-					aggregate aggr;
-					func.create_aggregate(tup, (char*)&aggr);
+					char aggr_buffer[sizeof(aggregate)];
+					func.create_aggregate(tup, aggr_buffer);
 					// neeed operator= doing a deep copy
-					group_table.insert(new_grp, aggr);
+					group_table.insert(new_grp, (*(aggregate*)aggr_buffer));
 				}
 			}
 		}

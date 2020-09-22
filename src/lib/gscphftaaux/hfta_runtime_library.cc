@@ -59,6 +59,11 @@ void hfta_vstr_destroy(vstring * str) {
 	str->length = 0;
 }
 
+//	Make the vstring safe to destroy even if its never initialized
+//	(e.g. stack-allocated groups containing strings)
+void hfta_vstr_init(vstring * str) {
+	str->length = 0;
+}
 
 gs_retval_t hfta_vstr_length(vstring *str) {
 	return str->length;

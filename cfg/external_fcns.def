@@ -610,8 +610,8 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
         uint  FUN [COST LOW] extr_med_hfta0_fcn(string);
         uint EXTR qspace_of quant_udaf_hfta0 extr_quant_hfta0_space (uint);
         uint  FUN [COST LOW] extr_quant_hfta0_space(string);
-        string UDAF [SUBAGGR quant_udaf_lfta3, SUPERAGGR quant_udaf_hfta3] quant_udaf_hfta0 fstring16 (uint);
-        string UDAF quant_udaf_hfta3 fstring16 (string);
+        string UDAF [SUBAGGR quant_udaf_lfta3, SUPERAGGR quant_udaf_hfta3] quant_udaf_hfta0 fstring24 (uint);
+        string UDAF quant_udaf_hfta3 fstring24 (string);
         string UDAF quant_udaf_lfta3 fstring6600 (uint);
 
 ///////////////////////////////////////////////////////////
@@ -676,20 +676,20 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 //	count the # times the payload is different from the previous value
 /////////////////////////////////////////////////////////////
 
-	uint UDAF [SUBAGGR count_diff_lfta_ui, SUPERAGGR count_diff_hfta] count_diff fstring12 (uint);
-	uint UDAF  count_diff_hfta fstring12 (string);
+	uint UDAF [SUBAGGR count_diff_lfta_ui, SUPERAGGR count_diff_hfta] count_diff fstring16 (uint);
+	uint UDAF  count_diff_hfta fstring16 (string);
 	string UDAF  count_diff_lfta_ui fstring20 (uint);
 
-	uint UDAF [SUBAGGR count_diff_lfta_i, SUPERAGGR count_diff_hfta] count_diff fstring12 (int);
+	uint UDAF [SUBAGGR count_diff_lfta_i, SUPERAGGR count_diff_hfta] count_diff fstring16 (int);
 	string UDAF  count_diff_lfta_i fstring20 (int);
 
-	uint UDAF [SUBAGGR count_diff_lfta_ul, SUPERAGGR count_diff_hfta] count_diff fstring12 (ullong);
+	uint UDAF [SUBAGGR count_diff_lfta_ul, SUPERAGGR count_diff_hfta] count_diff fstring16 (ullong);
 	string UDAF  count_diff_lfta_ul fstring20 (ullong);
 
-	uint UDAF [SUBAGGR count_diff_lfta_l, SUPERAGGR count_diff_hfta] count_diff fstring12 (llong);
+	uint UDAF [SUBAGGR count_diff_lfta_l, SUPERAGGR count_diff_hfta] count_diff fstring16 (llong);
 	string UDAF  count_diff_lfta_l fstring20 (llong);
 
-	uint UDAF [SUBAGGR count_diff_lfta_s, SUPERAGGR count_diff_hfta] count_diff fstring12 (string);
+	uint UDAF [SUBAGGR count_diff_lfta_s, SUPERAGGR count_diff_hfta] count_diff fstring16 (string);
 	string UDAF  count_diff_lfta_s fstring20 (string);
 
 

@@ -124,6 +124,7 @@ public:
   std::string get_hfta_buffer_replace();
   std::string get_hfta_buffer_size();
   std::string get_hfta_buffer_destroy();
+  std::string get_hfta_buffer_init();
 
   bool is_structured_type();
 //  std::string get_interface_type();

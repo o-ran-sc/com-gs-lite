@@ -74,11 +74,11 @@ public:
 		if ((iter = group_table.find(grp)) != group_table.end()) {
 			func.update_aggregate(tup, grp, (*iter).second);
 		}else{
-				aggregate aggr;
+				char aggr_buffer[sizeof(aggregate)];
 				// create an aggregate in preallocated buffer
-				func.create_aggregate(tup, (char*)&aggr);
+				func.create_aggregate(tup, aggr_buffer);
 				// neeed operator= doing a deep copy
-				group_table.insert(grp, aggr);
+				group_table.insert(grp, (*(aggregate*)aggr_buffer));
 		}
 		tup.free_tuple();
 		return 0;

@@ -134,6 +134,60 @@ void generate_makefile(vector<string> &input_file_names, int nfiles,
 
 //			Dump schema summary
 void dump_summary(stream_query *str){
+	for(int q=0;q<str->query_plan.size();++q){
+		qp_node *qp = str->query_plan[q];
+		if(qp==NULL)
+			continue;	// there can be blanks
+
+		fprintf(schema_summary_output,"-----\n");
+		fprintf(schema_summary_output,"%s\n",qp->node_name.c_str());
+
+		table_def *sch = qp->get_fields();
+
+		vector<field_entry *> flds = sch->get_fields();
+		int f;
+		for(f=0;f<flds.size();++f){
+			if(f>0) fprintf(schema_summary_output,"|");
+			fprintf(schema_summary_output,"%s",flds[f]->get_name().c_str());
+		}
+		fprintf(schema_summary_output,"\n");
+		for(f=0;f<flds.size();++f){
+			if(f>0) fprintf(schema_summary_output,"|");
+			fprintf(schema_summary_output,"%s",flds[f]->get_type().c_str());
+		}
+		fprintf(schema_summary_output,"\n");
+
+		map<std::string, std::string> defines = qp->get_definitions();
+		string comment = "";
+		if(defines.count("comment")>0){
+			comment = defines["comment"];
+		}
+		fprintf(schema_summary_output,"%s\n",comment.c_str());
+
+		vector<tablevar_t *> input_tables = qp->get_input_tbls();
+		for(int t=0; t<input_tables.size(); ++t){
+			if(t>0) fprintf(schema_summary_output,"|");
+			string machine = input_tables[t]->get_machine(); 
+			string iface = input_tables[t]->get_interface(); 
+			string schema = input_tables[t]->get_schema_name(); 
+			if(machine!=""){
+				fprintf(schema_summary_output,"%s.",machine.c_str());
+			}
+			if(iface!=""){
+				fprintf(schema_summary_output,"%s.",iface.c_str());
+			}else{
+				if(machine!="") fprintf(schema_summary_output,".");
+			}
+			fprintf(schema_summary_output,"%s",schema.c_str());
+		}
+
+		fprintf(schema_summary_output,"\n");
+	}
+
+
+
+/*
+	fprintf(schema_summary_output,"-----\n");
 	fprintf(schema_summary_output,"%s\n",str->query_name.c_str());
 
 	table_def *sch = str->get_output_tabledef();
@@ -150,6 +204,32 @@ void dump_summary(stream_query *str){
 		fprintf(schema_summary_output,"%s",flds[f]->get_type().c_str());
 	}
 	fprintf(schema_summary_output,"\n");
+
+	string comment = "";
+	if(str->defines.count("comment")>0){
+		comment = str->defines["comment"];
+	}
+	fprintf(schema_summary_output,"%s\n",comment.c_str());
+	
+	vector<tablevar_t *> input_tables = str->get_input_tables();
+	for(int t=0; t<input_tables.size(); ++t){
+		if(t>0) fprintf(schema_summary_output,"|");
+		string machine = input_tables[t]->get_machine(); 
+		string iface = input_tables[t]->get_interface(); 
+		string schema = input_tables[t]->get_schema_name(); 
+		if(machine!=""){
+			fprintf(schema_summary_output,"%s.",machine.c_str());
+		}
+		if(iface!=""){
+			fprintf(schema_summary_output,"%s.",iface.c_str());
+		}else{
+			if(machine!="") fprintf(schema_summary_output,".");
+		}
+		fprintf(schema_summary_output,"%s",schema.c_str());
+	}
+	fprintf(schema_summary_output,"\n");
+*/
+
 }
 
 //		Globals
@@ -1234,8 +1314,8 @@ fprintf(stderr,"Parsing file %s\n",qpathname.c_str());
   map<string, int> hfta_name_map;
 //  vector< vector<int> > process_sets;
 //  vector< set<int> > stream_node_sets;
-  reverse(process_order.begin(), process_order.end());  // get listing in reverse order.
-														// i.e. process leaves 1st.
+  reverse(process_order.begin(), process_order.end());  // get listing in reverse .
+														// order: process leaves 1st.
   for(i=0;i<process_order.size();++i){
 	if(qnodes[process_order[i]]->is_externally_visible == true){
 //printf("Visible.\n");
@@ -2159,13 +2239,13 @@ else{
 		}
 */
 
-/*
-//				output schema summary
-		if(output_schema_summary){
-			dump_summary(split_queries[0]);
-		}
-*/
       }
+//				output schema summary
+	  if(output_schema_summary){
+		for(int o=0;o<split_queries.size(); ++o){
+			dump_summary(split_queries[o]);
+	  	}
+	  }
 
 
 	  if(hfta_returned){		// query also has an HFTA component
