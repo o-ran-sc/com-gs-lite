@@ -182,10 +182,11 @@ gs_retval_t ftalookup_heartbeat(FTAID caller_id, gs_uint64_t trace_id,
     // to avoid sending redundant FTA instance stats to GSHUB we will only send statistics that have trace size of 1
 	// for application heartbeats (streamid=0) we will only send last stat in their traces
     if ((sz == 1) || (trace[sz-1].ftaid.streamid == 0)) {
-        if (set_instancestats(gshub,get_instance_name(),&trace[sz-1])!=0) {
+        /* disable sending heartbeats for now to avoid overloading gshub */ 
+        /*if (set_instancestats(gshub,get_instance_name(),&trace[sz-1])!=0) {
 	        gslog(LOG_EMERG,"ERROR:could not set instancestats");
 	        return -1;
-		}
+		} */
 
     }
 

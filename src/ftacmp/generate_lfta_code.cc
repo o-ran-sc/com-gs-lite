@@ -2210,7 +2210,8 @@ string generate_fta_clock(string node_name, table_list *schema, unsigned time_co
 	ret+="\tpost_tuple(tuple);\n";
 
 	ret += "\n\t/* Send a heartbeat message to clearinghouse */\n";
-	ret += "\tfta_heartbeat(f->ftaid, t->trace_id++, 1, &stats);\n";
+	ret += "\n\t/* Disable heartbeats for now to avoid overloading clearinghouse */\n";	
+	ret += "\t/* fta_heartbeat(f->ftaid, t->trace_id++, 1, &stats); */\n";
 
 	ret += "\n\t/* Reset runtime stats */\n";
 	ret += "\tt->in_tuple_cnt = 0;\n";

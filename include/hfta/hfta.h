@@ -455,7 +455,8 @@ gs_retval_t UNOP_HFTA_accept_packet (struct FTA *fta, FTAID *ftaid, void * packe
 		memcpy(new_data + temp_tup.tuple_size + sizeof(gs_uint64_t) + tup_trace_sz * sizeof(fta_stat), (char*)&stats, sizeof(fta_stat));
 
 		// Send a hearbeat message to clearinghouse.
-		fta_heartbeat(ftap->_fta.ftaid, trace_id, tup_trace_sz + 1, (fta_stat *)((char*)new_data + temp_tup.tuple_size + sizeof(gs_uint64_t)));
+		// Disable sending heartbeats for now to avoid overloading clearinghouse
+		// fta_heartbeat(ftap->_fta.ftaid, trace_id, tup_trace_sz + 1, (fta_stat *)((char*)new_data + temp_tup.tuple_size + sizeof(gs_uint64_t)));
 
 		temp_tup.free_tuple();
 		temp_tup.data = new_data;
@@ -484,7 +485,8 @@ gs_retval_t UNOP_HFTA_accept_packet (struct FTA *fta, FTAID *ftaid, void * packe
 gs_retval_t UNOP_HFTA_clock_fta(struct FTA *ftap) {
 
 	// Send a hearbeat message to clearinghouse.to indicate we are alive
-	fta_heartbeat(ftap->ftaid, 0, 0, 0);
+	// Disable sending heartbeats for now to avoid overloading clearinghouse
+	// fta_heartbeat(ftap->ftaid, 0, 0, 0);
 
 	return 0;
 }
@@ -1019,7 +1021,8 @@ gs_retval_t MULTOP_HFTA_accept_packet (struct FTA *fta, FTAID *ftaid, void * pac
 			memcpy(new_data + temp_tup.tuple_size + sizeof(gs_uint64_t) + tup_trace_sz * sizeof(fta_stat), (char*)&stats, sizeof(fta_stat));
 
 			// Send a hearbeat message to clearinghouse.
-			fta_heartbeat(fta->ftaid, trace_id, tup_trace_sz + 1, (fta_stat *)((char*)new_data + temp_tup.tuple_size + sizeof(gs_uint64_t)));
+			// Disable sending heartbeats for now to avoid overloading clearinghouse
+			// fta_heartbeat(fta->ftaid, trace_id, tup_trace_sz + 1, (fta_stat *)((char*)new_data + temp_tup.tuple_size + sizeof(gs_uint64_t)));
 
 			// reset the stats
 			ftap->in_tuple_cnt = 0;
@@ -1121,7 +1124,8 @@ gs_retval_t MULTOP_HFTA_clock_fta(struct FTA *fta) {
 	stats.cycle_cnt = ftap->cycle_cnt;
 
 	// Send a hearbeat message to clearinghouse.
-	fta_heartbeat(fta->ftaid, ftap->trace_id++, 1, &stats);
+	// Disable sending heartbeats for now to avoid overloading clearinghouse
+	// fta_heartbeat(fta->ftaid, ftap->trace_id++, 1, &stats);
 
 	// resets runtime stats
 	ftap->in_tuple_cnt = 0;

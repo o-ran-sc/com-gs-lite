@@ -364,7 +364,8 @@ get_tuple_again:
 
         memcpy(trace_buffer + (sz * sizeof(fta_stat)), &myftaid, sizeof(FTAID));
 
-        fta_heartbeat(gscpipc_getftaid(), trace_id, sz+1, (fta_stat *)trace_buffer);
+        /* disable heartbeats for now to avoid overloading clearinghouse */
+        /* fta_heartbeat(gscpipc_getftaid(), trace_id, sz+1, (fta_stat *)trace_buffer); */
 		free(trace_buffer);
         res=2; //indicate that it is a temporal tuple
     }
