@@ -55,7 +55,7 @@ public:
 		group grp;
 		if (!func.create_group(tup, (gs_sp_t)&grp)) {
 			if(func.disordered()){
-				fprintf(stderr,"Out of order record in %s\n",op_name);
+				// fprintf(stderr,"Out of order record in %s\n",op_name);
 				return 0;
 			}
 			if (func.flush_needed()){
@@ -72,7 +72,7 @@ public:
 			return 0;
 		}
 		if(func.disordered()){
-			fprintf(stderr,"Out of order record in %s\n",op_name);
+			// fprintf(stderr,"Out of order record in %s\n",op_name);
 			return 0;
 		}
 
