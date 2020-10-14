@@ -137,5 +137,8 @@ gs_param_handle_t register_handle_for_int_to_string_map_slot_1(vstring *filename
 gs_retval_t int_to_string_map(vstring *result, gs_int64_t val, gs_param_handle_t handle);
 gs_param_handle_t deregister_handle_for_int_to_string_map_slot_1(gs_param_handle_t handle);
 
+// --------------------------------------------------
+//	to_hex_string, for printing a binary string
 
+gs_retval_t to_hex_string(vstring *result, vstring *val);
 #endif

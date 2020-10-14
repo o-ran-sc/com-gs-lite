@@ -749,3 +749,7 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 	string UDAF [HFTA_ONLY, RUNNING] run_sum_max fstring16 (ullong);
 	string UDAF [HFTA_ONLY, RUNNING] run_sum_max fstring16 (llong);
 
+// ------------------------------------------------------------
+//	to_hex_string : allow printing of binary strings
+
+	string FUN [HFTA_ONLY, COST EXPENSIVE] to_hex_string(string);

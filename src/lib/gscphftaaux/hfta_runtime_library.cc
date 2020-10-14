@@ -661,3 +661,27 @@ gs_param_handle_t deregister_handle_for_int_to_string_map_slot_1(gs_param_handle
 	delete map_struct;
 }
 
+// ---------------------------------------------------
+//		Return a (binary, non-ascii) string in its hex representation
+
+static char hexmap[16] = {
+  '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'
+};
+
+gs_retval_t to_hex_string(vstring *result, vstring *val){
+	result->length = 2*(val->length);
+	result->offset = (gs_p_t)malloc(result->length);
+	result->reserved = INTERNAL;
+	unsigned char *rs = (unsigned char *)(result->offset);
+	unsigned char *vs = (unsigned char *)(val->offset);
+
+	for(int c=0;c<val->length; ++c){
+		rs[2*c] = hexmap[vs[c] >> 4];
+		rs[2*c+1] = hexmap[vs[c] & 0x0f];
+	}
+
+	return 0;
+}
+
+
+
