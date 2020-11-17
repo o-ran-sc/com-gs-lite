@@ -157,7 +157,7 @@ gs_retval_t fta_find(FTAname name, gs_uint32_t  reuse, FTAID *ftaid,
     a.h.size = sizeof(struct fta_find_arg);
     a.reuse=reuse;
     if (strlen(name)>=(MAXFTANAME-1)) {
-        gslog(LOG_EMERG,"ERROR:FTA name (%s) to large\n",name);
+        gslog(LOG_EMERG,"ERROR:FTA name (%s) too large in nfta_find\n",name);
         return -1;
     }
     strcpy(a.name,name);
@@ -198,12 +198,12 @@ gs_retval_t fta_alloc_instance(FTAID subscriber,
     }
     
     if (strlen(name)>=(MAXFTANAME-1)) {
-        gslog(LOG_EMERG,"ERROR:FTA name (%s) to large\n",name);
+        gslog(LOG_EMERG,"ERROR:FTA name (%s) too large in fta_alloc_instance\n",name);
         return -1;
     }
     
     if (strlen(schema)>=(MAXSCHEMASZ-1)) {
-        gslog(LOG_EMERG,"ERROR:FTA name (%s) to large\n",name);
+        gslog(LOG_EMERG,"ERROR:FTA schema (%s) too large in fta_alloc_instance\n",schema);
         return -1;
     }
     
@@ -257,12 +257,12 @@ gs_retval_t fta_alloc_print_instance(FTAID subscriber,
         return -1;
     }
     if (strlen(name)>=(MAXFTANAME-1)) {
-        gslog(LOG_EMERG,"ERROR:FTA name (%s) to large\n",name);
+        gslog(LOG_EMERG,"ERROR:FTA name (%s) too large in fta_alloc_print_instance\n",name);
         return -1;
     }
     
     if (strlen(schema)>=(MAXSCHEMASZ-1)) {
-        gslog(LOG_EMERG,"ERROR:FTA name (%s) to large\n",name);
+        gslog(LOG_EMERG,"ERROR:FTA schema (%s) too large in fta_alloc_print_instance\n",schema);
         return -1;
     }
     

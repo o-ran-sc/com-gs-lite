@@ -357,6 +357,54 @@ gs_retval_t deregister_handle_for_str_extract_regex_slot_1(gs_param_handle_t han
     return 0;
 }
 
+// -------------------------------------------------
+//		More substring functions
+
+//	 get last n bytes, if available
+//	 getting the prefix is done by str_truncate, defined in the include file
+gs_retval_t str_suffix(vstring *result,  vstring *s, gs_uint32_t n){
+  register gs_p_t st = (gs_p_t)s->offset; 
+  int prefix = (n > s->length) ? 0 : s->length-n;  
+  result->offset = st + prefix;
+  result->length = s->length-prefix;
+  result->reserved = SHALLOW_COPY;
+  return 0;
+}
+
+
+//	Split the string on sep, get the i'th substring, if any
+gs_retval_t get_list_entry(vstring *result, vstring *l,  vstring *sep, gs_uint32_t pos){
+	char s;
+	gs_int32_t c;
+
+	result->offset = l->offset;	// empty return string
+	result->reserved = SHALLOW_COPY;
+	result->length = 0;
+
+	if(sep->length > 0){	// get the sep char, ensure the string is nonempty
+		s = ((gs_sp_t)(sep->offset))[0];
+	}else{
+		return 0;
+	}
+
+	for(c=0;c < l->length && pos>0; ++c){
+		if(((gs_sp_t)(l->offset))[c] == s){
+			pos--;
+		}
+	}
+
+	if(pos>0 || c >= l->length-1){ // not enough seps, or final string is empty
+		return 0;
+	}
+	
+	result->offset = l->offset + c;
+	for(; c<l->length && ((gs_sp_t)(l->offset))[c] != s; ++c, ++result->length);
+	
+	return 0;
+}
+
+
+// -------------------------------------------------
 
 static gs_uint32_t nextint(struct vstring *str , gs_uint32_t * offset, gs_uint32_t *res) {
 	gs_uint8_t * s = (gs_uint8_t *)(str->offset);
@@ -375,6 +423,7 @@ static gs_uint32_t nextint(struct vstring *str , gs_uint32_t * offset, gs_uint32
  	}
 	return v;
 }
+
 
 gs_uint32_t strtoi(gs_uint32_t * r, struct vstring * s)
 {
@@ -684,4 +733,56 @@ gs_retval_t to_hex_string(vstring *result, vstring *val){
 }
 
 
+// ---------------------------------------------
+//		sum up unsigned integers expressed as a string with separators,
+//		e.g. on input '34|45|56' and sep '|', return 135.
+//		This kind of thing is common in Nokia PCMD data.
+// gracefully handle empty entries, e.g. '|8|' should return 8
+gs_int64_t sum_uint_in_list(struct vstring *list, struct vstring *sepchar){
+	gs_int64_t ret = 0;
+	gs_int64_t val = 0;
+	char sep;
+	char v;
+	int c;
+
+	if(sepchar->length < 1)
+		return 0;
+	sep = ((char *)(sepchar->offset))[0];
+
+	for(c=0;c<list->length;++c){
+		v = ((char *)(list->offset))[c];
+		if(v==sep){
+			ret+=val;
+			val = 0;
+		}else{
+			val = 10*val + (v>='0' && v<='9')*(v-'0');
+		}
+	}
+	ret += val;
+	return ret;
+}
+
+//	Convert an string to an integer
+gs_int64_t to_llong(vstring *v){
+	gs_int64_t ret=0;
+	gs_uint8_t d;
+	int c;
+	int neg=1;
+
+	if(v->length < 1)
+		return 0;
+	d = ((char *)(v->offset))[0];
+	if(d=='-'){
+		neg=-1;
+	}else{
+		ret = (d>='0' && d<='9')*(d-'0');
+	}
+
+	for(c=1;c<v->length;++c){
+		d = ((char *)(v->offset))[c];
+		ret = 10*ret+(d>='0' && d<='9')*(d-'0');
+	}
+
+	return neg*ret;
+}
 

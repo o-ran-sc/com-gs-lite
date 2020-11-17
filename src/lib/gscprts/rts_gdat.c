@@ -248,15 +248,18 @@ static void next_file() {
 
 static gs_retval_t gdat_replay_init(gs_sp_t device)
 {
-    gs_sp_t  verbosetmp;
-    gs_sp_t  delaytmp;
-    gs_sp_t  gshubtmp;
-    gs_sp_t  singlefiletmp;
+    gs_csp_t  verbosetmp;
+    gs_csp_t  delaytmp;
+    gs_csp_t  gshubtmp;
+    gs_csp_t  singlefiletmp;
 
-    if ((name=get_iface_properties(device,"filename"))==0) {
+	gs_csp_t tmp_name;
+
+    if ((tmp_name=get_iface_properties(device,"filename"))==0) {
 		print_error("csv_init::No GDAT \"Filename\" defined");
 		exit(0);
 	}
+	name = strdup(tmp_name);
     
     if ((verbosetmp=get_iface_properties(device,"verbose"))!=0) {
         if (strncmp(verbosetmp,"TRUE",4)==0) {

@@ -1,6 +1,11 @@
 #ifndef __SCHEMA_PROTOTYPES__
 #define __SCHEMA_PROTOTYPES__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 /* ------------------------------------------------
  Copyright 2014 AT&T Intellectual Property
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -141,6 +146,17 @@ static inline __attribute__((always_inline)) long gs_strtoll (const char *str, s
 }
 
 /* CSV access function using position as 3rd argument */
+
+static inline gs_retval_t get_csv_float_to_timestamp(struct packet * p, gs_uint32_t * t,gs_uint32_t pos)
+{
+#ifdef PARSER_SANITY_CHECKS    
+	if (p->ptype != PTYPE_CSV) return -1;
+	if (p->record.csv.numberfields < pos) return -1;
+#endif
+//    *t = strtoul((const char*)p->record.csv.fields[pos-1], NULL, 10);
+    *t = gs_strtoul((const char*)p->record.csv.fields[pos-1], p->record.csv.field_lens[pos-1]<10 ? p->record.csv.field_lens[pos-1] : 10);
+	return 0;
+}
 
 static inline gs_retval_t get_csv_uint(struct packet * p, gs_uint32_t * t,gs_uint32_t pos)
 {
@@ -515,6 +531,9 @@ static inline gs_retval_t get_gdat_float(struct packet * p, gs_float_t * t,gs_ui
 // External functions
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

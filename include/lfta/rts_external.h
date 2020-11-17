@@ -1,6 +1,12 @@
 #ifndef RTS_STRING_H
 #define RTS_STRING_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+
 /* ------------------------------------------------
  Copyright 2014 AT&T Intellectual Property
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,7 +81,7 @@ gs_retval_t str_equal( struct gs_string * str1, struct gs_string * str2);
 
 /*	Construct a string constant */
 
-gs_retval_t str_constructor(struct gs_string *s, gs_sp_t l);
+gs_retval_t str_constructor(struct gs_string *s, gs_csp_t l);
 
 /*	string hash	*/
 
@@ -157,13 +163,18 @@ gs_uint32_t str_partial_regex_match(struct gs_string* str,
 gs_retval_t deregister_handle_for_str_partial_regex_match_slot_1(
                                                                  gs_param_handle_t
                                                                  handle);
-
+// ----------------------------------
+//	Substring functions
 inline static gs_retval_t str_truncate(struct gs_string * result, struct gs_string *str, gs_uint32_t length) {
 	result->data=str->data;
 	result->length=(str->length<length)?str->length:length;
 	return 0;
 }
+gs_retval_t str_suffix(struct gs_string * ret, struct gs_string *s, gs_uint32_t n);
+gs_retval_t get_list_entry(struct gs_string * ret, struct gs_string *l, struct gs_string *sep, gs_uint32_t pos);
 
+
+// ----------------------------------
 //	constant string conversions
 gs_param_handle_t register_handle_for_strtoi_c_slot_0(struct FTA * f, struct gs_string* istr) ;
 gs_retval_t deregister_handle_for_strtoi_c_slot_0(gs_param_handle_t h) ;
@@ -201,5 +212,9 @@ gs_retval_t deregister_handle_for_signaturelib_get_content_id_slot_2(gs_param_ha
 
 gs_uint32_t signaturelib_get_fqdn(struct gs_string* result);
 gs_uint32_t signaturelib_get_channel_type(struct gs_string* result);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

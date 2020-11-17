@@ -2793,7 +2793,7 @@ for(ssi_el=extra_external_libs.begin();ssi_el!=extra_external_libs.end();++ssi_e
 	  lfta_val[lmach] += "// lookup interface properties by name\n";
 	  lfta_val[lmach] += "// mulitple values of given property returned in the same string separated by commas\n";
 	  lfta_val[lmach] += "// returns NULL if given property does not exist\n";
-	  lfta_val[lmach] += "gs_sp_t get_iface_properties (const gs_sp_t iface_name, const gs_sp_t property_name) {\n";
+	  lfta_val[lmach] += "gs_csp_t get_iface_properties (const gs_sp_t iface_name, const gs_sp_t property_name) {\n";
 
 //	  collect a lit of interface names used by queries running on this host
 	  set<std::string> iface_names;
@@ -2856,7 +2856,8 @@ for(ssi_el=extra_external_libs.begin();ssi_el!=extra_external_libs.end();++ssi_e
 
 //			Generate a full list of FTAs for clearinghouse reference
 	  lfta_val[lmach] += "// list of FTAs clearinghouse expects to register themselves\n";
-	  lfta_val[lmach] += "const gs_sp_t fta_names[] = {";
+
+	  lfta_val[lmach] += "gs_csp_t fta_names[] = {";
 
 	  bool first = true;
 	  for(auto mvsi=lfta_iface_lists.begin(); mvsi!=lfta_iface_lists.end(); ++mvsi){
@@ -3065,11 +3066,11 @@ for(ssi_el=extra_external_libs.begin();ssi_el!=extra_external_libs.end();++ssi_e
       if(!(debug_only || hfta_only) ){
 		string lfta_flnm;
 		if(lmach != "")
-		  lfta_flnm = lmach + "_lfta.c";
+		  lfta_flnm = lmach + "_lfta.cc";
 		else
-		  lfta_flnm = hostname + "_lfta.c";
+		  lfta_flnm = hostname + "_lfta.cc";
 	  	if((lfta_out = fopen(lfta_flnm.c_str(),"w")) == NULL){
-			fprintf(stderr,"Can't open output file %s\n%s\n","lfta.c",strerror(errno));
+			fprintf(stderr,"Can't open output file %s\n%s\n","lfta.cc",strerror(errno));
 			exit(1);
 		}
   	      fprintf(lfta_out,"%s",lfta_header.c_str());
@@ -3142,7 +3143,7 @@ void generate_makefile(vector<string> &input_file_names, int nfiles,
 
 	fputs(
 ("CPP= g++ -O3 -g -I "+root_path+"/include  -I "+root_path+"/include/hfta\n"
-"CC= gcc -O3 -g -I . -I "+root_path+"/include -I "+root_path+"/include/lfta"
+"CC= g++ -O3 -g -I . -I "+root_path+"/include -I "+root_path+"/include/lfta"
 ).c_str(), outfl
 );
 	if(generate_stats)
@@ -3271,10 +3272,10 @@ void generate_makefile(vector<string> &input_file_names, int nfiles,
 	fprintf(outfl,
 "\n"
 "\n"
-"lfta.o: %s_lfta.c\n"
-"\t$(CC) -o lfta.o -c %s_lfta.c\n"
+"lfta.o: %s_lfta.cc\n"
+"\t$(CC) -o lfta.o -c %s_lfta.cc\n"
 "\n"
-"%s_lfta.c: external_fcns.def %s ",hostname.c_str(), hostname.c_str(), hostname.c_str(),schema_file_name.c_str());
+"%s_lfta.cc: external_fcns.def %s ",hostname.c_str(), hostname.c_str(), hostname.c_str(),schema_file_name.c_str());
 	for(i=0;i<nfiles;++i)
 		fprintf(outfl," %s",input_file_names[i].c_str());
 	if(hostname == ""){
@@ -3310,7 +3311,7 @@ void generate_makefile(vector<string> &input_file_names, int nfiles,
 "\tln -s "+root_path+"/cfg/external_fcns.def .\n"
 "\n"
 "clean:\n"
-"\trm -rf core rts *.o  %s_lfta.c  external_fcns.def packet_schema.txt").c_str(),hostname.c_str());
+"\trm -rf core rts *.o  %s_lfta.cc  external_fcns.def packet_schema.txt").c_str(),hostname.c_str());
 	for(i=0;i<hfta_names.size();++i)
 		fprintf(outfl," %s %s.cc",hfta_names[i].c_str(),hfta_names[i].c_str());
 	fprintf(outfl,"\n");

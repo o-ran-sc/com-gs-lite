@@ -15,6 +15,10 @@
 #ifndef _RTS_UDAF_H_INCLUDED_
 #define _RTS_UDAF_H_INCLUDED_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "gsconfig.h"
 #include "gstypes.h"
 #include "rts_external.h"
@@ -149,5 +153,23 @@ gs_retval_t quant_udaf_lfta3_LFTA_AGGR_FLUSHME_(gs_sp_t);
 void quant_udaf_lfta3_LFTA_AGGR_OUTPUT_(struct gs_string *, gs_sp_t);
 void quant_udaf_lfta3_LFTA_AGGR_DESTROY_(gs_sp_t);
 
+/////////////////////////////////////////////////////////
+// ==============================================================
+//	other rts functions.	
+
+//		sum up unsigned integers expressed as a string with separators,
+//		e.g. on input '34|45|56' and sep '|', return 135.
+//		This kind of thing is common in Nokia PCMD data.
+// gracefully handle empty entries, e.g. '|8|' should return 8
+gs_int64_t sum_uint_in_list(struct gs_string *list, struct gs_string *sepchar);
+
+//	Convert a string to a llong.
+//	Has some protection to reject non-numeric characters.
+//	a leading minus sign is allowed
+gs_int64_t to_llong(struct gs_string *v);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

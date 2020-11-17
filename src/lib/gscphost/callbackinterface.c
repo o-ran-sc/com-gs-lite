@@ -97,7 +97,7 @@ static gs_retval_t  send_lookup_reply(FTAID f, gs_int32_t  result,
     r.f=*ftaid;
     if (result >=0) {
 	if (strlen(*schema)>=(MAXSCHEMASZ-1)) {
-	    gslog(LOG_EMERG,"ERROR:FTA schema (%s) to large\n",(unsigned char *)schema);
+	    gslog(LOG_EMERG,"ERROR:FTA schema (%s) t0o large in send_standard_replay\n",(unsigned char *)schema);
 	    r.result=-1;
 	} else {
 	    strcpy(r.schema,*schema);
@@ -155,11 +155,11 @@ static gs_retval_t  fta_register_instance(FTAID subscriber,
     a.h.callid = FTA_REGISTER;
     a.h.size = sizeof(struct fta_register_arg);
     if (strlen(name)>=(MAXFTANAME-1)) {
-      gslog(LOG_EMERG,"ERROR:FTA name (%s) to large\n",name);
+      gslog(LOG_EMERG,"ERROR:FTA name (%s) too large in fta_register_instance\n",name);
       return -1;
     }
     if (strlen(schema)>=(MAXSCHEMASZ-1)) {
-      gslog(LOG_EMERG,"ERROR:FTA schema (%s) to large\n",schema);
+      gslog(LOG_EMERG,"ERROR:FTA schema (%s) too large in fta_register_instance\n",schema);
       return -1;
     }
     strcpy(a.name,name);
@@ -744,11 +744,11 @@ FTAID fta_register(FTAname name,gs_uint32_t   reusable, DEVname dev,
 		a.h.callid = FTA_REGISTER;
 		a.h.size = sizeof(struct fta_register_arg);
 		if (strlen(name)>=(MAXFTANAME-1)) {
-			gslog(LOG_EMERG,"ERROR:FTA name (%s) to large\n",name);
+			gslog(LOG_EMERG,"ERROR:FTA name (%s) too large in fta_register\n",name);
 			return reserr;
 		}
 		if (strlen(schema)>=(MAXSCHEMASZ-1)) {
-			gslog(LOG_EMERG,"ERROR:FTA schema (%s) to large\n",schema);
+			gslog(LOG_EMERG,"ERROR:FTA schema (%s) too large in fta_register\n",schema);
 			return reserr;
 		}
 		strcpy(a.name,name);

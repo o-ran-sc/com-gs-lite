@@ -298,4 +298,31 @@ gs_uint32_t extr_quant_hfta0_fcn(vstring *, gs_float_t);
 gs_uint32_t extr_med_hfta0_fcn(vstring *);
 gs_uint32_t extr_quant_hfta0_space(vstring *);
 
+
+/****************************************************************/
+//		Approximate count distinct.
+//		Rely on the minhashing approach.
+//		Currently HFTA-only
+//		Uses a 32-bit hash, tested up to 100,000,000 elements
+//		and it gave good results (within 7%)
+/****************************************************************/
+
+// ---------------------------------------------
+//	HFTA-only
+void approx_count_distinct_udaf_HFTA_AGGR_INIT_(gs_sp_t buf);
+void approx_count_distinct_udaf_HFTA_AGGR_REINIT_(gs_sp_t buf);
+void approx_count_distinct_udaf_HFTA_AGGR_DESTROY_(gs_sp_t buf);
+void approx_count_distinct_udaf_HFTA_AGGR_UPDATE_(gs_sp_t buf, vstring *val);
+void approx_count_distinct_udaf_HFTA_AGGR_OUTPUT_(vstring *res, gs_sp_t buf);
+
+void running_approx_count_distinct_udaf_HFTA_AGGR_INIT_(gs_sp_t buf);
+void running_approx_count_distinct_udaf_HFTA_AGGR_REINIT_(gs_sp_t buf);
+void running_approx_count_distinct_udaf_HFTA_AGGR_DESTROY_(gs_sp_t buf);
+void running_approx_count_distinct_udaf_HFTA_AGGR_UPDATE_(gs_sp_t buf, vstring *val);
+void running_approx_count_distinct_udaf_HFTA_AGGR_OUTPUT_(vstring *res, gs_sp_t buf);
+
+gs_float_t extr_approx_count_distinct(vstring *v);
+
+
+
 #endif

@@ -454,10 +454,16 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
   
 
 ///////////////////////////////////////////////////////////
-//         Truncating strings        
+//         Truncating strings and substrings
 ///////////////////////////////////////////////////////////
        
+// str_truncate(str, n) : return the 1st n chars of str, or as much as possible
         string FUN [LFTA_LEGAL,PARTIAL,COST FREE] str_truncate (string, uint);
+// str_suffix(str, n) : return the last n chars of str, or as much as possible
+        string FUN [LFTA_LEGAL,PARTIAL,COST FREE] str_suffix (string, uint);
+// get_list_entry(list_str, sep_str, i) : split the list by sep,
+//		return the i-th value, if it exists.
+        string FUN [LFTA_LEGAL,PARTIAL,COST FREE] get_list_entry (string, string, uint CONST);
 
 
 ///////////////////////////////////////////////////////////
@@ -508,6 +514,8 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 	llong FUN [LFTA_LEGAL,COST FREE]LLONG(llong);
 	llong FUN [LFTA_LEGAL,COST FREE]LLONG(float);
 
+	llong FUN [LFTA_LEGAL,COST LOW] to_llong(string);
+
 ///////////////////////////////////////////////////////////
 //          Numeric functions
 ///////////////////////////////////////////////////////////
@@ -541,6 +549,13 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 //	for constant strings - faster at runtime
 	uint FUN [LFTA_LEGAL,COST LOW] strtoi_c(string HANDLE);
 	IP FUN [LFTA_LEGAL,COST LOW] strtoip_c(string HANDLE); 
+
+
+/////////////////////////////////////////////////////////////
+//	Add up uints in a delimited ascii list.
+//	return 135 on '34|45|56' and sep '|'
+
+	llong FUN [LFTA_LEGAL,COST LOW] sum_uint_in_list(string, string CONST);
 
 
 ///////////////////////////////////////////////////////////
@@ -753,3 +768,18 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 //	to_hex_string : allow printing of binary strings
 
 	string FUN [HFTA_ONLY, COST EXPENSIVE] to_hex_string(string);
+
+// -------------------------------------------------------------------
+//	approx_count_distinct : approximate the count distinct by
+//	taking minhashes.  accurate to 7%, tested up to 100M distinct
+//	items.
+//
+//	TODO : allow running aggregates to be used in regular aggregation?
+
+	float EXTR approx_count_distinct approx_count_distinct_udaf extr_approx_count_distinct(string);
+	string UDAF approx_count_distinct_udaf fstring1000 (string);
+	float FUN extr_approx_count_distinct(string);
+
+	float EXTR running_approx_count_distinct running_approx_count_distinct_udaf extr_approx_count_distinct(string);
+	string UDAF [RUNNING] running_approx_count_distinct_udaf fstring1000 (string);
+	float FUN extr_approx_count_distinct(string);

@@ -1371,7 +1371,7 @@ string generate_preamble(table_list *schema, //map<string,string> &int_fcn_defs,
 //	ret +=  "#include \"fta.h\"\n\n");
 
 	string ret = "#ifndef LFTA_IN_NIC\n";
-	ret += "char *"+generate_schema_string_name(node_name)+" = " +schema_embed_str+";\n";
+	ret += "const char *"+generate_schema_string_name(node_name)+" = " +schema_embed_str+";\n";
 	ret += "#include<stdio.h>\n";
 	ret += "#include <limits.h>\n";
 	ret += "#include <float.h>\n";
@@ -1460,7 +1460,7 @@ string generate_tuple_from_aggr(string node_name, table_list *schema, string idx
 	  ret += ";\n";
 
 
-	  ret += "\t\t\ttuple = allocate_tuple(f, tuple_size );\n";
+	  ret += "\t\t\ttuple = (struct "+generate_tuple_name(node_name)+" *)allocate_tuple(f, tuple_size );\n";
 	  ret += "\t\t\tif( tuple != NULL){\n";
 
 
@@ -1903,7 +1903,7 @@ string generate_fta_control(string node_name, table_list *schema, bool is_aggr_q
 		ret+="\tif(command == FTA_COMMAND_FLUSH){\n";
 
 		ret+="\t\tif (!t->n_aggrs) {\n";
-		ret+="\t\t\ttuple = allocate_tuple(f, 0);\n";
+		ret+="\t\t\ttuple = (struct "+generate_tuple_name(node_name)+" *)allocate_tuple(f, 0);\n";
 		ret+="\t\t\tif( tuple != NULL)\n";
 		ret+="\t\t\t\tpost_tuple(tuple);\n";
 
@@ -1954,7 +1954,7 @@ string generate_fta_control(string node_name, table_list *schema, bool is_aggr_q
 	}
 
 	ret += "\t\ttuple_size = sizeof( struct "+generate_tuple_name(node_name)+");\n";
-	ret += "\t\ttuple = allocate_tuple(f, tuple_size );\n";
+	ret += "\t\ttuple = ( struct "+generate_tuple_name(node_name)+" *)allocate_tuple(f, tuple_size );\n";
 	ret += "\t\tif( tuple == NULL)\n\t\treturn 1;\n";
 
 	/* mark tuple as EOF_TUPLE */
@@ -2144,7 +2144,7 @@ string generate_fta_clock(string node_name, table_list *schema, unsigned time_co
 	}
 
 	ret += "\ttuple_size = sizeof( struct "+generate_tuple_name(node_name)+") + sizeof(gs_uint64_t) + sizeof(struct fta_stat);\n";
-	ret += "\ttuple = allocate_tuple(f, tuple_size );\n";
+	ret += "\ttuple = ( struct "+generate_tuple_name(node_name)+"*)allocate_tuple(f, tuple_size );\n";
 	ret += "\tif( tuple == NULL)\n\t\treturn 1;\n";
 
 
@@ -2447,7 +2447,7 @@ string ret;
 	  ret += ";\n";
 
 
-	  ret += "\ttuple = allocate_tuple(f, tuple_size );\n";
+	  ret += "\ttuple = ( struct "+generate_tuple_name(node_name)+" *)allocate_tuple(f, tuple_size );\n";
 	  ret += "\tif( tuple == NULL)\n\t\tgoto end;\n";
 
 //			Test passed, make assignments to the tuple.
@@ -3038,7 +3038,7 @@ printf("n_bloom=%d, window_len=%d, bloom_width=%s, bf_exp_size=%d, bf_bit_size=%
 	  ret += ";\n";
 
 
-	  ret += "\ttuple = allocate_tuple(f, tuple_size );\n";
+	  ret += "\ttuple = ( struct "+generate_tuple_name(node_name)+" *)allocate_tuple(f, tuple_size );\n";
 	  ret += "\tif( tuple == NULL)\n\t\tgoto end;\n";
 
 //			Test passed, make assignments to the tuple.
@@ -3495,7 +3495,7 @@ string ret;
 	  ret += ";\n";
 
 
-	  ret += "\ttuple = allocate_tuple(f, tuple_size );\n";
+	  ret += "\ttuple = ( struct "+generate_tuple_name(node_name)+" *)allocate_tuple(f, tuple_size );\n";
 	  ret += "\tif( tuple == NULL)\n\t\tgoto end;\n";
 
 //			Test passed, make assignments to the tuple.
@@ -4151,7 +4151,7 @@ string generate_fta_alloc(qp_node *fs, string node_name, table_list *schema, boo
 	ret+="\tstruct "+generate_fta_name(node_name)+"* f;\n";
 	ret+="\tint i;\n";
 	ret += "\n";
-	ret+="\tif((f=fta_alloc(0,sizeof(struct "+generate_fta_name(node_name)+")))==0){\n\t\treturn(0);\n\t}\n";
+	ret+="\tif((f=(struct "+generate_fta_name(node_name)+" *)fta_alloc(0,sizeof(struct "+generate_fta_name(node_name)+")))==0){\n\t\treturn(0);\n\t}\n";
 
 //				assign a streamid to fta instance
 	ret+="\t/* assign a streamid */\n";
@@ -4198,12 +4198,12 @@ string generate_fta_alloc(qp_node *fs, string node_name, table_list *schema, boo
 		}
 		ret += ";\n";
 
-		ret+="\tif ((f->aggr_table = sp_fta_alloc((struct FTA *)f,sizeof(struct "+generate_aggr_struct_name(node_name)+") * f->max_aggrs))==0) {\n";
+		ret+="\tif ((f->aggr_table = (struct "+generate_aggr_struct_name(node_name)+" *)sp_fta_alloc((struct FTA *)f,sizeof(struct "+generate_aggr_struct_name(node_name)+") * f->max_aggrs))==0) {\n";
 		ret+="\t\treturn(0);\n";
 		ret+="\t}\n\n";
 //		ret+="/* compute how many integers we need to store the hashmap */\n";
 //		ret+="\tf->bitmap_size = (f->max_aggrs % (sizeof(gs_uint32_t) * 4)) ? (f->max_aggrs / (sizeof(gs_uint32_t) * 4) + 1) : (f->max_aggrs / (sizeof(gs_uint32_t) * 4));\n\n";
-		ret+="\tif ((f->aggr_table_hashmap = sp_fta_alloc((struct FTA *)f,sizeof(gs_uint32_t) * f->max_aggrs))==0) {\n";
+		ret+="\tif ((f->aggr_table_hashmap = (gs_uint32_t *)sp_fta_alloc((struct FTA *)f,sizeof(gs_uint32_t) * f->max_aggrs))==0) {\n";
 		ret+="\t\treturn(0);\n";
 		ret+="\t}\n";
 		ret+="/*\t\tfill bitmap with zero \t*/\n";
@@ -4240,7 +4240,7 @@ string generate_fta_alloc(qp_node *fs, string node_name, table_list *schema, boo
 			int bf_byte_size = bf_bit_size / (8*sizeof(char));
 
 			int bf_tot = n_bloom*bf_byte_size;
-			ret+="\tif ((f->bf_table = sp_fta_alloc((struct FTA *)f,"+int_to_string(bf_tot)+"))==0) {\n";
+			ret+="\tif ((f->bf_table = (unsigned char *)sp_fta_alloc((struct FTA *)f,"+int_to_string(bf_tot)+"))==0) {\n";
 			ret+="\t\treturn(0);\n";
 			ret+="\t}\n";
 			ret +=
@@ -4259,7 +4259,7 @@ string generate_fta_alloc(qp_node *fs, string node_name, table_list *schema, boo
 				}
 				ht_size = hs;
 			}
-			ret+="\tif ((f->join_table = sp_fta_alloc((struct FTA *)f,sizeof(struct "+generate_fj_struct_name(node_name)+") * "+int_to_string(ht_size)+"))==0) {\n";
+			ret+="\tif ((f->join_table = (struct "+generate_fj_struct_name(node_name)+" *) sp_fta_alloc((struct FTA *)f,sizeof(struct "+generate_fj_struct_name(node_name)+") * "+int_to_string(ht_size)+"))==0) {\n";
 			ret+="\t\treturn(0);\n";
 			ret+="\t}\n\n";
 			ret +=
@@ -4502,7 +4502,7 @@ string generate_lfta_block(qp_node *fs, table_list *schema, int gid,
 	}
 
 //			Build list of "partial functions", by clause.
-//			NOTE : partial fcns are not handles well.
+//			NOTE : partial fcns are not handled well.
 //			The act of searching for them associates the fcn call
 //			in the SE with an index to an array.  Refs to the
 //			fcn value are replaced with refs to the variable they are
@@ -4533,7 +4533,7 @@ string generate_lfta_block(qp_node *fs, table_list *schema, int gid,
 	ag_fcns_start = gb_fcns_end = partial_fcns.size();
 	if(aggr_tbl != NULL){
 		for(i=0;i<aggr_tbl->size();i++){
-			find_partial_fcns(aggr_tbl->get_aggr_se(i), NULL, NULL, &is_partial_fcn, Ext_fcns);
+			find_partial_fcns(aggr_tbl->get_aggr_se(i), &partial_fcns, NULL, &is_partial_fcn, Ext_fcns);
 		}
 	}
 	ag_fcns_end = partial_fcns.size();

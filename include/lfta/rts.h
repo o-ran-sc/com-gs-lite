@@ -18,6 +18,11 @@
  */
 #ifndef RTS_H
 #define RTS_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "gstypes.h"
 #include "gsconfig.h"
 #include "byteswap.h"
@@ -117,7 +122,13 @@ gs_retval_t print_error(char *string);	/* XXXCDC: right place? */
 
 /* Function to get the attributes of interfaces in an lfta */
 
-gs_sp_t get_iface_properties (const gs_sp_t iface_name, const gs_sp_t property_name);
+gs_csp_t get_iface_properties (const gs_sp_t iface_name, const gs_sp_t property_name);
+
+void fta_init(gs_sp_t device);
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

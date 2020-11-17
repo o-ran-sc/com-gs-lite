@@ -51,7 +51,7 @@ int main (int argc, char* argv[]) {
     gs_int32_t tip1,tip2,tip3,tip4;
     endpoint gshub;
     gs_sp_t instance_name;
-    gs_sp_t kafka;
+    gs_csp_t kafka;
     
     
 	gsopenlog(argv[0]);
@@ -135,7 +135,7 @@ int main (int argc, char* argv[]) {
         }
         
         if (pid==0) {
-            gs_sp_t interfacetype;
+            gs_csp_t interfacetype;
             /* wait for clearinghouse to finish startup */
             sleep(2);
             for(y=0;y<mapcnt;y++) {

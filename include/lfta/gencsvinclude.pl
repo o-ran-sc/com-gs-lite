@@ -21,6 +21,7 @@ close(I);
 chomp $num;
 printf("#ifndef CSV_MACRO_H\n#define CSV_MACRO_H\n");
 for($x=1;$x<=$num;$x++) {
+	printf "#define get_csv_float_to_timestamp_pos$x(X,Y) get_csv_float_to_timestamp((X),(Y),$x)\n";
 	printf "#define get_csv_uint_pos$x(X,Y) get_csv_uint((X),(Y),$x)\n";
     printf "#define get_csv_ullong_pos$x(X,Y) get_csv_ullong((X),(Y),$x)\n";
     printf "#define get_csv_ip_pos$x(X,Y) get_csv_ip((X),(Y),$x)\n";

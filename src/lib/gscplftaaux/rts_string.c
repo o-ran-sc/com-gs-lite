@@ -57,6 +57,7 @@ gs_retval_t str_replace( struct FTA * f, struct gs_string * dest, struct gs_stri
     return str_assign_with_copy(f, dest, src);
 }
 
+// ---------------------------------------------------
 /* Searching within a string */
 
 
@@ -142,8 +143,57 @@ gs_retval_t str_equal( struct gs_string * str1, struct gs_string * str2)
     return 0;
 }
 
-gs_retval_t str_constructor(struct gs_string *s, gs_sp_t l){
-    s->data =  l;
+////////////////////////////////////
+//	Substring functions
+
+//	 get last n bytes, if available
+//	 getting the prefix is done by str_truncate, defined in the include file
+gs_retval_t str_suffix(struct gs_string * ret, struct gs_string *s, gs_uint32_t n){
+  register gs_uint8_t * st = s->data; 
+  int prefix = (n > s->length) ? 0 : s->length-n;  
+  ret->data = st + prefix;
+  ret->length = s->length-prefix;
+  ret->owner = 0;
+  return 0;
+}
+
+
+//	Split the string on sep, get the i'th substring, if any
+gs_retval_t get_list_entry(struct gs_string * ret, struct gs_string *l, struct gs_string *sep, gs_uint32_t pos){
+	char s;
+	gs_int32_t c;
+
+	ret->data = l->data;	// empty return string
+	ret->owner=0;
+	ret->length = 0;
+
+	if(sep->length > 0){	// get the sep char, ensure the string is nonempty
+		s = sep->data[0];
+	}else{
+		return 0;
+	}
+
+	for(c=0;c < l->length && pos>0; ++c){
+		if(l->data[c] == s){
+			pos--;
+		}
+	}
+
+	if(pos>0 || c >= l->length-1){ // not enough seps, or final string is empty
+		return 0;
+	}
+	
+	ret->data = l->data + c;
+	for(; c<l->length && l->data[c] != s; ++c, ++ret->length);
+	
+	return 0;
+}
+	
+
+// ------------------------------------------------------
+
+gs_retval_t str_constructor(struct gs_string *s, gs_csp_t l){
+    s->data =  (gs_sp_t)l;
     s->length = 0;
     while(l[s->length] != '\0') s->length++;
     s->owner = NULL;    

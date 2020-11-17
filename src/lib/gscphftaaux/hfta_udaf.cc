@@ -27,6 +27,7 @@ Copyright 2014 AT&T Intellectual Property
 #include <iostream>
 
 #include "hfta_runtime_library.h"
+#include"stringhash.h"
 
 
 #define max(a,b) ((a) > (b) ? (a) : (b))
@@ -922,6 +923,80 @@ gs_int64_t extr_running_sum_max(vstring *v){
 	if(v->length != sizeof(run_sum_max_udaf_str)) return 0;
 	run_sum_max_udaf_str *vs = (run_sum_max_udaf_str *)(v->offset);
 	return vs->max;
+}
+
+// ---------------------------------------------
+//		Approximate count distinct.
+//		Rely on the minhashing approach.
+//		Currently HFTA-only
+//		Uses a 32-bit hash, tested up to 100,000,000 elements
+//		and it gave good results (within 7%)
+
+
+#define COUNT_DISTINCT_NREPS 250
+#define COUNT_DISTINCT_MAX_STRING_LEN 200	// number of 4-byte words
+
+static Hash32bit2univID hids[COUNT_DISTINCT_NREPS];
+static int approx_count_distinct_udaf_initialized = 0;
+struct approx_count_distinct_udaf_str{
+	unsigned int mn[COUNT_DISTINCT_NREPS];
+};
+
+
+void approx_count_distinct_udaf_HFTA_AGGR_INIT_(gs_sp_t buf){
+	approx_count_distinct_udaf_str *cd = (approx_count_distinct_udaf_str *)buf;
+	for(int i=0;i<COUNT_DISTINCT_NREPS;++i)
+		cd->mn[i]=4294967295;
+	if(approx_count_distinct_udaf_initialized==0){
+		for(int i=0;i<COUNT_DISTINCT_NREPS;++i)
+			hids[i] = InitStringHash32bit2univ(COUNT_DISTINCT_MAX_STRING_LEN);
+		approx_count_distinct_udaf_initialized=1;
+	}
+}
+void running_approx_count_distinct_udaf_HFTA_AGGR_INIT_(gs_sp_t buf){
+	approx_count_distinct_udaf_HFTA_AGGR_INIT_(buf);
+}
+
+void approx_count_distinct_udaf_HFTA_AGGR_REINIT_(gs_sp_t buf){ }
+void running_approx_count_distinct_udaf_HFTA_AGGR_REINIT_(gs_sp_t buf){}
+
+void approx_count_distinct_udaf_HFTA_AGGR_DESTROY_(gs_sp_t buf){ }
+void running_approx_count_distinct_udaf_HFTA_AGGR_DESTROY_(gs_sp_t buf){ }
+
+void approx_count_distinct_udaf_HFTA_AGGR_UPDATE_(gs_sp_t buf, vstring *val){
+	approx_count_distinct_udaf_str *cd = (approx_count_distinct_udaf_str *)buf;
+	unsigned int buffer[sizeof(unsigned int)*COUNT_DISTINCT_MAX_STRING_LEN];
+	buffer[val->length/4] = 0;
+	memcpy((char *)buffer, (char *)val->offset, min(val->length, 800));
+	unsigned int len4 = val->length/4 + ((val->length&0x03)>0);
+
+	for(int i=0; i<COUNT_DISTINCT_NREPS; ++i){
+		unsigned int h = StringHash32bit2univ(buffer, len4, hids[i]);
+		if(h < cd->mn[i]) cd->mn[i] = h;
+	}
+}
+void running_approx_count_distinct_udaf_HFTA_AGGR_UPDATE_(gs_sp_t buf, vstring *val){
+	approx_count_distinct_udaf_HFTA_AGGR_UPDATE_(buf, val);
+}
+
+void approx_count_distinct_udaf_HFTA_AGGR_OUTPUT_(vstring *res, gs_sp_t buf){
+	res->offset = (gs_p_t)buf;
+	res->length = sizeof(approx_count_distinct_udaf_str);
+	res->reserved = SHALLOW_COPY;
+}
+void running_approx_count_distinct_udaf_HFTA_AGGR_OUTPUT_(vstring *res, gs_sp_t buf){
+	approx_count_distinct_udaf_HFTA_AGGR_OUTPUT_(res, buf);
+}
+
+gs_float_t extr_approx_count_distinct(vstring *v){
+	approx_count_distinct_udaf_str *cd = (approx_count_distinct_udaf_str *)(v->offset);
+	gs_float_t avg = 0.0;
+	for(int i=0;i<COUNT_DISTINCT_NREPS;++i){
+		avg += cd->mn[i];
+	}
+	avg /= COUNT_DISTINCT_NREPS;
+	gs_float_t est = (4294967295.0 / avg) - 1;
+	return est;
 }
 
 

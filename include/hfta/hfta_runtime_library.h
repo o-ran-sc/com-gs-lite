@@ -63,6 +63,9 @@ inline static gs_retval_t str_truncate(vstring * result, vstring *str, gs_uint32
 	result->reserved=SHALLOW_COPY;
 	return 0;
 }
+gs_retval_t str_suffix(vstring *result,  vstring *s, gs_uint32_t n);
+gs_retval_t get_list_entry(vstring *result, vstring *s, vstring *sep, gs_uint32_t pos);
+
 
 gs_retval_t str_exists_substr(vstring * s1, vstring * s2);
 gs_retval_t str_compare(vstring * s1, vstring * s2);
@@ -141,4 +144,17 @@ gs_param_handle_t deregister_handle_for_int_to_string_map_slot_1(gs_param_handle
 //	to_hex_string, for printing a binary string
 
 gs_retval_t to_hex_string(vstring *result, vstring *val);
+
+// ------------------------------------------------------
+//		sum up unsigned integers expressed as a string with separators,
+//		e.g. on input '34|45|56' and sep '|', return 135.
+//		This kind of thing is common in Nokia PCMD data.
+// gracefully handle empty entries, e.g. '|8|' should return 8
+gs_int64_t sum_uint_in_list(struct vstring *list, struct vstring *sepchar);
+
+// --------------------------------------------
+//	Convert an string to an integer
+gs_int64_t to_llong(vstring *v);
+
+
 #endif

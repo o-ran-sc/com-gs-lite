@@ -482,3 +482,62 @@ void running_array_aggr_lfta_LFTA_AGGR_OUTPUT_(struct gs_string* res, char* scra
 
 void running_array_aggr_lfta_LFTA_AGGR_DESTROY_(char* scratch) { }
 
+
+
+/////////////////////////////////////////////////////////
+// ==============================================================
+//		other rts functions.
+
+// sum_int_in_list
+// given e.g. '34|45|56' and sepchar '|', return 135.
+// gracefully handle empty entries, e.g. '|8|' should return 8
+gs_int64_t sum_uint_in_list(struct gs_string *list, struct gs_string *sepchar){
+	gs_int64_t ret = 0;
+	gs_int64_t val = 0;
+	gs_uint8_t sep;
+	gs_uint8_t v;
+	int c;
+
+	if(sepchar->length < 1)
+		return 0;
+	sep = sepchar->data[0];
+
+	for(c=0;c<list->length;++c){
+		v = list->data[c];
+		if(v==sep){
+			ret+=val;
+			val = 0;
+		}else{
+			val = 10*val + (v>='0' && v<='9')*(v-'0');
+		}
+	}
+	ret += val;
+	return ret;
+}
+
+//	Convert an string to an integer
+gs_int64_t to_llong(struct gs_string *v){
+	gs_int64_t ret=0;
+	gs_uint8_t d;
+	int c;
+	int neg=1;
+
+	if(v->length < 1)
+		return 0;
+	d = v->data[0];
+	if(d=='-'){
+		neg=-1;
+	}else{
+		ret = (d>='0' && d<='9')*(d-'0');
+	}
+
+	for(c=1;c<v->length;++c){
+		d = v->data[c];
+		ret = 10*ret+(d>='0' && d<='9')*(d-'0');
+	}
+
+	return neg*ret;
+}
+
+	
+

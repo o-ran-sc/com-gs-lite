@@ -88,7 +88,7 @@ const INT64 Prime61 = (((INT64)1)<<61) - 1;
 
 
 //Random numbers from random.org based on atmostpheric noise.
-INT64 Random64[200]= {0x285eb7722a62ce6eull,
+static INT64 Random64[200]= {0x285eb7722a62ce6eull,
                       0xa84c7463e2b7856bull,
 		      0xb29100d6abcc8666ull,
 		      0xf9bfca5b7461fb1full,
@@ -294,8 +294,8 @@ INT64 Random64[200]= {0x285eb7722a62ce6eull,
 
 
 
-gs_int32_t nextrandom = 0;
-gs_int32_t endrandom = 100;
+static gs_int32_t nextrandom = 0;
+static gs_int32_t endrandom = 100;
 
 
 // The first "endrandom" numbers returned are truely random INT64.
@@ -309,8 +309,8 @@ inline static INT64 RandINT64() {
   INT64 r,r1;
   if (nextrandom<endrandom) r=Random64[nextrandom++];
   else {
-    if (nextrandom==endrandom)
-      fprintf(stderr,"Switching from random to pseudo-random in Rand64");
+//    if (nextrandom==endrandom)
+//      fprintf(stderr,"Switching from random to pseudo-random in Rand64");
     r =(INT64) mrand48();
     r1 = (INT64) mrand48();
     r=r<<32;
@@ -631,6 +631,8 @@ inline static Hash32bit2univID InitStringHash32bit2univ(gs_int32_t length) {
 }
 
 
+// ---------------------------------------------
+//		Mikkel's string hashing code, 250M hashes/sec
 
 //assumes string length even
 inline INT32 EvenStringHash32bit2univ(INT32 * x, gs_int32_t length,
@@ -687,6 +689,68 @@ inline INT32 StringHash32bit2univ(INT32 * x, gs_int32_t length, Hash32bit2univID
   if (length&1) return OddStringHash32bit2univ(x,length,hid);
   else return EvenStringHash32bit2univ(x,length,hid);
 }
+
+// ---------------------------------------------
+
+// ---------------------------------------------
+//		modification to Mikkel's string hashing code
+//		Return the full 64 bits ... low order bits are not random
+//		but we can squeeze a few more bits out.
+
+//assumes string length even
+inline INT64 EvenStringHash64bit(INT32 * x, gs_int32_t length,
+                                      Hash32bit2univID hid) {
+  gs_int32_t i;
+  INT64 H;
+  INT64 xh1,xh2,y;
+
+  H=0;
+  for (i=0;i<length;i+=2) {
+    xh1=x[i]+hid[i+1];
+    xh2=x[i+1]+hid[i];
+    y=xh1*xh2;
+    H = H^y;
+  }
+  H=H^hid[length];
+  return H;
+}
+
+//assumes string length odd
+inline INT64 OddStringHash64bit(INT32 * x, gs_int32_t length,
+                                      Hash32bit2univID hid) {
+  gs_int32_t i;
+  INT64 H;
+  INT64 xh1,xh2,y;
+
+  H = x[0]*hid[0];
+  for (i=1;i<length;i+=2) {
+    xh1=x[i]+hid[i+1];
+    xh2=x[i+1]+hid[i];
+    y=xh1*xh2;
+    H = H^y;
+  }
+  H=H^hid[length];
+  return H;
+}
+
+//Below we have the generic algorithm for fixed length string hashing
+//For shorter strings of length < 6, it is worthwhile using
+//specialized versions with fewer tests.
+//All versions rely on the some initialization above.
+inline INT64 StringHash64bit(INT32 * x, gs_int32_t length, Hash32bit2univID hid) {
+//  gs_int32_t i;
+//  INT64 H=0;
+//  INT32 h;
+//  for (i=0;i<length;i++) H = H^(x[i]*hid[i]);
+//  H=H^hid[length];
+//  h = H >> 32;
+//  return h;
+  if (length&1) return OddStringHash64bit(x,length,hid);
+  else return EvenStringHash64bit(x,length,hid);
+}
+
+// ---------------------------------------------
+
 
 
 //string of length 2

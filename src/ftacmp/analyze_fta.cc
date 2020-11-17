@@ -4291,6 +4291,7 @@ query_summary_class *analyze_fta(table_exp_t *fta_tree, table_list *schema,
 			int tblvar=infer_tablevar_from_colref(qs->mvars[cv],fta_tree->fm,schema);
 			if(tblvar<0){
 				fprintf(stderr,"ERROR, Merge column %d (%s) was not found in any of the tables.\n",cv,qs->mvars[cv]->to_string().c_str());
+				exit(1);
 			}
 			refd_sources.insert(tblvar);
 			tmp_crl[tblvar] = qs->mvars[cv];

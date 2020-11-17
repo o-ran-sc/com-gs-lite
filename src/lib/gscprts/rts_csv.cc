@@ -370,18 +370,20 @@ static void close_file_bsa() {
 
 static gs_retval_t csv_replay_init(gs_sp_t device)
 {
-	gs_sp_t	verbosetmp;
-	gs_sp_t	delaytmp;
-	gs_sp_t	gshubtmp;
-	gs_sp_t	tempdel;
-	gs_sp_t	singlefiletmp;
-	gs_sp_t compressortmp;
-	gs_sp_t bsatmp;  
-	gs_sp_t encryptedtmp;  
-	gs_sp_t maxfieldtmp;
+	gs_csp_t verbosetmp;
+	gs_csp_t delaytmp;
+	gs_csp_t gshubtmp;
+	gs_csp_t tempdel;
+	gs_csp_t singlefiletmp;
+	gs_csp_t compressortmp;
+	gs_csp_t bsatmp;  
+	gs_csp_t encryptedtmp;  
+	gs_csp_t maxfieldtmp;
 
-	gs_sp_t pkey_fname;  
-	gs_sp_t pwd_fname;  		
+	gs_csp_t pkey_fname;  
+	gs_csp_t pwd_fname;  		
+
+	gs_csp_t stringtmp;
 
 
 	if ((verbosetmp=get_iface_properties(device,(gs_sp_t)"verbose"))!=0) {
@@ -393,8 +395,18 @@ static gs_retval_t csv_replay_init(gs_sp_t device)
 		}
 	}
 
-	name=get_iface_properties(device,(gs_sp_t)"filename");
-	dir_name=get_iface_properties(device,(gs_sp_t)"directoryname");
+	stringtmp=get_iface_properties(device,(gs_sp_t)"filename");
+	if(stringtmp){
+		name = strdup(stringtmp);
+	}else{
+		name = NULL;
+	}
+	stringtmp=get_iface_properties(device,(gs_sp_t)"directoryname");
+	if(stringtmp){
+		dir_name = strdup(stringtmp);
+	}else{
+		dir_name = NULL;
+	}
 	if (!name && !dir_name) {
 		print_error((gs_sp_t)"csv_replay_init::Either \"Filename\" or \"Dirname\" must be defined");
 		exit(0);

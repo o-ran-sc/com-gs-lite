@@ -18,6 +18,10 @@
 #ifndef LAPP_H
 #define LAPP_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <fta.h>
 #include <systat.h>
 #include <fta_stat.h>
@@ -127,5 +131,9 @@ extern gs_uint64_t shared_memory_full_warning;
 
 /* returns 1 if GSCP ringbuffers are in blocking mode */
 gs_retval_t gscp_blocking_mode();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
