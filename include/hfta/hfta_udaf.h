@@ -279,24 +279,104 @@ void running_array_aggr_hfta_HFTA_AGGR_DESTROY_(vstring* scratch);
 /* HFTA functions						*/
 /****************************************************************/
 
-void quant_udaf_hfta3_HFTA_AGGR_INIT_(gs_sp_t);
-void quant_udaf_hfta3_HFTA_AGGR_UPDATE_(gs_sp_t, vstring *);
-void quant_udaf_hfta3_HFTA_AGGR_OUTPUT_(vstring *, gs_sp_t);
-void quant_udaf_hfta3_HFTA_AGGR_DESTROY_(gs_sp_t);
-gs_uint32_t extr_quant_hfta3_fcn(vstring *, gs_float_t);
-gs_uint32_t extr_med_hfta3_fcn(vstring *);
-gs_uint32_t extr_quant_hfta3_space(vstring *);
+// void quant_udaf_hfta3_HFTA_AGGR_INIT_(gs_sp_t);
+// void quant_udaf_hfta3_HFTA_AGGR_UPDATE_(gs_sp_t, vstring *);
+// void quant_udaf_hfta3_HFTA_AGGR_OUTPUT_(vstring *, gs_sp_t);
+// void quant_udaf_hfta3_HFTA_AGGR_DESTROY_(gs_sp_t);
+// gs_uint32_t extr_quant_hfta3_fcn(vstring *, gs_float_t);
+// gs_uint32_t extr_med_hfta3_fcn(vstring *);
+// gs_uint32_t extr_quant_hfta3_space(vstring *);
+
+void quant_f_udaf_hfta3_HFTA_AGGR_INIT_(gs_sp_t b);
+void quant_f_udaf_hfta3_HFTA_AGGR_UPDATE_(gs_sp_t b, vstring *v);
+void quant_f_udaf_hfta3_HFTA_AGGR_OUTPUT_(vstring *r, gs_sp_t b) ;
+//gs_float_t extr_quant_f_hfta3_fcn(vstring *v, gs_float_t phi) ;
+//gs_float_t extr_f_med_hfta3_fcn(vstring *v);
+void quant_f_udaf_hfta3_HFTA_AGGR_DESTROY_(gs_sp_t b) ;
+
+void quant_ui_udaf_hfta3_HFTA_AGGR_INIT_(gs_sp_t b);
+void quant_ui_udaf_hfta3_HFTA_AGGR_UPDATE_(gs_sp_t b, vstring *v);
+void quant_ui_udaf_hfta3_HFTA_AGGR_OUTPUT_(vstring *r, gs_sp_t b) ;
+//gs_uint32_t extr_quant_ui_hfta3_fcn(vstring *v, gs_float_t phi) ;
+//gs_uint32_t extr_ui_med_hfta3_fcn(vstring *v);
+void quant_ui_udaf_hfta3_HFTA_AGGR_DESTROY_(gs_sp_t b) ;
+
+void quant_i_udaf_hfta3_HFTA_AGGR_INIT_(gs_sp_t b);
+void quant_i_udaf_hfta3_HFTA_AGGR_UPDATE_(gs_sp_t b, vstring *v);
+void quant_i_udaf_hfta3_HFTA_AGGR_OUTPUT_(vstring *r, gs_sp_t b) ;
+//gs_int32_t extr_quant_i_hfta3_fcn(vstring *v, gs_float_t phi) ;
+//gs_int32_t extr_i_med_hfta3_fcn(vstring *v);
+void quant_i_udaf_hfta3_HFTA_AGGR_DESTROY_(gs_sp_t b) ;
+
+void quant_ul_udaf_hfta3_HFTA_AGGR_INIT_(gs_sp_t b);
+void quant_ul_udaf_hfta3_HFTA_AGGR_UPDATE_(gs_sp_t b, vstring *v);
+void quant_ul_udaf_hfta3_HFTA_AGGR_OUTPUT_(vstring *r, gs_sp_t b) ;
+//gs_uint64_t extr_quant_ul_hfta3_fcn(vstring *v, gs_float_t phi) ;
+//gs_uint64_t extr_ul_med_hfta3_fcn(vstring *v);
+void quant_ul_udaf_hfta3_HFTA_AGGR_DESTROY_(gs_sp_t b) ;
+
+void quant_l_udaf_hfta3_HFTA_AGGR_INIT_(gs_sp_t b);
+void quant_l_udaf_hfta3_HFTA_AGGR_UPDATE_(gs_sp_t b, vstring *v);
+void quant_l_udaf_hfta3_HFTA_AGGR_OUTPUT_(vstring *r, gs_sp_t b) ;
+//gs_int64_t extr_quant_l_hfta3_fcn(vstring *v, gs_float_t phi) ;
+//gs_int64_t extr_l_med_hfta3_fcn(vstring *v);
+void quant_l_udaf_hfta3_HFTA_AGGR_DESTROY_(gs_sp_t b) ;
+
+
+
 
 /****************************************************************/
 /* HFTA-only functions						*/
 /****************************************************************/
-void quant_udaf_hfta0_HFTA_AGGR_INIT_(gs_sp_t);
-void quant_udaf_hfta0_HFTA_AGGR_UPDATE_(gs_sp_t, gs_uint32_t);
-void quant_udaf_hfta0_HFTA_AGGR_OUTPUT_(vstring *, gs_sp_t);
-void quant_udaf_hfta0_HFTA_AGGR_DESTROY_(gs_sp_t);
-gs_uint32_t extr_quant_hfta0_fcn(vstring *, gs_float_t);
-gs_uint32_t extr_med_hfta0_fcn(vstring *);
-gs_uint32_t extr_quant_hfta0_space(vstring *);
+
+// void quant_udaf_hfta0_HFTA_AGGR_INIT_(gs_sp_t);
+// void quant_udaf_hfta0_HFTA_AGGR_UPDATE_(gs_sp_t, gs_uint32_t);
+// void quant_udaf_hfta0_HFTA_AGGR_OUTPUT_(vstring *, gs_sp_t);
+// void quant_udaf_hfta0_HFTA_AGGR_DESTROY_(gs_sp_t);
+// gs_uint32_t extr_quant_hfta0_fcn(vstring *, gs_float_t);
+// gs_uint32_t extr_med_hfta0_fcn(vstring *);
+// gs_uint32_t extr_quant_hfta0_space(vstring *);
+
+void quant_ui_udaf_hftaZ_HFTA_AGGR_INIT_(gs_sp_t b);
+void quant_ui_udaf_hftaZ_HFTA_AGGR_UPDATE_(gs_sp_t b, gs_uint32_t v) ;
+void quant_ui_udaf_hftaZ_HFTA_AGGR_OUTPUT_(vstring *r, gs_sp_t b);
+void quant_ui_udaf_hftaZ_HFTA_AGGR_DESTROY_(gs_sp_t b);
+gs_uint32_t extr_quant_ui_hftaZ_fcn(vstring *v, gs_float_t phi) ;
+gs_uint32_t extr_med_ui_hftaZ_fcn(vstring *v) ;
+int quant_ui_udaf_hftaZ_nelem(gs_sp_t b) ;
+
+void quant_ul_udaf_hftaZ_HFTA_AGGR_INIT_(gs_sp_t b);
+void quant_ul_udaf_hftaZ_HFTA_AGGR_UPDATE_(gs_sp_t b, gs_uint64_t v) ;
+void quant_ul_udaf_hftaZ_HFTA_AGGR_OUTPUT_(vstring *r, gs_sp_t b);
+void quant_ul_udaf_hftaZ_HFTA_AGGR_DESTROY_(gs_sp_t b);
+gs_uint64_t extr_quant_ul_hftaZ_fcn(vstring *v, gs_float_t phi) ;
+gs_uint64_t extr_med_ul_hftaZ_fcn(vstring *v) ;
+int quant_ul_udaf_hftaZ_nelem(gs_sp_t b) ;
+
+void quant_i_udaf_hftaZ_HFTA_AGGR_INIT_(gs_sp_t b);
+void quant_i_udaf_hftaZ_HFTA_AGGR_UPDATE_(gs_sp_t b, gs_int32_t v) ;
+void quant_i_udaf_hftaZ_HFTA_AGGR_OUTPUT_(vstring *r, gs_sp_t b);
+void quant_i_udaf_hftaZ_HFTA_AGGR_DESTROY_(gs_sp_t b);
+gs_int32_t extr_quant_i_hftaZ_fcn(vstring *v, gs_float_t phi) ;
+gs_int32_t extr_med_i_hftaZ_fcn(vstring *v) ;
+int quant_i_udaf_hftaZ_nelem(gs_sp_t b) ;
+
+void quant_l_udaf_hftaZ_HFTA_AGGR_INIT_(gs_sp_t b);
+void quant_l_udaf_hftaZ_HFTA_AGGR_UPDATE_(gs_sp_t b, gs_int64_t v) ;
+void quant_l_udaf_hftaZ_HFTA_AGGR_OUTPUT_(vstring *r, gs_sp_t b);
+void quant_l_udaf_hftaZ_HFTA_AGGR_DESTROY_(gs_sp_t b);
+gs_int64_t extr_quant_l_hftaZ_fcn(vstring *v, gs_float_t phi) ;
+gs_int64_t extr_med_l_hftaZ_fcn(vstring *v) ;
+int quant_l_udaf_hftaZ_nelem(gs_sp_t b) ;
+
+void quant_f_udaf_hftaZ_HFTA_AGGR_INIT_(gs_sp_t b);
+void quant_f_udaf_hftaZ_HFTA_AGGR_UPDATE_(gs_sp_t b, gs_float_t v) ;
+void quant_f_udaf_hftaZ_HFTA_AGGR_OUTPUT_(vstring *r, gs_sp_t b);
+void quant_f_udaf_hftaZ_HFTA_AGGR_DESTROY_(gs_sp_t b);
+gs_float_t extr_quant_f_hftaZ_fcn(vstring *v, gs_float_t phi) ;
+gs_float_t extr_med_f_hftaZ_fcn(vstring *v) ;
+int quant_f_udaf_hftaZ_nelem(gs_sp_t b) ;
+
 
 
 /****************************************************************/

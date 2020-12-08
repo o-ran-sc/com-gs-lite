@@ -619,15 +619,51 @@ uint FUN [LFTA_LEGAL, COST EXPENSIVE]
 //         Flips approximate quantile
 ///////////////////////////////////////////////////////////
 
-        uint EXTR quantile_of quant_udaf_hfta0 extr_quant_hfta0_fcn (uint, float);
-        uint  FUN [COST LOW] extr_quant_hfta0_fcn(string, float);
-        uint EXTR median_of quant_udaf_hfta0 extr_med_hfta0_fcn (uint);
-        uint  FUN [COST LOW] extr_med_hfta0_fcn(string);
-        uint EXTR qspace_of quant_udaf_hfta0 extr_quant_hfta0_space (uint);
-        uint  FUN [COST LOW] extr_quant_hfta0_space(string);
-        string UDAF [SUBAGGR quant_udaf_lfta3, SUPERAGGR quant_udaf_hfta3] quant_udaf_hfta0 fstring24 (uint);
-        string UDAF quant_udaf_hfta3 fstring24 (string);
-        string UDAF quant_udaf_lfta3 fstring6600 (uint);
+// uint
+        uint EXTR quantile_of quant_ui_udaf_hftaZ extr_quant_ui_hftaZ_fcn (uint, float);
+        uint  FUN [COST LOW] extr_quant_ui_hftaZ_fcn(string, float);
+        uint EXTR median_of quant_ui_udaf_hftaZ extr_med_ui_hftaZ_fcn (uint);
+        uint  FUN [COST LOW] extr_med_ui_hftaZ_fcn(string);
+
+        string UDAF [SUBAGGR quant_ui_udaf_lfta3, SUPERAGGR quant_ui_udaf_hfta3] quant_ui_udaf_hftaZ fstring32 (uint);
+        string UDAF quant_ui_udaf_hfta3 fstring32 (string);
+        string UDAF quant_ui_udaf_lfta3 fstring2088 (uint);
+// int
+        int EXTR quantile_of quant_i_udaf_hftaZ extr_quant_i_hftaZ_fcn (int, float);
+        int  FUN [COST LOW] extr_quant_i_hftaZ_fcn(string, float);
+        int EXTR median_of quant_i_udaf_hftaZ extr_med_i_hftaZ_fcn (int);
+        int  FUN [COST LOW] extr_med_i_hftaZ_fcn(string);
+
+        string UDAF [SUBAGGR quant_i_udaf_lfta3, SUPERAGGR quant_i_udaf_hfta3] quant_i_udaf_hftaZ fstring32 (int);
+        string UDAF quant_i_udaf_hfta3 fstring32 (string);
+        string UDAF quant_i_udaf_lfta3 fstring2088 (int);
+// ullong
+        ullong EXTR quantile_of quant_ul_udaf_hftaZ extr_quant_ul_hftaZ_fcn (ullong, float);
+        ullong  FUN [COST LOW] extr_quant_ul_hftaZ_fcn(string, float);
+        ullong EXTR median_of quant_ul_udaf_hftaZ extr_med_ul_hftaZ_fcn (ullong);
+        ullong  FUN [COST LOW] extr_med_ul_hftaZ_fcn(string);
+
+        string UDAF [SUBAGGR quant_ul_udaf_lfta3, SUPERAGGR quant_ul_udaf_hfta3] quant_ul_udaf_hftaZ fstring32 (ullong);
+        string UDAF quant_ul_udaf_hfta3 fstring32 (string);
+        string UDAF quant_ul_udaf_lfta3 fstring2904 (ullong);
+// llong
+        llong EXTR quantile_of quant_l_udaf_hftaZ extr_quant_l_hftaZ_fcn (llong, float);
+        llong  FUN [COST LOW] extr_quant_l_hftaZ_fcn(string, float);
+        llong EXTR median_of quant_l_udaf_hftaZ extr_med_l_hftaZ_fcn (llong);
+        llong  FUN [COST LOW] extr_med_l_hftaZ_fcn(string);
+
+        string UDAF [SUBAGGR quant_l_udaf_lfta3, SUPERAGGR quant_l_udaf_hfta3] quant_l_udaf_hftaZ fstring32 (llong);
+        string UDAF quant_l_udaf_hfta3 fstring32 (string);
+        string UDAF quant_l_udaf_lfta3 fstring2904 (llong);
+// float
+        float EXTR quantile_of quant_f_udaf_hftaZ extr_quant_f_hftaZ_fcn (float, float);
+        float  FUN [COST LOW] extr_quant_f_hftaZ_fcn(string, float);
+        float EXTR median_of quant_f_udaf_hftaZ extr_med_f_hftaZ_fcn (float);
+        float  FUN [COST LOW] extr_med_f_hftaZ_fcn(string);
+
+        string UDAF [SUBAGGR quant_f_udaf_lfta3, SUPERAGGR quant_f_udaf_hfta3] quant_f_udaf_hftaZ fstring32 (float);
+        string UDAF quant_f_udaf_hfta3 fstring32 (string);
+        string UDAF quant_f_udaf_lfta3 fstring2904 (float);
 
 ///////////////////////////////////////////////////////////
 //               FIRST and LAST aggregation funciton

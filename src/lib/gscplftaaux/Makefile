@@ -13,11 +13,12 @@
 #   limitations under the License.
 # -------------------------------------------
 
+CPP=g++ -g -O3  -fexpensive-optimizations -I ../gscpaux/acl/ -I ../gscpaux/ -I ../../../include/lfta/ -I ../../../include/
 CC=gcc -g -O3  -fexpensive-optimizations -I ../gscpaux/acl/ -I ../gscpaux/ -I ../../../include/lfta/ -I ../../../include/
 
-SOURCE =  rts_string.c rts_byteswap.c rts_sample.c rts_udaf.c flip_udaf.c
+SOURCE =  rts_string.c rts_byteswap.c rts_sample.c rts_udaf.c flip_udaf.cc
 
-OBJECTS = $(SOURCE:.c=.o)
+OBJECTS = rts_string.o rts_byteswap.o rts_sample.o rts_udaf.o flip_udaf.o
 
 INCDIR=../../../include
 HFTA_DIR=$(INCDIR/hfta)
@@ -37,11 +38,14 @@ rts_sample.c : $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) $(LFTA_DIR/rts_external.
 
 rts_udaf.c : $(LFTA_DIR/rts_udaf.h) $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) 
 
-flip_udaf.c : $(LFTA_DIR/flip_udaf.h) $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) 
+flip_udaf.cc : $(LFTA_DIR/flip_udaf.h) $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h) 
 
 lpm.c : $(LFTA_DIR/rts_external.h) $(INCDIR/fta.h) $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h)
 
-flip_udaf.c : $(LFTA_DIR/rts_udaf.h) $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h)
+flip_udaf.cc : $(LFTA_DIR/rts_udaf.h) $(INCDIR/gsconfig.h) $(INCDIR/gstypes.h)
+
+flip_udaf.o : flip_udaf.cc
+	$(CPP) -c -o flip_udaf.o flip_udaf.cc
 
 install: all
 

@@ -147,11 +147,35 @@ void running_array_aggr_lfta_LFTA_AGGR_DESTROY_(char* scratch);
 /* LFTA functions						*/
 /****************************************************************/
 
-void quant_udaf_lfta3_LFTA_AGGR_INIT_(gs_sp_t);
-void quant_udaf_lfta3_LFTA_AGGR_UPDATE_(gs_sp_t, gs_uint32_t);
-gs_retval_t quant_udaf_lfta3_LFTA_AGGR_FLUSHME_(gs_sp_t);
-void quant_udaf_lfta3_LFTA_AGGR_OUTPUT_(struct gs_string *, gs_sp_t);
-void quant_udaf_lfta3_LFTA_AGGR_DESTROY_(gs_sp_t);
+void quant_ui_udaf_lfta3_LFTA_AGGR_INIT_(gs_sp_t);
+void quant_ui_udaf_lfta3_LFTA_AGGR_UPDATE_(gs_sp_t, gs_uint32_t);
+gs_retval_t quant_ui_udaf_lfta3_LFTA_AGGR_FLUSHME_(gs_sp_t);
+void quant_ui_udaf_lfta3_LFTA_AGGR_OUTPUT_(struct gs_string *, gs_sp_t);
+void quant_ui_udaf_lfta3_LFTA_AGGR_DESTROY_(gs_sp_t);
+
+void quant_i_udaf_lfta3_LFTA_AGGR_INIT_(gs_sp_t);
+void quant_i_udaf_lfta3_LFTA_AGGR_UPDATE_(gs_sp_t, gs_int32_t);
+gs_retval_t quant_i_udaf_lfta3_LFTA_AGGR_FLUSHME_(gs_sp_t);
+void quant_i_udaf_lfta3_LFTA_AGGR_OUTPUT_(struct gs_string *, gs_sp_t);
+void quant_i_udaf_lfta3_LFTA_AGGR_DESTROY_(gs_sp_t);
+
+void quant_ul_udaf_lfta3_LFTA_AGGR_INIT_(gs_sp_t);
+void quant_ul_udaf_lfta3_LFTA_AGGR_UPDATE_(gs_sp_t, gs_uint64_t);
+gs_retval_t quant_ul_udaf_lfta3_LFTA_AGGR_FLUSHME_(gs_sp_t);
+void quant_ul_udaf_lfta3_LFTA_AGGR_OUTPUT_(struct gs_string *, gs_sp_t);
+void quant_ul_udaf_lfta3_LFTA_AGGR_DESTROY_(gs_sp_t);
+
+void quant_l_udaf_lfta3_LFTA_AGGR_INIT_(gs_sp_t);
+void quant_l_udaf_lfta3_LFTA_AGGR_UPDATE_(gs_sp_t, gs_int64_t);
+gs_retval_t quant_l_udaf_lfta3_LFTA_AGGR_FLUSHME_(gs_sp_t);
+void quant_l_udaf_lfta3_LFTA_AGGR_OUTPUT_(struct gs_string *, gs_sp_t);
+void quant_l_udaf_lfta3_LFTA_AGGR_DESTROY_(gs_sp_t);
+
+void quant_f_udaf_lfta3_LFTA_AGGR_INIT_(gs_sp_t);
+void quant_f_udaf_lfta3_LFTA_AGGR_UPDATE_(gs_sp_t, gs_float_t);
+gs_retval_t quant_f_udaf_lfta3_LFTA_AGGR_FLUSHME_(gs_sp_t);
+void quant_f_udaf_lfta3_LFTA_AGGR_OUTPUT_(struct gs_string *, gs_sp_t);
+void quant_f_udaf_lfta3_LFTA_AGGR_DESTROY_(gs_sp_t);
 
 /////////////////////////////////////////////////////////
 // ==============================================================
