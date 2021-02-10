@@ -1,0 +1,10 @@
+#!/bin/sh
+./killexample
+sleep 1
+./runit
+sleep 10
+
+../../bin/gsprintconsole `cat gshub.log` default example1 -s > example1.csv &
+../../bin/gsprintconsole `cat gshub.log` default example2 -s > example2.csv &
+sleep 1
+../../bin/start_processing

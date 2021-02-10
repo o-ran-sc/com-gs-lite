@@ -1,0 +1,11 @@
+#!/bin/sh
+./killexample
+sleep 1
+./runit
+sleep 10
+python ./gen_feed.py &
+
+../../bin/gsprintconsole `cat gshub.log` default example &
+sleep 10
+../../bin/start_processing
+

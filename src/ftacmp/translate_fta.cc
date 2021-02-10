@@ -3275,13 +3275,13 @@ void generate_makefile(vector<string> &input_file_names, int nfiles,
 "lfta.o: %s_lfta.cc\n"
 "\t$(CC) -o lfta.o -c %s_lfta.cc\n"
 "\n"
-"%s_lfta.cc: external_fcns.def %s ",hostname.c_str(), hostname.c_str(), hostname.c_str(),schema_file_name.c_str());
+"%s_lfta.cc: %s ",hostname.c_str(), hostname.c_str(), hostname.c_str(),schema_file_name.c_str());
 	for(i=0;i<nfiles;++i)
 		fprintf(outfl," %s",input_file_names[i].c_str());
 	if(hostname == ""){
-		fprintf(outfl,"\n\t%s/bin/translate_fta %s %s ",root_path.c_str(), config_dir_path.c_str(),schema_file_name.c_str());
+		fprintf(outfl,"\n\t%s/bin/translate_fta -f -N -c -M -R %s %s -l %s/qlib packet_schema.txt ",root_path.c_str(), root_path.c_str(), config_dir_path.c_str(), root_path.c_str());
 	}else{
-		fprintf(outfl,"\n\t%s/bin/translate_fta -h %s %s %s ", root_path.c_str(), hostname.c_str(), config_dir_path.c_str(),schema_file_name.c_str());
+		fprintf(outfl,"\n\t%s/bin/translate_fta -f -N -h %s -c -M -R %s %s -l %s/qlib packet_schema.txt ", root_path.c_str(), hostname.c_str(), root_path.c_str(), config_dir_path.c_str(), root_path.c_str());
 	}
 	for(i=0;i<nfiles;++i)
 		fprintf(outfl," %s",input_file_names[i].c_str());
@@ -3303,15 +3303,9 @@ void generate_makefile(vector<string> &input_file_names, int nfiles,
 		);
 
 	fprintf(outfl,
-("\n"
-"packet_schema.txt:\n"
-"\tln -s "+root_path+"/cfg/packet_schema.txt .\n"
-"\n"
-"external_fcns.def:\n"
-"\tln -s "+root_path+"/cfg/external_fcns.def .\n"
 "\n"
 "clean:\n"
-"\trm -rf core rts *.o  %s_lfta.cc  external_fcns.def packet_schema.txt").c_str(),hostname.c_str());
+"\trm -rf core rts *.o  %s_lfta.cc",hostname.c_str());
 	for(i=0;i<hfta_names.size();++i)
 		fprintf(outfl," %s %s.cc",hfta_names[i].c_str(),hfta_names[i].c_str());
 	fprintf(outfl,"\n");
