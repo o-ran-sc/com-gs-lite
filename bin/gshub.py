@@ -18,6 +18,7 @@
 # for announcement and discovery of gs instances, sources and sinks
 
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from SocketServer import ThreadingMixIn
 import SocketServer
 import json
 import cgi
@@ -336,7 +337,9 @@ class Server(BaseHTTPRequestHandler) :
 def usage():
 	print ('./gshub.py [-p port]')
 	
-	
+
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    """Handle requests in a separate thread."""	
 
 def main():
 	# process command-line arguments
@@ -360,7 +363,7 @@ def main():
 
 	# start HTTP server to serve REST calls
 	server_address = ('127.0.0.1', port)
-	httpd = HTTPServer(server_address, Server)
+	httpd = ThreadedHTTPServer(server_address, Server)
 
 	# record HTTP server address in gshub.log
 	f = open('gshub.log', 'w')
