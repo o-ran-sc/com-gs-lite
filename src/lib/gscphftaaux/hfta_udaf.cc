@@ -667,7 +667,7 @@ void count_diff_hfta_HFTA_AGGR_DESTROY_(gs_sp_t scratch){ }
 //		running_array_aggr aggregate
 
 void running_array_aggr_hfta_HFTA_AGGR_INIT_(vstring* scratch) {
-  scratch->offset = NULL;  
+  scratch->offset = (gs_p_t)NULL;  
   scratch->length = 0;
 }
 
@@ -743,12 +743,12 @@ void CAT_aggr_HFTA_AGGR_REINIT_(gs_sp_t s){
 	v->val="";
 }
 void CAT_aggr_HFTA_AGGR_UPDATE_(gs_sp_t s, vstring *sep, vstring *str){
-char buf1[MAXTUPLESZ-20], buf2[MAXTUPLESZ-20];
-int i;
-for(i=0;i<sep->length;++i) buf1[i] = *(((char *)sep->offset)+i);
-buf1[i]='\0';
-for(i=0;i<str->length;++i) buf2[i] = *(((char *)str->offset)+i);
-buf2[i]='\0';
+//char buf1[MAXTUPLESZ-20], buf2[MAXTUPLESZ-20];
+//int i;
+//for(i=0;i<sep->length;++i) buf1[i] = *(((char *)sep->offset)+i);
+//buf1[i]='\0';
+//for(i=0;i<str->length;++i) buf2[i] = *(((char *)str->offset)+i);
+//buf2[i]='\0';
 	CAT_aggr_scratch_ptr *p = (CAT_aggr_scratch_ptr *)s;
 	CAT_aggr_scratch *v = p->ptr;
 	if(v->val.size()>0)
@@ -924,6 +924,77 @@ gs_int64_t extr_running_sum_max(vstring *v){
 	run_sum_max_udaf_str *vs = (run_sum_max_udaf_str *)(v->offset);
 	return vs->max;
 }
+
+
+// ---------------------------------------------
+//		aggr_diff : from a sequence of strings, collect
+//		  the ones which are different than the previous.
+//		  this includes the prior time period.
+//		  the idea is to see the sequence of handovers
+
+struct CAT_aggr_diff_scratch{
+	std::string val;
+	std::string prev_s;
+//	gs_int64_t prev_ts;	// for now, just catenate strings
+};
+
+struct CAT_aggr_diff_scratch_ptr{
+	CAT_aggr_diff_scratch *ptr;
+};
+
+
+
+void CAT_aggr_diff_HFTA_AGGR_INIT_(gs_sp_t s){
+	CAT_aggr_diff_scratch_ptr *p = (CAT_aggr_diff_scratch_ptr *)s;
+	CAT_aggr_diff_scratch *v = new CAT_aggr_diff_scratch();
+	v->prev_s = "";
+	v->val = "";
+
+	p->ptr = v;
+}
+void CAT_aggr_diff_HFTA_AGGR_REINIT_(gs_sp_t s){
+	CAT_aggr_diff_scratch_ptr *p = (CAT_aggr_diff_scratch_ptr *)s;
+	CAT_aggr_diff_scratch *v = p->ptr;
+	v->val=v->prev_s;
+}
+void CAT_aggr_diff_HFTA_AGGR_UPDATE_(gs_sp_t s,  vstring *str){
+	char str_buf[MAXTUPLESZ-20];
+	int i;
+	for(i=0;i<str->length;++i) str_buf[i] = *(((char *)str->offset)+i);
+	str_buf[i]='\0';
+
+	CAT_aggr_diff_scratch_ptr *p = (CAT_aggr_diff_scratch_ptr *)s;
+	CAT_aggr_diff_scratch *v = p->ptr;
+	if(str_buf != v->prev_s){
+		if(v->val.size()>0)
+			v->val += ':';
+		v->val += str_buf;
+		v->prev_s = str_buf;
+	}
+}
+
+void CAT_aggr_diff_HFTA_AGGR_OUTPUT_(vstring *res, gs_sp_t s){
+	CAT_aggr_diff_scratch_ptr *p = (CAT_aggr_diff_scratch_ptr *)s;
+	CAT_aggr_diff_scratch *v = p->ptr;
+//printf("output val=%s\n",v->val.c_str());
+	res->offset = (gs_p_t)malloc(v->val.size());
+	res->length = v->val.size();
+	if(res->length>MAXTUPLESZ-20)
+		res->length=MAXTUPLESZ-20;
+//	v->val.copy((char *)(res->offset), 0, res->length);
+	const char *dat = v->val.c_str();
+	memcpy((char *)(res->offset), dat, res->length);
+//	for(int i=0;i<res->length;++i)
+//		*(((char *)res->offset)+i) = dat[i];
+	res->reserved = INTERNAL;
+}
+void CAT_aggr_diff_HFTA_AGGR_DESTROY_(gs_sp_t s){
+	CAT_aggr_diff_scratch_ptr *p = (CAT_aggr_diff_scratch_ptr *)s;
+	CAT_aggr_diff_scratch *v = p->ptr;
+	delete v;
+}
+
+
 
 // ---------------------------------------------
 //		Approximate count distinct.

@@ -229,6 +229,16 @@ void CAT_aggr_HFTA_AGGR_UPDATE_(gs_sp_t s, vstring *sep, vstring *str);
 void CAT_aggr_HFTA_AGGR_OUTPUT_(vstring *res, gs_sp_t s);
 void CAT_aggr_HFTA_AGGR_DESTROY_(gs_sp_t s);
 
+//////////////////////////////////////////////
+//	CAT_aggr, aggregate strings by catenation but only when the payload changes
+//////////////////////////////////////////////
+void CAT_aggr_diff_HFTA_AGGR_INIT_(gs_sp_t s);
+void CAT_aggr_diff_HFTA_AGGR_REINIT_(gs_sp_t s);
+void CAT_aggr_diff_HFTA_AGGR_UPDATE_(gs_sp_t s,  vstring *str);
+void CAT_aggr_diff_HFTA_AGGR_OUTPUT_(vstring *res, gs_sp_t s);
+void CAT_aggr_diff_HFTA_AGGR_DESTROY_(gs_sp_t s);
+
+
 /////////////////////////////////////////////////////////
 //	time-averaged sum, from aperiodic reports
 ////////////////////////////////////////////////////////

@@ -34,6 +34,14 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include <errno.h>
+#include <string.h>
+
+#ifdef RMR_ENABLED
+#include <rmr/rmr.h>
+#include <rmr/RIC_message_types.h>
+#include <sys/epoll.h>
+#endif
 
 #include "gsconfig.h"
 #include "gstypes.h"
@@ -169,6 +177,12 @@ int main(int argc, char* argv[]) {
     endpoint dummyep;
     gs_uint32_t tip1,tip2,tip3,tip4;
     gs_sp_t instance_name;
+    gs_sp_t	rmr_port = NULL;    
+
+#ifdef RMR_ENABLED
+    // RMR-related parameters
+    gs_int32_t	rmr_mtype = MC_REPORT;
+#endif
 
 	gs_sp_t curl_address = NULL;
 	endpoint curl_endpoint;
@@ -178,17 +192,29 @@ int main(int argc, char* argv[]) {
 
 	gs_uint32_t ves_version=7;
 
-
     gs_uint32_t tlimit = 0;     // time limit in seconds
     time_t start_time, curr_time;
 
     gs_uint64_t post_success_cnt = 0ULL;
     gs_uint64_t post_failure_cnt = 0ULL;    
+
+#ifdef RMR_ENABLED
+	void* mrc;      						//msg router context
+	struct epoll_event events[1];			// list of events to give to epoll
+	struct epoll_event epe;                 // event definition for event to listen to
+	gs_int32_t     ep_fd = -1;						// epoll's file des (given to epoll_wait)
+	gs_int32_t rcv_fd;     						// file des that NNG tickles -- give this to epoll to listen on
+	gs_int32_t nready;								// number of events ready for receive
+	rmr_mbuf_t*		rmr_sbuf;					// send buffer
+	rmr_mbuf_t*		rmr_rbuf;					// received buffer
+
+    gs_uint64_t rmr_post_success_cnt = 0ULL;
+    gs_uint64_t rmr_post_failure_cnt = 0ULL;        
+#endif
     
 	gsopenlog(argv[0]);
     
-    
-    while ((ch = getopt(argc, argv, "l:p:r:vXDC:U:A:V:")) != -1) {
+    while ((ch = getopt(argc, argv, "l:p:r:vXDC:U:R:A:V:")) != -1) {
         switch (ch) {
             case 'r':
                 bufsz=atoi(optarg);
@@ -220,6 +246,9 @@ int main(int argc, char* argv[]) {
     			curl_endpoint.ip=htonl(tip1<<24|tip2<<16|tip3<<8|tip4);
     			curl_endpoint.port=htons(curl_endpoint.port);
 				break;
+            case 'R':
+                rmr_port=strdup(optarg);
+                break;
             case 'U':
 				curl_url = strdup(optarg);
                 break;
@@ -228,7 +257,7 @@ int main(int argc, char* argv[]) {
                 break;
             default:
             usage:
-                fprintf(stderr, "usage: %s [-r <bufsz>] [-p <port>] [-l <time_limit>] [-v] [-X] [-D] [-C <curl_dest>:<curl_port>] [-U <curl_url>] [-A <authentication_string>] [-V <ves_version>] <gshub-hostname>:<gshub-port> <gsinstance_name>  query param1 param2...\n",
+                fprintf(stderr, "usage: %s [-r <bufsz>] [-p <port>] [-l <time_limit>] [-v] [-X] [-D] [-C <curl_dest>:<curl_port>] [-U <curl_url>] [-A <authentication_string>] [-V <ves_version>] [-R <rmr_port>] <gshub-hostname>:<gshub-port> <gsinstance_name>  query param1 param2...\n",
                         *argv);
                 exit(1);
         }
@@ -274,7 +303,45 @@ int main(int argc, char* argv[]) {
     argv +=2;
     if (argc < 1)
         goto usage;
-    
+
+    if (rmr_port) {
+#ifdef RMR_ENABLED        
+        /* initialize RMR library */
+        if( (mrc = rmr_init( rmr_port, 1400, RMRFL_NONE )) == NULL ) {
+            fprintf(stderr, "%s::error:unable to initialise RMR\n", me);
+            exit( 1 );
+        }
+
+        rcv_fd = rmr_get_rcvfd( mrc );					// set up epoll things, start by getting the FD from MRr
+        if( rcv_fd < 0 ) {
+            fprintf(stderr, "%s::error:unable to set up polling fd\n", me);
+            exit( 1 );
+        }
+        if( (ep_fd = epoll_create1( 0 )) < 0 ) {
+            fprintf(stderr, "%s::error:unable to create epoll fd: %d\n", me, errno);
+            exit( 1 );
+        }
+        epe.events = EPOLLIN;
+        epe.data.fd = rcv_fd;
+
+        if( epoll_ctl( ep_fd, EPOLL_CTL_ADD, rcv_fd, &epe ) != 0 )  {
+            fprintf(stderr, "%s::error:epoll_ctl status not 0 : %s\n", me, strerror(errno));
+            exit( 1 );
+        }
+
+        rmr_sbuf = rmr_alloc_msg( mrc, MAXLINE );	// alloc first send buffer; subsequent buffers allcoated on send
+        rmr_rbuf = NULL;						// don't need to alloc receive buffer
+
+        while( ! rmr_ready( mrc ) ) {		// must have a route table before we can send; wait til RMr say it has one
+            sleep( 10 );
+        }
+        fprintf( stderr, "%s: RMR is ready\n", argv[0]);       
+#else
+		fprintf(stderr,"Runtime libraries built without RMR support. Rebuild with RMR_ENABLED defined in gsoptions.h\n");
+		exit(0);
+#endif
+    }
+        
     /* initialize host library and the sgroup  */
     
     if (verbose>=2) fprintf(stderr,"Initializing gscp\n");
@@ -626,8 +693,30 @@ int main(int argc, char* argv[]) {
 		"}}}\n", measurement_interval
 				);
 			}
+
+#ifdef RMR_ENABLED
+            if (rmr_port) {                
+                rmr_sbuf->mtype = rmr_mtype;							// fill in the message bits
+		        rmr_sbuf->len =  strlen(linebuf) + 1;           // our receiver likely wants a nice acsii-z string
+		        memcpy(rmr_sbuf->payload, linebuf, rmr_sbuf->len);
+                rmr_sbuf->state = 0;
+                rmr_sbuf = rmr_send_msg( mrc, rmr_sbuf);				// send it (send returns an empty payload on success, or the original payload on fail/retry)
+                while( rmr_sbuf->state == RMR_ERR_RETRY ) {			// soft failure (device busy?) retry
+                    rmr_sbuf = rmr_send_msg( mrc, rmr_sbuf);			// retry send until it's good (simple test; real programmes should do better)
+                }
+                if(rmr_sbuf->state != RMR_OK) {
+                    gslog(LOG_WARNING, "rmr_send_msg() failure, strerror(errno) is %s", strerror(errno));
+                    rmr_post_failure_cnt++;
+                } else
+                    rmr_post_success_cnt++;
+                if (((rmr_post_success_cnt+rmr_post_failure_cnt) % STAT_FREQUENCY) == 0)
+                    gslog(LOG_WARNING, "%s: successful RMR posts - %llu, failed RMR posts - %llu", argv[0], rmr_post_success_cnt, rmr_post_failure_cnt);
+            }
+#endif            
+
 			if(curl_address==NULL){
-            	emit_line();
+                if (!rmr_port)  // if neither VES collector nor RMR is specified print to standard output
+            	    emit_line();
 			}else{
 				http_post_request_hdr(curl_endpoint, curl_url, linebuf, &http_code, curl_auth);
 				if(http_code != 200 && http_code != 202){

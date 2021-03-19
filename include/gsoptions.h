@@ -29,5 +29,8 @@
 // support for SSL decryption
 //#define SSL_ENABLED
 
+// support RMR streams
+#define RMR_ENABLED
+
 #endif
 
