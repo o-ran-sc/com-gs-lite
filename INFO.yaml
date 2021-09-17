@@ -31,7 +31,7 @@ meetings:
     repeats: "bi-weekly"
     time: "9-10am ET, Tuesdays"
 repositories:
-    - "com/gs-lite"
+    - "ric-app/mc"
 committers:
     - <<: *oran_ricapp_ptl
     - name: "Vladislav Shkapenyuk"
